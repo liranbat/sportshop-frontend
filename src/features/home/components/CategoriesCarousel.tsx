@@ -50,6 +50,13 @@ type Props = { categories: readonly Category[] };
 function ScrollableCarousel({ categories }: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
 
+  // embla's scroll position lives outside react, so when the user drags or clicks
+  // an arrow, react doesn't know to re-render. useSyncExternalStore is the bridge:
+  // `subscribe` hooks into embla's "select"/"reInit" events to trigger re-renders,
+  // and the inline getters re-read canScrollPrev/Next on each render.
+  // with `loop: true` both getters always return true, so the buttons are never
+  // actually disabled today — this is wired up so flipping to `loop: false` later
+  // (boundary arrows greying out) would Just Work without any code changes here.
   const subscribe = useCallback(
     (onChange: () => void) => {
       if (!emblaApi) return () => {};
