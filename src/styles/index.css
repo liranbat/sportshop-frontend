@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
-@theme 
-{
+@theme {
   --color-primary-blue: #2563eb;
   --color-primary-blue-hover: #1d4ed8;
   --color-primary-blue-light: #eff6ff;
@@ -21,21 +20,21 @@
   --color-background-page: #f9fafb;
   --color-background-card: #ffffff;
 
-  --text-heading-xl: 3rem; 
+  --text-heading-xl: 3rem;
   --text-heading-xl--font-weight: 700;
-  --text-heading-l: 1.5rem; 
+  --text-heading-l: 1.5rem;
   --text-heading-l--font-weight: 600;
-  --text-heading-m: 1.25rem; 
+  --text-heading-m: 1.25rem;
   --text-heading-m--font-weight: 600;
-  --text-body-large: 1.125rem; 
+  --text-body-large: 1.125rem;
   --text-body-large--font-weight: 400;
-  --text-body-regular: 1rem; 
+  --text-body-regular: 1rem;
   --text-body-regular--font-weight: 400;
-  --text-body-small: 0.875rem; 
+  --text-body-small: 0.875rem;
   --text-body-small--font-weight: 400;
-  --text-body-small-bold: 0.875rem; 
+  --text-body-small-bold: 0.875rem;
   --text-body-small-bold--font-weight: 600;
-  --text-caption-regular: 0.75rem; 
+  --text-caption-regular: 0.75rem;
   --text-caption-regular--font-weight: 400;
 
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;

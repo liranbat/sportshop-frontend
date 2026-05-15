@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import type { Category } from "@/features/categories";
 import { CategoryCard } from "@/features/home/components/CategoryCard";
@@ -49,23 +49,22 @@ type Props = { categories: readonly Category[] };
 // so embla's loop wrap leaves no space between last and first slide.
 function ScrollableCarousel({ categories }: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  useEffect(() => {
-    if (!emblaApi) return;
-    const update = () => {
-      setCanScrollPrev(emblaApi.canScrollPrev());
-      setCanScrollNext(emblaApi.canScrollNext());
-    };
-    update();
-    emblaApi.on("select", update);
-    emblaApi.on("reInit", update);
-    return () => {
-      emblaApi.off("select", update);
-      emblaApi.off("reInit", update);
-    };
-  }, [emblaApi]);
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!emblaApi) return () => {};
+      emblaApi.on("select", onChange);
+      emblaApi.on("reInit", onChange);
+      return () => {
+        emblaApi.off("select", onChange);
+        emblaApi.off("reInit", onChange);
+      };
+    },
+    [emblaApi],
+  );
+
+  const canScrollPrev = useSyncExternalStore(subscribe, () => emblaApi?.canScrollPrev() ?? false);
+  const canScrollNext = useSyncExternalStore(subscribe, () => emblaApi?.canScrollNext() ?? false);
 
   const scrollPrev = () => emblaApi?.scrollPrev();
   const scrollNext = () => emblaApi?.scrollNext();
@@ -73,16 +72,9 @@ function ScrollableCarousel({ categories }: Props) {
   return (
     <>
       <div ref={emblaRef} className="overflow-hidden">
-        <div
-          className="flex touch-pan-y"
-          style={{ marginLeft: -SLIDE_SPACING_PX }}
-        >
+        <div className="flex touch-pan-y" style={{ marginLeft: -SLIDE_SPACING_PX }}>
           {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="shrink-0"
-              style={{ paddingLeft: SLIDE_SPACING_PX }}
-            >
+            <div key={cat.id} className="shrink-0" style={{ paddingLeft: SLIDE_SPACING_PX }}>
               <CategoryCard name={cat.name} iconSrc={cat.icon} />
             </div>
           ))}
