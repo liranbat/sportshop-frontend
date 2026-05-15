@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme 
+{
+  --color-primary-blue: #2563eb;
+  --color-primary-blue-hover: #1d4ed8;
+  --color-primary-blue-light: #eff6ff;
+  --color-primary-blue-disabled: #93c5fd;
+
+  --color-section-hero: #eff6ff;
+  --color-section-categories: #dbeafe;
+  --color-section-about: #bfdbfe;
+  --color-section-footer: #1e40af;
+
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-placeholder: #9ca3af;
+
+  --color-border-default: #d1d5db;
+  --color-border-focus: #2563eb;
+  --color-background-page: #f9fafb;
+  --color-background-card: #ffffff;
+
+  --text-heading-xl: 3rem; 
+  --text-heading-xl--font-weight: 700;
+  --text-heading-l: 1.5rem; 
+  --text-heading-l--font-weight: 600;
+  --text-heading-m: 1.25rem; 
+  --text-heading-m--font-weight: 600;
+  --text-body-large: 1.125rem; 
+  --text-body-large--font-weight: 400;
+  --text-body-regular: 1rem; 
+  --text-body-regular--font-weight: 400;
+  --text-body-small: 0.875rem; 
+  --text-body-small--font-weight: 400;
+  --text-body-small-bold: 0.875rem; 
+  --text-body-small-bold--font-weight: 600;
+  --text-caption-regular: 0.75rem; 
+  --text-caption-regular--font-weight: 400;
+
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+}
