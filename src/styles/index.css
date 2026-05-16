@@ -5,6 +5,7 @@
   --color-primary-blue-hover: #1d4ed8;
   --color-primary-blue-light: #eff6ff;
   --color-primary-blue-disabled: #93c5fd;
+  --color-primary-blue-deep: #1e40af;
 
   --color-section-hero: #eff6ff;
   --color-section-categories: #dbeafe;
@@ -20,8 +21,15 @@
   --color-background-page: #f9fafb;
   --color-background-card: #ffffff;
 
+  --color-error-red: #ef4444;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+  --color-error-text: #991b1b;
+
   --text-heading-xl: 3rem;
   --text-heading-xl--font-weight: 700;
+  --text-heading-brand: 2.25rem;
+  --text-heading-brand--font-weight: 700;
   --text-heading-l: 1.5rem;
   --text-heading-l--font-weight: 600;
   --text-heading-m: 1.25rem;
@@ -38,4 +46,6 @@
   --text-caption-regular--font-weight: 400;
 
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+
+  --shadow-card: 0px 1px 2px 0px rgba(0, 0, 0, 0.06), 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
 }

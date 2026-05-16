@@ -1,0 +1,124 @@
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "react-router";
+import { BrandPanel } from "@/components/BrandPanel";
+import { Button } from "@/components/Button";
+import { InputField } from "@/components/InputField";
+import { PasswordField } from "@/components/PasswordField";
+import { SignUpFormSchema, type SignUpFormValues } from "@/features/auth/schema";
+
+export function SignUpPage() {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpFormValues>({
+    resolver: zodResolver(SignUpFormSchema),
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Decouple submit-enable from RHF's touched-based isValid so the button reflects
+  // real schema validity even on first render (when nothing has been blurred yet).
+  const values = useWatch({ control });
+  const isFormValid = SignUpFormSchema.safeParse(values).success;
+
+  // Phase 1: no-op submit. Phase 3 will replace with useRegisterMutation (strips confirmPassword).
+  const onValid = (values: SignUpFormValues) => {
+    console.log("[SignUp] submit (Phase 1 no-op)", values);
+  };
+
+  return (
+    <div className="flex h-full w-full">
+      <BrandPanel />
+      <div className="flex flex-1 overflow-y-auto bg-background-page">
+        <form
+          onSubmit={handleSubmit(onValid)}
+          noValidate
+          className="m-auto flex w-[480px] flex-col rounded-2xl bg-background-card p-8 shadow-card"
+        >
+          <div className="flex flex-col items-center gap-2 text-center">
+            <h2 className="text-heading-l text-text-primary">Create Account</h2>
+            <p className="text-body-small text-text-secondary">Join SportShop today</p>
+          </div>
+
+          <InputField
+            label="First Name"
+            autoComplete="given-name"
+            placeholder="Enter your first name"
+            error={errors.firstName?.message}
+            containerClassName="mt-8"
+            {...register("firstName")}
+          />
+          <InputField
+            label="Last Name"
+            autoComplete="family-name"
+            placeholder="Enter your last name"
+            error={errors.lastName?.message}
+            containerClassName="mt-3"
+            {...register("lastName")}
+          />
+          <InputField
+            label="Email"
+            type="email"
+            autoComplete="email"
+            placeholder="Enter your email"
+            error={errors.email?.message}
+            containerClassName="mt-3"
+            {...register("email")}
+          />
+          <InputField
+            label="Phone Number"
+            type="tel"
+            autoComplete="tel"
+            placeholder="Enter your phone"
+            error={errors.phone?.message}
+            containerClassName="mt-3"
+            {...register("phone")}
+          />
+          <PasswordField
+            label="Password"
+            autoComplete="new-password"
+            placeholder="Enter your password"
+            error={errors.password?.message}
+            containerClassName="mt-3"
+            {...register("password")}
+          />
+          <PasswordField
+            label="Confirm Password"
+            autoComplete="new-password"
+            placeholder="Confirm your password"
+            error={errors.confirmPassword?.message}
+            containerClassName="mt-3"
+            {...register("confirmPassword")}
+          />
+
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            disabled={!isFormValid}
+            className="mx-auto mt-4 w-[380px]"
+          >
+            Create Account
+          </Button>
+
+          <p className="mt-8 text-center text-body-small text-text-secondary">
+            Already have an account?{" "}
+            <Link to="/sign-in" className="font-semibold text-primary-blue hover:underline">
+              Sign In
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
+}
