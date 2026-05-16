@@ -4,9 +4,8 @@ type Props = {
   role: "User" | "Admin";
 };
 
-// Small pill rendered immediately right of the logo on logged-in Navbar variants.
-// "Admin" gets the loud primary fill; "User" gets the calm primary-blue-light fill.
-// Sizing (h-6, rounded-full, px-2.5, text-body-small-bold) matches Figma Nav/RoleBadge.
+// Sizing and palette match Figma `Nav/RoleBadge`; rendered immediately right
+// of the logo on logged-in Navbar variants.
 export function RoleBadge({ role }: Props) {
   return (
     <span

@@ -28,8 +28,7 @@ export function Navbar() {
   return (
     <header className="flex h-12 w-full shrink-0 items-center justify-between border-b border-border-default bg-background-card pr-8">
       <div className="flex h-full items-center gap-3">
-        {/* explicit h-12 because <img> ignores h-full inside flex sometimes.
-            scale-x-90 + origin-left = 10% narrower, anchored to the left edge */}
+        {/* explicit h-12 because <img> ignores h-full inside flex sometimes */}
         <img
           src={sportshopHorizontal}
           alt="SportShop"
