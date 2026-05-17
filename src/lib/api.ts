@@ -4,15 +4,37 @@ import { env } from "@/lib/env";
 export class ApiError extends Error {
   readonly status: number | undefined;
   readonly code: string | undefined;
+  readonly traceId: string | undefined;
   readonly cause: unknown;
 
-  constructor(message: string, options: { status?: number; code?: string; cause?: unknown } = {}) {
+  constructor(
+    message: string,
+    options: { status?: number; code?: string; traceId?: string; cause?: unknown } = {},
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = options.status;
     this.code = options.code;
+    this.traceId = options.traceId;
     this.cause = options.cause;
   }
+}
+
+function extractTraceId(error: AxiosError): string | undefined {
+  const headerValue = error.response?.headers?.["x-trace-id"];
+  if (typeof headerValue === "string" && headerValue.length > 0) {
+    return headerValue;
+  }
+  const data = error.response?.data;
+  if (
+    typeof data === "object" &&
+    data !== null &&
+    "trace_id" in data &&
+    typeof (data as { trace_id: unknown }).trace_id === "string"
+  ) {
+    return (data as { trace_id: string }).trace_id;
+  }
+  return undefined;
 }
 
 function normalizeError(error: unknown): ApiError {
@@ -31,6 +53,7 @@ function normalizeError(error: unknown): ApiError {
     return new ApiError(serverMessage ?? error.message, {
       status,
       code: error.code,
+      traceId: extractTraceId(error),
       cause: error,
     });
   }
