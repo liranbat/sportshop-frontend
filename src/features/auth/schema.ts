@@ -3,77 +3,73 @@ import { z } from "zod";
 // Letters only, hyphen permitted only between letter groups (no leading/trailing/consecutive hyphens)
 const NAME_PATTERN = /^[A-Za-z]+(-[A-Za-z]+)*$/;
 
-export const SignInRequestSchema = z.object({
+const nameSchema = (fieldLabel: string) =>
+  z
+    .string()
+    .trim()
+    .refine((v) => v.length >= 2 && v.length <= 50 && NAME_PATTERN.test(v), {
+      message: `${fieldLabel} must be 2-50 letters (a-z); '-' allowed only between letters`,
+    });
+
+const emailSchema = z
+  .string()
+  .trim()
+  .pipe(
+    z
+      .email("Enter a valid email address")
+      .max(254, "Email must be 254 characters or fewer"),
+  );
+
+const phoneSchema = z
+  .string()
+  .refine((v) => /^05\d{8}$/.test(v), {
+    message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
+  });
+
+const passwordSchema = z
+  .string()
+  .refine(
+    (v) =>
+      v.length >= 8 &&
+      v.length <= 30 &&
+      /[A-Za-z]/.test(v) &&
+      /\d/.test(v) &&
+      !/\s/.test(v),
+    {
+      message:
+        "Password must be 8-30 characters, include both letters and numbers, and contain no spaces",
+    },
+  );
+
+export const LoginRequestSchema = z.object({
   email: z.string().trim().pipe(z.email("Enter a valid email address")),
   password: z.string().min(1, "Password is required"),
 });
+export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
-export type SignInRequest = z.infer<typeof SignInRequestSchema>;
+const registerRequestFields = {
+  firstName: nameSchema("First name"),
+  lastName: nameSchema("Last name"),
+  email: emailSchema,
+  phone: phoneSchema,
+  password: passwordSchema,
+};
 
-// confirmPassword lives on the client only; stripped before sending to the server in Phase 3
+export const RegisterRequestSchema = z.object(registerRequestFields);
+export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
+
 export const SignUpFormSchema = z
   .object({
-    firstName: z
-      .string()
-      .trim()
-      .refine(
-        (v) => v.length >= 2 && v.length <= 50 && NAME_PATTERN.test(v),
-        {
-          message:
-            "First name must be 2-50 letters (a-z); '-' allowed only between letters",
-        },
-      ),
-    lastName: z
-      .string()
-      .trim()
-      .refine(
-        (v) => v.length >= 2 && v.length <= 50 && NAME_PATTERN.test(v),
-        {
-          message:
-            "Last name must be 2-50 letters (a-z); '-' allowed only between letters",
-        },
-      ),
-    email: z
-      .string()
-      .trim()
-      .pipe(
-        z
-          .email("Enter a valid email address")
-          .max(254, "Email must be 254 characters or fewer"),
-      ),
-    // strip user-entered dashes/spaces so the server always receives 10-digit "05XXXXXXXX"
-    phone: z
-      .string()
-      .trim()
-      .transform((v) => v.replace(/[-\s]/g, ""))
-      .refine((v) => /^05\d{8}$/.test(v), {
-        message: "Enter a valid Israeli mobile number (e.g. 052-1234567)",
-      }),
-    password: z
-      .string()
-      .refine(
-        (v) =>
-          v.length >= 8 &&
-          v.length <= 30 &&
-          /[A-Za-z]/.test(v) &&
-          /\d/.test(v) &&
-          !/\s/.test(v),
-        {
-          message:
-            "Password must be 8-30 characters, include both letters and numbers, and contain no spaces",
-        },
-      ),
+    ...registerRequestFields,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
 export type SignUpFormValues = z.infer<typeof SignUpFormSchema>;
 
-// /api/auth/me response shape — used by Phase 3 to drive Navbar variant
-export const MeResponseSchema = z.object({
+export const UserResponseSchema = z.object({
   id: z.number().int().positive(),
   firstName: z.string(),
   lastName: z.string(),
@@ -81,5 +77,4 @@ export const MeResponseSchema = z.object({
   phone: z.string(),
   isAdmin: z.boolean(),
 });
-
-export type MeResponse = z.infer<typeof MeResponseSchema>;
+export type UserResponse = z.infer<typeof UserResponseSchema>;

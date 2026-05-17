@@ -1,20 +1,36 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { BrandPanel } from "@/components/BrandPanel";
 import { Button } from "@/components/Button";
 import { InputField } from "@/components/InputField";
+import { Notice } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
-import { SignInRequestSchema, type SignInRequest } from "@/features/auth/schema";
+import { useLoginMutation } from "@/features/auth/queries";
+import { LoginRequestSchema, type LoginRequest } from "@/features/auth/schema";
+
+type ReasonNotice = { message: string; variant: "warning" | "success" };
+
+const REASON_NOTICES: Record<string, ReasonNotice> = {
+  expired: { message: "Your session expired. Sign in again to continue.", variant: "warning" },
+  registered: { message: "Account created. Sign in with your new credentials.", variant: "success" },
+};
 
 export function SignInPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const loginMutation = useLoginMutation();
+
+  const reason = searchParams.get("reason");
+  const reasonNotice = reason ? REASON_NOTICES[reason] : undefined;
+
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
-  } = useForm<SignInRequest>({
-    resolver: zodResolver(SignInRequestSchema),
+    formState: { errors },
+  } = useForm<LoginRequest>({
+    resolver: zodResolver(LoginRequestSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
     defaultValues: { email: "", password: "" },
@@ -23,11 +39,12 @@ export function SignInPage() {
   // Decouple submit-enable from RHF's touched-based isValid so the button reflects
   // real schema validity even on first render (when nothing has been blurred yet).
   const values = useWatch({ control });
-  const isFormValid = SignInRequestSchema.safeParse(values).success;
+  const isFormValid = LoginRequestSchema.safeParse(values).success;
 
-  // Phase 1: no-op submit. Phase 3 will replace with useLoginMutation.
-  const onValid = (values: SignInRequest) => {
-    console.log("[SignIn] submit (Phase 1 no-op)", values);
+  const onValid = (values: LoginRequest) => {
+    loginMutation.mutate(values, {
+      onSuccess: () => navigate("/", { replace: true }),
+    });
   };
 
   return (
@@ -43,6 +60,21 @@ export function SignInPage() {
             <h2 className="text-heading-l text-text-primary">Welcome</h2>
             <p className="text-body-small text-text-secondary">Sign in to your account</p>
           </div>
+
+          {reasonNotice && (
+            <Notice
+              message={reasonNotice.message}
+              variant={reasonNotice.variant}
+              className="mt-6"
+            />
+          )}
+          {loginMutation.isError && (
+            <Notice
+              variant="error"
+              message={loginMutation.error.message}
+              className="mt-3"
+            />
+          )}
 
           <InputField
             label="Email"
@@ -64,7 +96,7 @@ export function SignInPage() {
 
           <Button
             type="submit"
-            isLoading={isSubmitting}
+            isLoading={loginMutation.isPending}
             disabled={!isFormValid}
             className="mx-auto mt-4 w-[380px]"
           >

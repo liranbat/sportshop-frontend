@@ -26,6 +26,16 @@
   --color-error-border: #fecaca;
   --color-error-text: #991b1b;
 
+  --color-warning-amber: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-warning-text: #92400e;
+
+  --color-success-green: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+  --color-success-text: #065f46;
+
   --text-heading-xl: 3rem;
   --text-heading-xl--font-weight: 700;
   --text-heading-brand: 2.25rem;

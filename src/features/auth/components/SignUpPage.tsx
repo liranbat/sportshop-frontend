@@ -1,18 +1,27 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { BrandPanel } from "@/components/BrandPanel";
 import { Button } from "@/components/Button";
 import { InputField } from "@/components/InputField";
+import { Notice } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
-import { SignUpFormSchema, type SignUpFormValues } from "@/features/auth/schema";
+import { useRegisterMutation } from "@/features/auth/queries";
+import {
+  SignUpFormSchema,
+  type RegisterRequest,
+  type SignUpFormValues,
+} from "@/features/auth/schema";
 
 export function SignUpPage() {
+  const navigate = useNavigate();
+  const registerMutation = useRegisterMutation();
+
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(SignUpFormSchema),
     mode: "onTouched",
@@ -32,9 +41,18 @@ export function SignUpPage() {
   const values = useWatch({ control });
   const isFormValid = SignUpFormSchema.safeParse(values).success;
 
-  // Phase 1: no-op submit. Phase 3 will replace with useRegisterMutation (strips confirmPassword).
   const onValid = (values: SignUpFormValues) => {
-    console.log("[SignUp] submit (Phase 1 no-op)", values);
+    // confirmPassword is form-only; build the API payload explicitly so it can't leak.
+    const payload: RegisterRequest = {
+      firstName: values.firstName,
+      lastName: values.lastName,
+      email: values.email,
+      phone: values.phone,
+      password: values.password,
+    };
+    registerMutation.mutate(payload, {
+      onSuccess: () => navigate("/sign-in?reason=registered", { replace: true }),
+    });
   };
 
   return (
@@ -50,6 +68,14 @@ export function SignUpPage() {
             <h2 className="text-heading-l text-text-primary">Create Account</h2>
             <p className="text-body-small text-text-secondary">Join SportShop today</p>
           </div>
+
+          {registerMutation.isError && (
+            <Notice
+              variant="error"
+              message={registerMutation.error.message}
+              className="mt-6"
+            />
+          )}
 
           <InputField
             label="First Name"
@@ -104,7 +130,7 @@ export function SignUpPage() {
 
           <Button
             type="submit"
-            isLoading={isSubmitting}
+            isLoading={registerMutation.isPending}
             disabled={!isFormValid}
             className="mx-auto mt-4 w-[380px]"
           >
