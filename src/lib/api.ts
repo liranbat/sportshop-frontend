@@ -45,6 +45,7 @@ function normalizeError(error: unknown): ApiError {
 export const api: AxiosInstance = axios.create({
   baseURL: env.VITE_API_URL,
   timeout: 10_000,
+  withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
 
