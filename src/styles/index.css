@@ -22,6 +22,7 @@
   --color-background-card: #ffffff;
 
   --color-error-red: #ef4444;
+  --color-error-red-disabled: #fca5a5;
   --color-error-bg: #fef2f2;
   --color-error-border: #fecaca;
   --color-error-text: #991b1b;
@@ -35,6 +36,11 @@
   --color-success-bg: #ecfdf5;
   --color-success-border: #a7f3d0;
   --color-success-text: #065f46;
+
+  --color-info-blue: #2563eb;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+  --color-info-text: #1e40af;
 
   --text-heading-xl: 3rem;
   --text-heading-xl--font-weight: 700;

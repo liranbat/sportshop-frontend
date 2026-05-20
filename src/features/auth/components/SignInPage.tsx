@@ -9,11 +9,12 @@ import { PasswordField } from "@/components/PasswordField";
 import { useLoginMutation } from "@/features/auth/queries";
 import { LoginRequestSchema, type LoginRequest } from "@/features/auth/schema";
 
-type ReasonNotice = { message: string; variant: "warning" | "success" };
+type ReasonNotice = { message: string; variant: "warning" | "success" | "info" };
 
 const REASON_NOTICES: Record<string, ReasonNotice> = {
   expired: { message: "Your session expired. Sign in again to continue.", variant: "warning" },
   registered: { message: "Account created. Sign in with your new credentials.", variant: "success" },
+  deleted: { message: "Your account has been deleted.", variant: "info" },
 };
 
 export function SignInPage() {
