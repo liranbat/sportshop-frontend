@@ -11,6 +11,9 @@ const nameSchema = (fieldLabel: string) =>
       message: `${fieldLabel} must be 2-50 letters (a-z); '-' allowed only between letters`,
     });
 
+export const firstNameSchema = nameSchema("First name");
+export const lastNameSchema = nameSchema("Last name");
+
 const emailSchema = z
   .string()
   .trim()
@@ -20,13 +23,13 @@ const emailSchema = z
       .max(254, "Email must be 254 characters or fewer"),
   );
 
-const phoneSchema = z
+export const phoneSchema = z
   .string()
   .refine((v) => /^05\d{8}$/.test(v), {
     message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
   });
 
-const passwordSchema = z
+export const passwordSchema = z
   .string()
   .refine(
     (v) =>
@@ -48,8 +51,8 @@ export const LoginRequestSchema = z.object({
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
 const registerRequestFields = {
-  firstName: nameSchema("First name"),
-  lastName: nameSchema("Last name"),
+  firstName: firstNameSchema,
+  lastName: lastNameSchema,
   email: emailSchema,
   phone: phoneSchema,
   password: passwordSchema,

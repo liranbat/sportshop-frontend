@@ -11,7 +11,7 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
 };
 
 const baseClasses =
-  "inline-flex h-10 items-center justify-center rounded-lg px-5 text-body-regular font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2 disabled:cursor-not-allowed";
+  "inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg px-5 text-body-regular font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2 disabled:cursor-not-allowed";
 
 const variantClasses: Record<Variant, string> = {
   primary:

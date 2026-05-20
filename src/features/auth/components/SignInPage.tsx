@@ -14,6 +14,7 @@ type ReasonNotice = { message: string; variant: "warning" | "success" };
 const REASON_NOTICES: Record<string, ReasonNotice> = {
   expired: { message: "Your session expired. Sign in again to continue.", variant: "warning" },
   registered: { message: "Account created. Sign in with your new credentials.", variant: "success" },
+  deleted: { message: "Your account has been deleted.", variant: "success" },
 };
 
 export function SignInPage() {
