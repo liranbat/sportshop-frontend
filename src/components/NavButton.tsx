@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-type Variant = "outlined" | "filled" | "subtle";
+type Variant = "outlined" | "filled";
 
 type LinkProps = {
   label: string;
@@ -20,8 +20,6 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   outlined:
     "border border-primary-blue text-primary-blue hover:bg-primary-blue-light",
   filled: "bg-primary-blue text-white hover:bg-primary-blue-hover",
-  subtle:
-    "border border-border-default text-text-primary hover:bg-background-page",
 };
 
 export function NavButton(props: Props) {

@@ -50,7 +50,13 @@ export const router = createBrowserRouter([
             },
           },
           { path: "orders", element: <PlaceholderPage title="Orders" /> },
-          { path: "profile", element: <PlaceholderPage title="Profile" /> },
+          {
+            path: "profile",
+            lazy: async () => {
+              const { ProfilePage } = await import("@/features/profile");
+              return { Component: ProfilePage };
+            },
+          },
         ],
       },
       {
