@@ -17,8 +17,7 @@ type ButtonProps = {
 type Props = LinkProps | ButtonProps;
 
 const VARIANT_CLASSES: Record<Variant, string> = {
-  outlined:
-    "border border-primary-blue text-primary-blue hover:bg-primary-blue-light",
+  outlined: "border border-primary-blue text-primary-blue hover:bg-primary-blue-light",
   filled: "bg-primary-blue text-white hover:bg-primary-blue-hover",
 };
 

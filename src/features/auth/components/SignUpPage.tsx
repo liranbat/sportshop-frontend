@@ -70,11 +70,7 @@ export function SignUpPage() {
           </div>
 
           {registerMutation.isError && (
-            <Notice
-              variant="error"
-              message={registerMutation.error.message}
-              className="mt-6"
-            />
+            <Notice variant="error" message={registerMutation.error.message} className="mt-6" />
           )}
 
           <InputField

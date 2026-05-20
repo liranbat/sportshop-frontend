@@ -6,10 +6,7 @@ import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import type { UserResponse } from "@/features/auth/schema";
 import { useUpdateProfileMutation } from "@/features/profile/queries";
-import {
-  UpdateProfileRequestSchema,
-  type UpdateProfileRequest,
-} from "@/features/profile/schema";
+import { UpdateProfileRequestSchema, type UpdateProfileRequest } from "@/features/profile/schema";
 
 const SUCCESS_NOTICE_TIMEOUT_MS = 4000;
 
@@ -70,9 +67,7 @@ export function ProfileCard({ user }: Props) {
     <section className="flex w-full flex-col gap-6 rounded-2xl bg-background-card p-6 shadow-card">
       <h2 className="text-heading-m text-text-primary text-center">Personal Details</h2>
 
-      {showSuccess && (
-        <Notice variant="success" message="Profile updated." />
-      )}
+      {showSuccess && <Notice variant="success" message="Profile updated." />}
       {updateMutation.isError && !showSuccess && (
         <Notice variant="error" message={updateMutation.error.message} />
       )}
@@ -113,11 +108,7 @@ export function ProfileCard({ user }: Props) {
         />
 
         <div className="mt-2 flex gap-3">
-          <Button
-            type="submit"
-            isLoading={updateMutation.isPending}
-            disabled={!isFormValid}
-          >
+          <Button type="submit" isLoading={updateMutation.isPending} disabled={!isFormValid}>
             Save Changes
           </Button>
           <Button

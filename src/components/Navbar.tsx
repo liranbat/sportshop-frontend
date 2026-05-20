@@ -28,7 +28,12 @@ export function Navbar() {
       </div>
 
       <nav aria-label="Primary" className="flex items-center gap-3">
-        {!isPending && (!user ? <GuestLinks /> : <AuthedLinks isAdmin={user.isAdmin} onSignOut={handleSignOut} />)}
+        {!isPending &&
+          (!user ? (
+            <GuestLinks />
+          ) : (
+            <AuthedLinks isAdmin={user.isAdmin} onSignOut={handleSignOut} />
+          ))}
       </nav>
     </header>
   );

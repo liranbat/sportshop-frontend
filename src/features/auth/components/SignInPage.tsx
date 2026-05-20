@@ -13,7 +13,10 @@ type ReasonNotice = { message: string; variant: "warning" | "success" | "info" }
 
 const REASON_NOTICES: Record<string, ReasonNotice> = {
   expired: { message: "Your session expired. Sign in again to continue.", variant: "warning" },
-  registered: { message: "Account created. Sign in with your new credentials.", variant: "success" },
+  registered: {
+    message: "Account created. Sign in with your new credentials.",
+    variant: "success",
+  },
   deleted: { message: "Your account has been deleted.", variant: "info" },
 };
 
@@ -70,11 +73,7 @@ export function SignInPage() {
             />
           )}
           {loginMutation.isError && (
-            <Notice
-              variant="error"
-              message={loginMutation.error.message}
-              className="mt-3"
-            />
+            <Notice variant="error" message={loginMutation.error.message} className="mt-3" />
           )}
 
           <InputField

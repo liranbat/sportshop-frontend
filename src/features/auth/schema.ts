@@ -17,27 +17,16 @@ export const lastNameSchema = nameSchema("Last name");
 const emailSchema = z
   .string()
   .trim()
-  .pipe(
-    z
-      .email("Enter a valid email address")
-      .max(254, "Email must be 254 characters or fewer"),
-  );
+  .pipe(z.email("Enter a valid email address").max(254, "Email must be 254 characters or fewer"));
 
-export const phoneSchema = z
-  .string()
-  .refine((v) => /^05\d{8}$/.test(v), {
-    message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
-  });
+export const phoneSchema = z.string().refine((v) => /^05\d{8}$/.test(v), {
+  message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
+});
 
 export const passwordSchema = z
   .string()
   .refine(
-    (v) =>
-      v.length >= 8 &&
-      v.length <= 30 &&
-      /[A-Za-z]/.test(v) &&
-      /\d/.test(v) &&
-      !/\s/.test(v),
+    (v) => v.length >= 8 && v.length <= 30 && /[A-Za-z]/.test(v) && /\d/.test(v) && !/\s/.test(v),
     {
       message:
         "Password must be 8-30 characters, include both letters and numbers, and contain no spaces",

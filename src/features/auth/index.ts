@@ -5,7 +5,6 @@ export {
   useLoginMutation,
   useLogoutMutation,
   useMeQuery,
-  useRefreshMutation,
   useRegisterMutation,
 } from "@/features/auth/queries";
 export type {

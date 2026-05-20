@@ -33,8 +33,8 @@ export function SecurityCard() {
         <div className="flex flex-col gap-1">
           <p className="text-body-small-bold text-text-primary">Delete account</p>
           <p className="text-body-small text-text-secondary">
-            Your data will be removed and you won&apos;t be able to sign in again. Orders you
-            have already placed are kept for record.
+            Your data will be removed and you won&apos;t be able to sign in again. Orders you have
+            already placed are kept for record.
           </p>
         </div>
         <Button

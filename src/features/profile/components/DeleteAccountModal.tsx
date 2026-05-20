@@ -7,10 +7,7 @@ import { Notice } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
 import { WarningTile } from "@/components/WarningTile";
 import { useDeleteAccountMutation } from "@/features/profile/queries";
-import {
-  DeleteAccountRequestSchema,
-  type DeleteAccountRequest,
-} from "@/features/profile/schema";
+import { DeleteAccountRequestSchema, type DeleteAccountRequest } from "@/features/profile/schema";
 
 type Props = {
   open: boolean;

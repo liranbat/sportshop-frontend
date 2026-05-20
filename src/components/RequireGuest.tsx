@@ -6,9 +6,7 @@ export function RequireGuest() {
 
   if (isPending) {
     return (
-      <div className="flex h-full items-center justify-center text-text-secondary">
-        Loading…
-      </div>
+      <div className="flex h-full items-center justify-center text-text-secondary">Loading…</div>
     );
   }
 

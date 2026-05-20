@@ -5,7 +5,7 @@ import { installAuthInterceptor } from "@/lib/auth-interceptor";
 import "@fontsource-variable/inter";
 import "@/styles/index.css";
 
-// Install BEFORE rendering so the very first /me call from the Navbar can already 
+// Install BEFORE rendering so the very first /me call from the Navbar can already
 // benefit from the 401-refresh-retry flow.
 installAuthInterceptor();
 

@@ -12,9 +12,7 @@ export function RoleBadge({ role }: Props) {
       aria-label={`Role: ${role}`}
       className={cn(
         "inline-flex h-6 items-center rounded-full px-2.5 text-body-small-bold",
-        role === "Admin"
-          ? "bg-primary-blue text-white"
-          : "bg-primary-blue-light text-primary-blue",
+        role === "Admin" ? "bg-primary-blue text-white" : "bg-primary-blue-light text-primary-blue",
       )}
     >
       {role}

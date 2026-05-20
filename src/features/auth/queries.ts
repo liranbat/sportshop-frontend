@@ -1,11 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  getMe,
-  login,
-  logout,
-  refresh,
-  register,
-} from "@/features/auth/api";
+import { getMe, login, logout, register } from "@/features/auth/api";
 import type { UserResponse } from "@/features/auth/schema";
 import { ApiError } from "@/lib/api";
 
@@ -63,16 +57,6 @@ export function useLogoutMutation() {
     mutationFn: logout,
     onSuccess: () => {
       queryClient.setQueryData(authQueryKeys.me(), null);
-    },
-  });
-}
-
-export function useRefreshMutation() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: refresh,
-    onSuccess: (user) => {
-      queryClient.setQueryData(authQueryKeys.me(), user);
     },
   });
 }
