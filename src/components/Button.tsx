@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "outlined" | "subtle";
+type Variant = "primary" | "outlined" | "danger";
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   variant?: Variant;
@@ -18,8 +18,8 @@ const variantClasses: Record<Variant, string> = {
     "bg-primary-blue text-white hover:bg-primary-blue-hover disabled:bg-primary-blue-disabled disabled:text-white/70 disabled:hover:bg-primary-blue-disabled",
   outlined:
     "border border-primary-blue bg-transparent text-primary-blue hover:bg-primary-blue-light disabled:border-text-placeholder disabled:text-text-placeholder disabled:hover:bg-transparent",
-  subtle:
-    "border border-border-default bg-transparent text-text-primary hover:bg-background-page disabled:opacity-50 disabled:hover:bg-transparent",
+  danger:
+    "bg-error-red text-white hover:bg-error-red/90 disabled:bg-error-red-disabled disabled:text-white/80 disabled:hover:bg-error-red-disabled",
 };
 
 export function Button({
