@@ -37,6 +37,11 @@
   --color-success-border: #a7f3d0;
   --color-success-text: #065f46;
 
+  --color-info-blue: #2563eb;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #bfdbfe;
+  --color-info-text: #1e40af;
+
   --text-heading-xl: 3rem;
   --text-heading-xl--font-weight: 700;
   --text-heading-brand: 2.25rem;

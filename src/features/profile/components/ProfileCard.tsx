@@ -26,7 +26,7 @@ export function ProfileCard({ user }: Props) {
     handleSubmit,
     reset,
     control,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<UpdateProfileRequest>({
     resolver: zodResolver(UpdateProfileRequestSchema),
     mode: "onTouched",
@@ -116,7 +116,7 @@ export function ProfileCard({ user }: Props) {
           <Button
             type="submit"
             isLoading={updateMutation.isPending}
-            disabled={!isDirty || !isFormValid}
+            disabled={!isFormValid}
           >
             Save Changes
           </Button>
@@ -124,7 +124,7 @@ export function ProfileCard({ user }: Props) {
             type="button"
             variant="outlined"
             onClick={onDiscard}
-            disabled={!isDirty || updateMutation.isPending}
+            disabled={updateMutation.isPending}
           >
             Discard
           </Button>

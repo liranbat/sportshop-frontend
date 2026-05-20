@@ -100,20 +100,13 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
           error={errors.currentPassword?.message}
           {...register("currentPassword")}
         />
-        <div className="flex flex-col">
-          <PasswordField
-            label="New password"
-            autoComplete="new-password"
-            placeholder="Enter new password"
-            error={errors.newPassword?.message}
-            {...register("newPassword")}
-          />
-          {!errors.newPassword && (
-            <p className="pl-[156px] mt-1 text-caption-regular text-text-secondary">
-              Minimum 8 characters.
-            </p>
-          )}
-        </div>
+        <PasswordField
+          label="New password"
+          autoComplete="new-password"
+          placeholder="Enter new password"
+          error={errors.newPassword?.message}
+          {...register("newPassword")}
+        />
         <PasswordField
           label="Confirm new password"
           autoComplete="new-password"

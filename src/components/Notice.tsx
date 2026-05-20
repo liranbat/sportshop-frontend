@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-type Variant = "warning" | "success" | "error";
+type Variant = "warning" | "success" | "error" | "info";
 
 type Props = {
   message: string;
@@ -23,6 +23,11 @@ const variantClasses: Record<Variant, { container: string; dot: string; text: st
     container: "border-error-border bg-error-bg",
     dot: "bg-error-red",
     text: "text-error-text",
+  },
+  info: {
+    container: "border-info-border bg-info-bg",
+    dot: "bg-info-blue",
+    text: "text-info-text",
   },
 };
 
