@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { listActiveCategories } from "@/features/categories/api";
+import { listCategories } from "@/features/categories/api";
+import type { CategoryListParams } from "@/features/categories/schema";
 
 export const categoriesQueryKeys = {
   all: ["categories"] as const,
-  active: () => [...categoriesQueryKeys.all, "active"] as const,
+  list: (params: CategoryListParams) => [...categoriesQueryKeys.all, "list", params] as const,
 };
 
-export function useActiveCategoriesQuery() {
+export function useCategoriesQuery(params: CategoryListParams) {
   return useQuery({
-    queryKey: categoriesQueryKeys.active(),
-    queryFn: listActiveCategories,
+    queryKey: categoriesQueryKeys.list(params),
+    queryFn: () => listCategories(params),
   });
 }

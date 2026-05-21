@@ -62,7 +62,7 @@ export function SignUpPage() {
         <form
           onSubmit={handleSubmit(onValid)}
           noValidate
-          className="m-auto flex w-[480px] flex-col rounded-2xl bg-background-card p-8 shadow-card"
+          className="m-auto flex w-120 flex-col rounded-2xl bg-background-card p-8 shadow-card"
         >
           <div className="flex flex-col items-center gap-2 text-center">
             <h2 className="text-heading-l text-text-primary">Create Account</h2>
@@ -128,7 +128,7 @@ export function SignUpPage() {
             type="submit"
             isLoading={registerMutation.isPending}
             disabled={!isFormValid}
-            className="mx-auto mt-4 w-[380px]"
+            className="mx-auto mt-4 w-95"
           >
             Create Account
           </Button>
