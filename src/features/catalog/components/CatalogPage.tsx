@@ -52,7 +52,6 @@ export function CatalogPage() {
   const productsQuery = useProductsQuery(appliedParams, { enabled: intentResolved });
   const productPage = productsQuery.data;
   const products = productPage?.items ?? [];
-  const totalElements = productPage?.totalElements ?? 0;
   const totalPages = productPage?.totalPages ?? 0;
 
   const hasPendingEdits = !filtersEqual(staged, applied);
@@ -73,8 +72,8 @@ export function CatalogPage() {
   };
 
   return (
-    <main className="h-full overflow-y-auto bg-background-page">
-      <div className="flex flex-col gap-2 px-6 py-3 lg:px-10 2xl:px-14">
+    <main className="h-full overflow-hidden bg-background-page">
+      <div className="flex h-full flex-col gap-2 px-6 py-3 lg:px-10 2xl:px-14">
         <CatalogToolbar
           staged={staged}
           setStaged={setStaged}
@@ -83,25 +82,27 @@ export function CatalogPage() {
           onApply={handleApply}
           onClear={handleClear}
         />
-        {productsQuery.isError ? (
-          <Notice
-            variant="error"
-            message="Could not load products. Please refresh and try again."
-          />
-        ) : (
-          <>
-            <CatalogGrid products={products} categories={categories} />
-            {totalElements > 0 && (
-              <CatalogPagination
-                page={page}
-                pageSize={staged.pageSize}
-                totalPages={totalPages}
-                onPageChange={setPage}
-                onPageSizeChange={handleStagePageSize}
+
+        <div className="min-h-0 flex-1">
+          {productsQuery.isError ? (
+            <div className="flex h-full items-center justify-center">
+              <Notice
+                variant="error"
+                message="Could not load products. Please refresh and try again."
               />
-            )}
-          </>
-        )}
+            </div>
+          ) : (
+            <CatalogGrid products={products} categories={categories} pageSize={applied.pageSize} />
+          )}
+        </div>
+
+        <CatalogPagination
+          page={page}
+          pageSize={staged.pageSize}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          onPageSizeChange={handleStagePageSize}
+        />
       </div>
     </main>
   );

@@ -64,6 +64,7 @@ export function CatalogPagination({
           }}
           ariaLabel="Items per page"
           className="w-32"
+          openUpward
         />
       </div>
     </nav>

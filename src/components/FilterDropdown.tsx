@@ -16,6 +16,8 @@ type Props = {
   ariaLabel: string;
   disabled?: boolean;
   className?: string;
+  // open the listbox above the trigger; default is below
+  openUpward?: boolean;
 };
 
 export function FilterDropdown({
@@ -26,6 +28,7 @@ export function FilterDropdown({
   ariaLabel,
   disabled = false,
   className,
+  openUpward = false,
 }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -56,7 +59,10 @@ export function FilterDropdown({
         <ul
           role="listbox"
           aria-label={ariaLabel}
-          className="absolute top-full right-0 left-0 z-10 mt-1 max-h-60 overflow-y-auto rounded-lg border border-border-default bg-background-card shadow-card"
+          className={cn(
+            "absolute right-0 left-0 z-10 max-h-60 overflow-y-auto rounded-lg border border-border-default bg-background-card shadow-card",
+            openUpward ? "bottom-full mb-1" : "top-full mt-1",
+          )}
         >
           {options.map((option) => (
             <li key={option.value}>

@@ -88,7 +88,7 @@ export function CatalogToolbar({
         />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="mt-3 flex items-center gap-2">
         <div className="relative">
           <Button variant="primary" className="h-7 px-3 text-body-small" onClick={onApply}>
             Apply
