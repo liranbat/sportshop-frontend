@@ -4,9 +4,9 @@ import type { Category } from "@/features/categories";
 import { CategoryCard } from "@/features/home/components/CategoryCard";
 
 const VISIBLE_CARDS = 5;
-const CARD_WIDTH_PX = 200;
-const SLIDE_SPACING_PX = 24;
-const VIEWPORT_WIDTH = VISIBLE_CARDS * CARD_WIDTH_PX + (VISIBLE_CARDS - 1) * SLIDE_SPACING_PX;
+const CARD_WIDTH_REM = 12.5;
+const SLIDE_SPACING_REM = 1.5;
+const VIEWPORT_WIDTH_REM = VISIBLE_CARDS * CARD_WIDTH_REM + (VISIBLE_CARDS - 1) * SLIDE_SPACING_REM;
 
 type ArrowButtonProps = {
   direction: "left" | "right";
@@ -27,8 +27,6 @@ function ArrowButton({ direction, onClick, disabled }: ArrowButtonProps) {
       className="flex h-10 w-10 items-center justify-center rounded-full border border-primary-blue bg-background-card text-primary-blue transition-colors hover:bg-primary-blue-light disabled:cursor-not-allowed disabled:border-text-placeholder disabled:text-text-placeholder disabled:hover:bg-background-card"
     >
       <svg
-        width="20"
-        height="20"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -36,6 +34,7 @@ function ArrowButton({ direction, onClick, disabled }: ArrowButtonProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
+        className="h-5 w-5"
       >
         <polyline points={points} />
       </svg>
@@ -79,10 +78,14 @@ function ScrollableCarousel({ categories }: Props) {
   return (
     <>
       <div ref={emblaRef} className="overflow-hidden">
-        <div className="flex touch-pan-y" style={{ marginLeft: -SLIDE_SPACING_PX }}>
+        <div className="flex touch-pan-y" style={{ marginLeft: `-${SLIDE_SPACING_REM}rem` }}>
           {categories.map((cat) => (
-            <div key={cat.id} className="shrink-0" style={{ paddingLeft: SLIDE_SPACING_PX }}>
-              <CategoryCard name={cat.name} iconSrc={cat.icon} />
+            <div
+              key={cat.id}
+              className="shrink-0"
+              style={{ paddingLeft: `${SLIDE_SPACING_REM}rem` }}
+            >
+              <CategoryCard id={cat.id} name={cat.name} iconSrc={cat.icon} />
             </div>
           ))}
         </div>
@@ -99,13 +102,13 @@ export function CategoriesCarousel({ categories }: Props) {
   const hasOverflow = categories.length > VISIBLE_CARDS;
 
   return (
-    <div style={{ width: VIEWPORT_WIDTH }} className="flex flex-col gap-4">
+    <div style={{ width: `${VIEWPORT_WIDTH_REM}rem` }} className="flex flex-col gap-4">
       {hasOverflow ? (
         <ScrollableCarousel categories={categories} />
       ) : (
         <div className="flex justify-center gap-6">
           {categories.map((cat) => (
-            <CategoryCard key={cat.id} name={cat.name} iconSrc={cat.icon} />
+            <CategoryCard key={cat.id} id={cat.id} name={cat.name} iconSrc={cat.icon} />
           ))}
         </div>
       )}
