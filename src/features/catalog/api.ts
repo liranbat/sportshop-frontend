@@ -1,8 +1,8 @@
 import { api } from "@/lib/api";
 import type { ProductListParams } from "@/features/catalog/filters";
-import { ProductsSchema, type Product } from "@/features/catalog/schema";
+import { ProductPageSchema, type ProductPage } from "@/features/catalog/schema";
 
-export async function listProducts(params: ProductListParams): Promise<Product[]> {
+export async function listProducts(params: ProductListParams): Promise<ProductPage> {
   const { data } = await api.get<unknown>("/api/products", { params });
-  return ProductsSchema.parse(data);
+  return ProductPageSchema.parse(data);
 }

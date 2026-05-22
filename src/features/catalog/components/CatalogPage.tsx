@@ -3,10 +3,13 @@ import { useLocation } from "react-router";
 import { Notice } from "@/components/Notice";
 import { useCategoriesQuery } from "@/features/categories";
 import { CatalogGrid } from "@/features/catalog/components/CatalogGrid";
+import { CatalogPagination } from "@/features/catalog/components/CatalogPagination";
 import { CatalogToolbar } from "@/features/catalog/components/CatalogToolbar";
 import {
   DEFAULT_FILTERS,
+  filtersEqual,
   toProductListParams,
+  type PageSize,
   type StagedFilters,
 } from "@/features/catalog/filters";
 import { useProductsQuery } from "@/features/catalog/queries";
@@ -29,6 +32,8 @@ export function CatalogPage() {
   const [staged, setStaged] = useState<StagedFilters>(DEFAULT_FILTERS);
   const [applied, setApplied] = useState<StagedFilters>(DEFAULT_FILTERS);
 
+  const [page, setPage] = useState(0);
+
   const [intentResolved, setIntentResolved] = useState(intentCategoryId === null);
 
   const categoriesQuery = useCategoriesQuery({ active: true });
@@ -43,9 +48,29 @@ export function CatalogPage() {
     setIntentResolved(true);
   }
 
-  const appliedParams = useMemo(() => toProductListParams(applied), [applied]);
+  const appliedParams = useMemo(() => toProductListParams(applied, page), [applied, page]);
   const productsQuery = useProductsQuery(appliedParams, { enabled: intentResolved });
-  const products = productsQuery.data ?? [];
+  const productPage = productsQuery.data;
+  const products = productPage?.items ?? [];
+  const totalElements = productPage?.totalElements ?? 0;
+  const totalPages = productPage?.totalPages ?? 0;
+
+  const hasPendingEdits = !filtersEqual(staged, applied);
+
+  const handleApply = () => {
+    setPage(0);
+    setApplied(staged);
+  };
+
+  const handleClear = () => {
+    setPage(0);
+    setStaged(DEFAULT_FILTERS);
+    setApplied(DEFAULT_FILTERS);
+  };
+
+  const handleStagePageSize = (next: PageSize) => {
+    setStaged({ ...staged, pageSize: next });
+  };
 
   return (
     <main className="h-full overflow-y-auto bg-background-page">
@@ -54,11 +79,9 @@ export function CatalogPage() {
           staged={staged}
           setStaged={setStaged}
           categories={categories}
-          onApply={() => setApplied(staged)}
-          onClear={() => {
-            setStaged(DEFAULT_FILTERS);
-            setApplied(DEFAULT_FILTERS);
-          }}
+          hasPendingEdits={hasPendingEdits}
+          onApply={handleApply}
+          onClear={handleClear}
         />
         {productsQuery.isError ? (
           <Notice
@@ -66,7 +89,18 @@ export function CatalogPage() {
             message="Could not load products. Please refresh and try again."
           />
         ) : (
-          <CatalogGrid products={products} categories={categories} />
+          <>
+            <CatalogGrid products={products} categories={categories} />
+            {totalElements > 0 && (
+              <CatalogPagination
+                page={page}
+                pageSize={staged.pageSize}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                onPageSizeChange={handleStagePageSize}
+              />
+            )}
+          </>
         )}
       </div>
     </main>

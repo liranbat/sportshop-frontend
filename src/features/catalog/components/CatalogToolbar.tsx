@@ -17,11 +17,19 @@ type Props = {
   staged: StagedFilters;
   setStaged: (next: StagedFilters) => void;
   categories: readonly Category[];
+  hasPendingEdits: boolean;
   onApply: () => void;
   onClear: () => void;
 };
 
-export function CatalogToolbar({ staged, setStaged, categories, onApply, onClear }: Props) {
+export function CatalogToolbar({
+  staged,
+  setStaged,
+  categories,
+  hasPendingEdits,
+  onApply,
+  onClear,
+}: Props) {
   const categoryOptions: readonly DropdownOption[] = categories.map((c) => ({
     value: String(c.id),
     label: c.name,
@@ -81,9 +89,18 @@ export function CatalogToolbar({ staged, setStaged, categories, onApply, onClear
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="primary" className="h-7 px-3 text-body-small" onClick={onApply}>
-          Apply
-        </Button>
+        <div className="relative">
+          <Button variant="primary" className="h-7 px-3 text-body-small" onClick={onApply}>
+            Apply
+          </Button>
+          {hasPendingEdits && (
+            <span
+              aria-label="Unapplied filter changes"
+              title="Unapplied filter changes"
+              className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-error-red ring-2 ring-background-page"
+            />
+          )}
+        </div>
         <Button variant="outlined" className="h-7 px-3 text-body-small" onClick={onClear}>
           Clear
         </Button>

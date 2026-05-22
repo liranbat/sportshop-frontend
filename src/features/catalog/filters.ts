@@ -1,6 +1,14 @@
 export type SortField = "name" | "price" | "category";
 export type SortDirection = "asc" | "desc";
 
+export const PAGE_SIZE_OPTIONS = [4, 9, 16, 25] as const;
+export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
+export const DEFAULT_PAGE_SIZE: PageSize = 9;
+
+export function isPageSize(value: number): value is PageSize {
+  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
+}
+
 export type StagedFilters = {
   search: string;
   categoryIds: readonly number[];
@@ -10,6 +18,7 @@ export type StagedFilters = {
   sortField: SortField;
   sortEnabled: boolean;
   sortDirection: SortDirection;
+  pageSize: PageSize;
 };
 
 export const DEFAULT_FILTERS: StagedFilters = {
@@ -21,6 +30,7 @@ export const DEFAULT_FILTERS: StagedFilters = {
   sortField: "name",
   sortEnabled: false,
   sortDirection: "asc",
+  pageSize: DEFAULT_PAGE_SIZE,
 };
 
 export type ProductListParams = {
@@ -31,10 +41,12 @@ export type ProductListParams = {
   priceMax?: number;
   sortField?: SortField;
   sortDirection?: SortDirection;
+  page?: number;
+  pageSize?: number;
 };
 
-export function toProductListParams(filters: StagedFilters): ProductListParams {
-  const params: ProductListParams = { active: true };
+export function toProductListParams(filters: StagedFilters, page: number): ProductListParams {
+  const params: ProductListParams = { active: true, page, pageSize: filters.pageSize };
 
   const trimmedSearch = filters.search.trim();
   if (trimmedSearch.length > 0) params.search = trimmedSearch;
@@ -52,4 +64,19 @@ export function toProductListParams(filters: StagedFilters): ProductListParams {
   }
 
   return params;
+}
+
+export function filtersEqual(a: StagedFilters, b: StagedFilters): boolean {
+  return (
+    a.search === b.search &&
+    a.priceEnabled === b.priceEnabled &&
+    a.priceMin === b.priceMin &&
+    a.priceMax === b.priceMax &&
+    a.sortField === b.sortField &&
+    a.sortEnabled === b.sortEnabled &&
+    a.sortDirection === b.sortDirection &&
+    a.pageSize === b.pageSize &&
+    a.categoryIds.length === b.categoryIds.length &&
+    a.categoryIds.every((id, i) => id === b.categoryIds[i])
+  );
 }
