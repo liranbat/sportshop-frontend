@@ -1,2 +1,2 @@
-export { useActiveCategoriesQuery, categoriesQueryKeys } from "@/features/categories/queries";
-export type { Category } from "@/features/categories/schema";
+export { useCategoriesQuery, categoriesQueryKeys } from "@/features/categories/queries";
+export type { Category, CategoryListParams } from "@/features/categories/schema";

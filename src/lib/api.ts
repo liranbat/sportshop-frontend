@@ -65,11 +65,36 @@ function normalizeError(error: unknown): ApiError {
   return new ApiError("Unknown API error", { cause: error });
 }
 
+function stringifyParamValue(value: unknown): string {
+  if (value instanceof Date) return value.toISOString();
+  return String(value);
+}
+
+function paramsSerializer(params: Record<string, unknown>): string {
+  const parts: string[] = [];
+  for (const [key, rawValue] of Object.entries(params)) {
+    if (rawValue === undefined || rawValue === null) continue;
+    const encodedKey = encodeURIComponent(key);
+    if (Array.isArray(rawValue)) {
+      const joined = rawValue
+        .filter((v) => v !== undefined && v !== null)
+        .map((v) => encodeURIComponent(stringifyParamValue(v)))
+        .join(",");
+      if (joined.length === 0) continue;
+      parts.push(`${encodedKey}=${joined}`);
+    } else {
+      parts.push(`${encodedKey}=${encodeURIComponent(stringifyParamValue(rawValue))}`);
+    }
+  }
+  return parts.join("&");
+}
+
 export const api: AxiosInstance = axios.create({
   baseURL: env.VITE_API_URL,
   timeout: 10_000,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
+  paramsSerializer,
 });
 
 api.interceptors.response.use(

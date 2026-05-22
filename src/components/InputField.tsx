@@ -1,8 +1,7 @@
 import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from "react";
 import { cn } from "@/lib/cn";
 
-// label width 140 + gap 16 = 156px; error text aligns under the input column
-const ERROR_LEFT_PADDING = "pl-[156px]";
+const ERROR_LEFT_PADDING = "pl-39";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
   label: string;
@@ -30,10 +29,7 @@ export function InputField({
   return (
     <div className={cn("flex w-full flex-col gap-1", containerClassName)}>
       <div className="flex w-full items-center gap-4">
-        <label
-          htmlFor={inputId}
-          className="w-[140px] shrink-0 text-body-small-bold text-text-primary"
-        >
+        <label htmlFor={inputId} className="w-35 shrink-0 text-body-small-bold text-text-primary">
           {label}
         </label>
         <div

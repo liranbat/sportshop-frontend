@@ -26,7 +26,7 @@ export function ProfilePage() {
 
   return (
     <main className="h-full overflow-y-auto bg-background-page">
-      <div className="mx-auto flex w-full max-w-[37.5rem] flex-col gap-6 px-4 py-8">
+      <div className="mx-auto flex w-full max-w-150 flex-col gap-6 px-4 py-8">
         <header className="flex flex-col gap-1">
           <h1 className="text-heading-l text-text-primary">My Profile</h1>
           <p className="text-body-small text-text-secondary">
