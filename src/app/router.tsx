@@ -26,6 +26,13 @@ export const router = createBrowserRouter([
         },
       },
       {
+        path: "products/:id",
+        lazy: async () => {
+          const { ProductDetailsPage } = await import("@/features/catalog");
+          return { Component: ProductDetailsPage };
+        },
+      },
+      {
         Component: RequireGuest,
         children: [
           {

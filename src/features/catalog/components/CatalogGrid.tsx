@@ -1,5 +1,5 @@
 import { Notice } from "@/components/Notice";
-import { ProductCard, ProductCardPlaceholder } from "@/components/ProductCard";
+import { ProductCard, ProductCardPlaceholder } from "@/features/catalog/components/ProductCard";
 import type { PageSize } from "@/features/catalog/filters";
 import type { Product } from "@/features/catalog/schema";
 import type { Category } from "@/features/categories";
@@ -44,7 +44,11 @@ export function CatalogGrid({ products, categories, pageSize }: Props) {
             key={product.id}
             id={product.id}
             name={product.name}
-            categoryName={categoryNameById.get(product.categoryId) ?? null}
+            categoryName={
+              product.categoryId !== undefined
+                ? (categoryNameById.get(product.categoryId) ?? null)
+                : null
+            }
             price={product.price}
             imageUrl={product.imageUrl}
           />
