@@ -19,5 +19,21 @@ export const ProductPageSchema = z.object({
   totalPages: z.number().int().nonnegative(),
 });
 
+export const StockStateSchema = z.enum(["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK"]);
+
+export const ProductSizeSchema = z.object({
+  size: z.string().min(1),
+  quantity: z.number().int().nonnegative(),
+  state: StockStateSchema,
+});
+
+export const ProductDetailSchema = ProductSchema.extend({
+  categoryName: z.string().min(1).max(100).optional(),
+  sizes: z.array(ProductSizeSchema).optional(),
+});
+
 export type Product = z.infer<typeof ProductSchema>;
 export type ProductPage = z.infer<typeof ProductPageSchema>;
+export type StockState = z.infer<typeof StockStateSchema>;
+export type ProductSize = z.infer<typeof ProductSizeSchema>;
+export type ProductDetail = z.infer<typeof ProductDetailSchema>;

@@ -1,5 +1,5 @@
 import { Notice } from "@/components/Notice";
-import { ProductCard, ProductCardPlaceholder } from "@/components/ProductCard";
+import { ProductCard, ProductCardPlaceholder } from "@/features/catalog/components/ProductCard";
 import type { PageSize } from "@/features/catalog/filters";
 import type { Product } from "@/features/catalog/schema";
 import type { Category } from "@/features/categories";
