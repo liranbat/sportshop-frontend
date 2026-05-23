@@ -4,7 +4,7 @@ export const ProductSchema = z.object({
   id: z.number().int().positive(),
   name: z.string().min(1).max(200),
   description: z.string().nullable(),
-  categoryId: z.number().int().positive(),
+  categoryId: z.number().int().positive().optional(),
   isMultiSize: z.boolean(),
   imageUrl: z.string().nullable(),
   price: z.number().min(0),

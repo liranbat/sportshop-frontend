@@ -44,7 +44,11 @@ export function CatalogGrid({ products, categories, pageSize }: Props) {
             key={product.id}
             id={product.id}
             name={product.name}
-            categoryName={categoryNameById.get(product.categoryId) ?? null}
+            categoryName={
+              product.categoryId !== undefined
+                ? (categoryNameById.get(product.categoryId) ?? null)
+                : null
+            }
             price={product.price}
             imageUrl={product.imageUrl}
           />
