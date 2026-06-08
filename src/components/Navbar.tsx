@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import sportshopHorizontal from "@/assets/sportshop-logos/sportshop-horizontal.png";
 import { NavButton } from "@/components/NavButton";
+import { NavCartButton } from "@/components/NavCartButton";
 import { RoleBadge } from "@/components/RoleBadge";
 import { useLogoutMutation, useMeQuery } from "@/features/auth";
 
@@ -55,9 +56,7 @@ function AuthedLinks({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () =
     <>
       <NavButton to="/" label="Home" variant="outlined" />
       <NavButton to="/catalog" label="Catalog" variant="outlined" />
-      {/* Cart rendered as a plain outlined button for now; the iconified
-          Nav/CartButton with quantity badge ships with the Cart feature. */}
-      <NavButton to="/cart" label="Cart" variant="outlined" />
+      <NavCartButton />
       <NavButton to="/orders" label="Orders" variant="outlined" />
       <NavButton to="/profile" label="Profile" variant="outlined" />
       {isAdmin && (

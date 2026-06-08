@@ -1,31 +1,132 @@
-import { useQuery } from "@tanstack/react-query";
-import { z } from "zod";
-import { api } from "@/lib/api";
+import { useState } from "react";
+import { Notice } from "@/components/Notice";
+import { RefreshButton } from "@/components/RefreshButton";
+import { CartIssuesModal } from "@/features/cart/components/CartIssuesModal";
+import { CartItemsList } from "@/features/cart/components/CartItemsList";
+import { EmptyCart } from "@/features/cart/components/EmptyCart";
+import { OrderSummary } from "@/features/cart/components/OrderSummary";
+import { cartHasBlockingIssues } from "@/features/cart/cartItemRowState";
+import {
+  useCartQuery,
+  useSyncCartMutation,
+  useValidateCartMutation,
+} from "@/features/cart/queries";
+import type { StockIssue, VersionMismatch } from "@/features/cart/schema";
 
-// QA-only stub: hits the temporary GET /api/cart so the 401 -> refresh -> retry
-// interceptor can be exercised from a real authed route. Replace with the real
-// cart UI (separate api.ts/queries.ts under features/cart) when that feature lands.
-const CartResponseSchema = z.object({
-  items: z.array(z.unknown()),
-});
-
-async function fetchCart() {
-  const { data } = await api.get<unknown>("/api/cart");
-  return CartResponseSchema.parse(data);
-}
+type ModalState = {
+  versionMismatches: readonly VersionMismatch[];
+  stockIssues: readonly StockIssue[];
+};
 
 export function CartPage() {
-  const { isPending, isError, error, data } = useQuery({
-    queryKey: ["cart", "stub"],
-    queryFn: fetchCart,
-  });
+  const cartQuery = useCartQuery();
+  const syncMutation = useSyncCartMutation();
+  const validateMutation = useValidateCartMutation();
+
+  const [issuesModal, setIssuesModal] = useState<ModalState | null>(null);
+
+  if (cartQuery.isPending) {
+    return (
+      <div className="flex h-full items-center justify-center text-text-secondary">
+        Loading cart…
+      </div>
+    );
+  }
+
+  if (cartQuery.isError) {
+    return (
+      <div className="flex h-full items-center justify-center px-4">
+        <Notice variant="error" message={`Failed to load cart: ${cartQuery.error.message}`} />
+      </div>
+    );
+  }
+
+  const cart = cartQuery.data;
+
+  if (cart.itemCount === 0) {
+    return (
+      <main className="h-full">
+        <EmptyCart />
+      </main>
+    );
+  }
+
+  const hasBlockingIssues = cartHasBlockingIssues(cart.items);
+  const totalUnits = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const handleProceedToCheckout = () => {
+    validateMutation.mutate(undefined, {
+      onSuccess: (result) => {
+        if (result.ok) {
+          // TODO(checkout-dialog): open Modal/CheckoutDialog here.
+          return;
+        }
+        setIssuesModal({
+          versionMismatches: result.versionMismatches,
+          stockIssues: result.stockIssues,
+        });
+      },
+    });
+  };
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-text-secondary">
-      <h2 className="text-heading-l text-text-primary">Cart</h2>
-      {isPending && <p>Loading cart…</p>}
-      {isError && <p className="text-error-text">Failed to load cart: {error.message}</p>}
-      {data && <p>{data.items.length} item(s) in your cart.</p>}
-    </div>
+    <main className="mx-auto flex h-full w-full max-w-360 flex-col gap-6 px-8 py-8">
+      <header className="flex items-center justify-between">
+        <h1 className="text-heading-l text-text-primary">
+          Shopping Cart ({cart.itemCount} {cart.itemCount === 1 ? "item" : "items"})
+        </h1>
+        <RefreshButton
+          onClick={() => syncMutation.mutate()}
+          isPending={syncMutation.isPending}
+          ariaLabel="Refresh cart"
+        />
+      </header>
+
+      <div className="grid min-h-0 grid-cols-1 gap-6 lg:grid-cols-[1fr_auto]">
+        <div className="flex min-w-0 flex-col gap-4">
+          {hasBlockingIssues && (
+            <Notice
+              variant="warning"
+              message="Some items have availability issues. Please update your cart to proceed."
+            />
+          )}
+          {validateMutation.isError && (
+            <Notice
+              variant="error"
+              message={`Couldn't validate cart: ${validateMutation.error.message}`}
+            />
+          )}
+          {syncMutation.isError && (
+            <Notice
+              variant="error"
+              message={`Couldn't refresh cart: ${syncMutation.error.message}`}
+            />
+          )}
+          <CartItemsList items={cart.items} />
+        </div>
+
+        <div className="lg:w-95">
+          <OrderSummary
+            itemCount={cart.itemCount}
+            totalUnits={totalUnits}
+            subtotal={cart.subtotal}
+            hasBlockingIssues={hasBlockingIssues}
+            onProceedToCheckout={handleProceedToCheckout}
+            isValidating={validateMutation.isPending}
+          />
+        </div>
+      </div>
+
+      {issuesModal && (
+        <CartIssuesModal
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) setIssuesModal(null);
+          }}
+          versionMismatches={issuesModal.versionMismatches}
+          stockIssues={issuesModal.stockIssues}
+        />
+      )}
+    </main>
   );
 }
