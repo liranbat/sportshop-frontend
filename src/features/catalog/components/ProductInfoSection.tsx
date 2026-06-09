@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { Notice } from "@/components/Notice";
 import { QuantityControl } from "@/components/QuantityControl";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useMeQuery } from "@/features/auth";
+import { useAddCartItemMutation } from "@/features/cart/queries";
 import { SizeButton } from "@/features/catalog/components/SizeButton";
 import type { ProductDetail, ProductSize, StockState } from "@/features/catalog/schema";
 
@@ -35,6 +37,7 @@ function sortSizes(sizes: readonly ProductSize[]): ProductSize[] {
 export function ProductInfoSection({ product }: Props) {
   const { data: user, isPending: authPending } = useMeQuery();
   const isAuthed = !authPending && user !== null && user !== undefined;
+  const addCartItemMutation = useAddCartItemMutation();
 
   const sizes = useMemo(() => sortSizes(product.sizes ?? []), [product.sizes]);
 
@@ -52,6 +55,19 @@ export function ProductInfoSection({ product }: Props) {
   const handleSelectSize = (size: string) => {
     setSelectedSize(size);
     setQuantity(1);
+    addCartItemMutation.reset();
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedSize) return;
+    addCartItemMutation.mutate(
+      { productId: product.id, size: selectedSize, quantity },
+      {
+        onSuccess: () => {
+          setQuantity(1);
+        },
+      },
+    );
   };
 
   return (
@@ -101,25 +117,31 @@ export function ProductInfoSection({ product }: Props) {
       <StatusBadge state={stockState} className="self-start" />
 
       {isAuthed && (
-        <div className="flex items-center gap-3">
-          {canPurchase && (
-            <QuantityControl
-              value={quantity}
-              onChange={setQuantity}
-              min={1}
-              max={maxQuantity}
-              ariaLabel={`Quantity for ${product.name}`}
-            />
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            {canPurchase && (
+              <QuantityControl
+                value={quantity}
+                onChange={setQuantity}
+                min={1}
+                ariaLabel={`Quantity for ${product.name}`}
+              />
+            )}
+            <Button
+              variant="primary"
+              disabled={!canPurchase}
+              isLoading={addCartItemMutation.isPending}
+              onClick={handleAddToCart}
+            >
+              {canPurchase ? "Add to Cart" : "Out of Stock"}
+            </Button>
+          </div>
+          {addCartItemMutation.isError && (
+            <Notice variant="error" message={addCartItemMutation.error.message} />
           )}
-          <Button
-            variant="primary"
-            disabled={!canPurchase}
-            onClick={() => {
-              // No-op for the MVP; real cart wiring lands with the Cart feature.
-            }}
-          >
-            {canPurchase ? "Add to Cart" : "Out of Stock"}
-          </Button>
+          {addCartItemMutation.isSuccess && (
+            <Notice variant="success" message="Added to your cart." />
+          )}
         </div>
       )}
     </div>

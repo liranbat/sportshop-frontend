@@ -72,7 +72,7 @@ export function CatalogPage() {
   };
 
   return (
-    <main className="h-full overflow-hidden bg-background-page">
+    <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-2 px-6 py-3 lg:px-10 2xl:px-14">
         <CatalogToolbar
           staged={staged}

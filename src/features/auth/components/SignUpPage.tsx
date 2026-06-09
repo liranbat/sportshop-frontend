@@ -58,7 +58,7 @@ export function SignUpPage() {
   return (
     <div className="flex h-full w-full">
       <BrandPanel />
-      <div className="flex flex-1 overflow-y-auto bg-background-page">
+      <div className="flex flex-1 overflow-y-auto">
         <form
           onSubmit={handleSubmit(onValid)}
           noValidate
