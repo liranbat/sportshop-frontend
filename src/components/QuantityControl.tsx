@@ -4,7 +4,7 @@ type Props = {
   value: number;
   onChange: (next: number) => void;
   min?: number;
-  max: number;
+  max?: number;
   disabled?: boolean;
   ariaLabel: string;
   className?: string;
@@ -20,7 +20,7 @@ export function QuantityControl({
   className,
 }: Props) {
   const canDecrement = !disabled && value > min;
-  const canIncrement = !disabled && value < max;
+  const canIncrement = !disabled && (max === undefined || value < max);
 
   return (
     <div
