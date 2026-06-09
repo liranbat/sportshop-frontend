@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRef } from "react";
 import { useMeQuery } from "@/features/auth/queries";
 import {
   addCartItem,
+  getCart,
   getCartCount,
   removeCartItem,
   syncCart,
@@ -35,11 +37,24 @@ export function useCartCountQuery() {
   });
 }
 
+// First call per fresh mount goes through sync (so every navigation into /cart
+// acknowledges seller-side version bumps). All subsequent refetches while still
+// mounted -- triggered by +/-/remove invalidations -- go through the read-only
+// GET so quantity tweaks don't silently bump versions.
 export function useCartQuery() {
   const { data: user } = useMeQuery();
+  const isFirstFetchRef = useRef(true);
+  // ref is a per-mount flag, intentionally not part of the cache identity
+  // eslint-disable-next-line @tanstack/query/exhaustive-deps
   return useQuery<CartView>({
     queryKey: cartKeys.full(),
-    queryFn: syncCart,
+    queryFn: () => {
+      if (isFirstFetchRef.current) {
+        isFirstFetchRef.current = false;
+        return syncCart();
+      }
+      return getCart();
+    },
     enabled: !!user,
     staleTime: 0,
     refetchOnMount: "always",

@@ -15,6 +15,11 @@ export async function getCartCount(): Promise<CartCount> {
   return CartCountSchema.parse(data);
 }
 
+export async function getCart(): Promise<CartView> {
+  const { data } = await api.get<unknown>("/api/cart");
+  return CartViewSchema.parse(data);
+}
+
 export async function syncCart(): Promise<CartView> {
   const { data } = await api.post<unknown>("/api/cart/sync");
   return CartViewSchema.parse(data);
