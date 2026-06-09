@@ -1,4 +1,5 @@
 import { QuantityControl } from "@/components/QuantityControl";
+import { StatusBadge } from "@/components/StatusBadge";
 import { cartItemRowState, type CartItemRowState } from "@/features/cart/cartItemRowState";
 import { useRemoveCartItemMutation, useUpdateCartItemMutation } from "@/features/cart/queries";
 import type { CartItem } from "@/features/cart/schema";
@@ -15,28 +16,18 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
 
 const ONE_SIZE = "ONE_SIZE";
 
-function stockLabelFor(
-  item: CartItem,
-  state: CartItemRowState,
-): {
-  text: string;
-  className: string;
-} | null {
+type BadgeSpec = { kind: "LOW_STOCK" | "OUT_OF_STOCK" | "DELETED"; label?: string };
+
+function badgeFor(state: CartItemRowState): BadgeSpec | null {
   switch (state) {
     case "LOW_STOCK":
-      return {
-        text: `Only ${item.availableStock} left`,
-        className: "text-warning-amber",
-      };
+      return { kind: "LOW_STOCK" };
     case "INSUFFICIENT_STOCK":
-      return {
-        text: `Only ${item.availableStock} available (you have ${item.quantity})`,
-        className: "text-warning-amber",
-      };
+      return { kind: "OUT_OF_STOCK", label: "Insufficient stock" };
     case "OUT_OF_STOCK":
-      return { text: "Out of stock", className: "text-error-red" };
+      return { kind: "OUT_OF_STOCK" };
     case "UNAVAILABLE":
-      return { text: "No longer available", className: "text-error-red" };
+      return { kind: "DELETED" };
     default:
       return null;
   }
@@ -49,7 +40,7 @@ export function CartItemRow({ item }: Props) {
   const state = cartItemRowState(item);
   const isBlocking = state === "OUT_OF_STOCK" || state === "UNAVAILABLE";
   const isOneSize = item.size === ONE_SIZE;
-  const stockLabel = stockLabelFor(item, state);
+  const badge = badgeFor(state);
 
   const handleQuantityChange = (next: number) => {
     if (next === item.quantity) return;
@@ -66,7 +57,8 @@ export function CartItemRow({ item }: Props) {
     <div
       className={cn(
         "flex gap-4 p-4",
-        state === "INSUFFICIENT_STOCK" && "border-l-4 border-warning-amber",
+        state === "LOW_STOCK" && "border-l-4 border-warning-amber",
+        state === "INSUFFICIENT_STOCK" && "border-l-4 border-error-red",
       )}
     >
       <div
@@ -97,8 +89,8 @@ export function CartItemRow({ item }: Props) {
         <p className="text-body-small text-text-secondary">
           {priceFormatter.format(item.productPrice)} ea
         </p>
-        {stockLabel && (
-          <p className={cn("text-body-small", stockLabel.className)}>{stockLabel.text}</p>
+        {badge && (
+          <StatusBadge state={badge.kind} label={badge.label} className="mt-1 self-start" />
         )}
       </div>
 

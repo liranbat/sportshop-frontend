@@ -86,7 +86,7 @@ export function CartPage() {
         <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
           {hasBlockingIssues && (
             <Notice
-              variant="warning"
+              variant="error"
               message="Some items have availability issues. Please update your cart to proceed."
             />
           )}
