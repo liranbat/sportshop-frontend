@@ -27,7 +27,7 @@ function ProductDetailsView({ productId }: { productId: number }) {
 
   if (isPending) {
     return (
-      <main className="flex h-full items-center justify-center bg-background-page text-text-secondary">
+      <main className="flex h-full items-center justify-center text-text-secondary">
         Loading product…
       </main>
     );
@@ -38,7 +38,7 @@ function ProductDetailsView({ productId }: { productId: number }) {
       return <ProductNotFound />;
     }
     return (
-      <main className="flex h-full items-center justify-center bg-background-page px-4">
+      <main className="flex h-full items-center justify-center px-4">
         <Notice
           variant="error"
           message="Could not load this product. Please refresh and try again."
@@ -48,7 +48,7 @@ function ProductDetailsView({ productId }: { productId: number }) {
   }
 
   return (
-    <main className="h-full overflow-hidden bg-background-page">
+    <main className="h-full overflow-hidden">
       <div className="grid h-full grid-cols-1 gap-8 px-6 py-6 lg:grid-cols-2 lg:px-10 lg:py-8 2xl:px-14">
         <ProductImageSection name={product.name} imageUrl={product.imageUrl} />
         <ProductInfoSection product={product} />
@@ -59,7 +59,7 @@ function ProductDetailsView({ productId }: { productId: number }) {
 
 function ProductNotFound() {
   return (
-    <main className="flex h-full items-center justify-center bg-background-page px-4">
+    <main className="flex h-full items-center justify-center px-4">
       <div className="flex flex-col items-center gap-3 text-center">
         <h2 className="text-heading-l text-text-primary">Product not found</h2>
         <p className="text-body-small text-text-secondary">

@@ -14,7 +14,7 @@ export function RefreshButton({ onClick, isPending, ariaLabel }: Props) {
       onClick={onClick}
       isLoading={isPending}
       aria-label={ariaLabel}
-      className="h-9 w-9 px-0"
+      className="h-7 w-7 px-0"
     >
       <svg
         viewBox="0 0 24 24"
@@ -23,7 +23,7 @@ export function RefreshButton({ onClick, isPending, ariaLabel }: Props) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-4 w-4"
+        className="h-3.5 w-3.5"
         aria-hidden="true"
       >
         <polyline points="23 4 23 10 17 10" />

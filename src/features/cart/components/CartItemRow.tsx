@@ -13,6 +13,8 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
+const ONE_SIZE = "ONE_SIZE";
+
 function stockLabelFor(
   item: CartItem,
   state: CartItemRowState,
@@ -46,6 +48,7 @@ export function CartItemRow({ item }: Props) {
 
   const state = cartItemRowState(item);
   const isBlocking = state === "OUT_OF_STOCK" || state === "UNAVAILABLE";
+  const isOneSize = item.size === ONE_SIZE;
   const stockLabel = stockLabelFor(item, state);
 
   const handleQuantityChange = (next: number) => {
@@ -100,7 +103,14 @@ export function CartItemRow({ item }: Props) {
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-2">
-        <p className={cn("text-body-small text-text-secondary", isBlocking && mutedClass)}>
+        <p
+          aria-hidden={isOneSize}
+          className={cn(
+            "text-body-small text-text-secondary",
+            isOneSize && "invisible",
+            isBlocking && mutedClass,
+          )}
+        >
           Size: {item.size}
         </p>
         <div className={cn("flex items-center gap-3", isBlocking && mutedClass)}>

@@ -7,7 +7,7 @@ type Props = {
 
 export function CartItemsList({ items }: Props) {
   return (
-    <ul className="flex flex-col rounded-2xl border border-border-default bg-background-card shadow-card">
+    <ul className="flex flex-col rounded-2xl border border-border-default bg-background-card shadow-card lg:min-h-0 lg:overflow-y-auto">
       {items.map((item, index) => (
         <li
           key={`${item.productId}-${item.size}`}

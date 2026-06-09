@@ -70,9 +70,9 @@ export function CartPage() {
   };
 
   return (
-    <main className="mx-auto flex h-full w-full max-w-360 flex-col gap-6 px-8 py-8">
+    <main className="flex h-full w-full flex-col gap-6 px-6 py-3 lg:px-10 2xl:px-14">
       <header className="flex items-center justify-between">
-        <h1 className="text-heading-l text-text-primary">
+        <h1 className="text-body-large font-semibold text-text-primary">
           Shopping Cart ({cart.itemCount} {cart.itemCount === 1 ? "item" : "items"})
         </h1>
         <RefreshButton
@@ -82,8 +82,8 @@ export function CartPage() {
         />
       </header>
 
-      <div className="grid min-h-0 grid-cols-1 gap-6 lg:grid-cols-[1fr_auto]">
-        <div className="flex min-w-0 flex-col gap-4">
+      <div className="grid min-h-0 grid-cols-1 gap-6 lg:flex-1 lg:grid-cols-[1fr_auto] lg:grid-rows-1 lg:gap-12">
+        <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
           {hasBlockingIssues && (
             <Notice
               variant="warning"
@@ -105,7 +105,7 @@ export function CartPage() {
           <CartItemsList items={cart.items} />
         </div>
 
-        <div className="lg:w-95">
+        <div className="lg:w-104">
           <OrderSummary
             itemCount={cart.itemCount}
             totalUnits={totalUnits}
