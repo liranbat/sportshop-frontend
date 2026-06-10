@@ -12,6 +12,7 @@ import {
   useValidateCartMutation,
 } from "@/features/cart/queries";
 import type { StockIssue, VersionMismatch } from "@/features/cart/schema";
+import { CheckoutDialog } from "@/features/checkout";
 
 type ModalState = {
   versionMismatches: readonly VersionMismatch[];
@@ -24,6 +25,7 @@ export function CartPage() {
   const validateMutation = useValidateCartMutation();
 
   const [issuesModal, setIssuesModal] = useState<ModalState | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (cartQuery.isPending) {
     return (
@@ -58,7 +60,7 @@ export function CartPage() {
     validateMutation.mutate(undefined, {
       onSuccess: (result) => {
         if (result.ok) {
-          // TODO(checkout-dialog): open Modal/CheckoutDialog here.
+          setCheckoutOpen(true);
           return;
         }
         setIssuesModal({
@@ -127,6 +129,8 @@ export function CartPage() {
           stockIssues={issuesModal.stockIssues}
         />
       )}
+
+      <CheckoutDialog open={checkoutOpen} onOpenChange={setCheckoutOpen} subtotal={cart.subtotal} />
     </main>
   );
 }
