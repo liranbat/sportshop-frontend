@@ -7,6 +7,9 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
   hint?: string;
   endAdornment?: ReactNode;
   containerClassName?: string;
+  // when true, always render the caption row so the field has a constant total height
+  // regardless of whether an error is showing — prevents form layout shift on validation
+  reserveErrorSpace?: boolean;
   ref?: Ref<HTMLInputElement>;
 };
 
@@ -19,6 +22,7 @@ export function InputFieldStacked({
   className,
   type = "text",
   disabled,
+  reserveErrorSpace,
   ref,
   ...inputProps
 }: Props) {
@@ -74,6 +78,11 @@ export function InputFieldStacked({
       {error && (
         <p id={errorId} role="alert" className="text-caption-regular text-error-red">
           {error}
+        </p>
+      )}
+      {reserveErrorSpace && !error && !hint && (
+        <p aria-hidden="true" className="invisible text-caption-regular">
+          {"\u00A0"}
         </p>
       )}
     </div>

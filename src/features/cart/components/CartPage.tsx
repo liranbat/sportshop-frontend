@@ -12,6 +12,7 @@ import {
   useValidateCartMutation,
 } from "@/features/cart/queries";
 import type { StockIssue, VersionMismatch } from "@/features/cart/schema";
+import { CheckoutDialog } from "@/features/checkout";
 
 type ModalState = {
   versionMismatches: readonly VersionMismatch[];
@@ -24,6 +25,7 @@ export function CartPage() {
   const validateMutation = useValidateCartMutation();
 
   const [issuesModal, setIssuesModal] = useState<ModalState | null>(null);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (cartQuery.isPending) {
     return (
@@ -42,23 +44,15 @@ export function CartPage() {
   }
 
   const cart = cartQuery.data;
-
-  if (cart.itemCount === 0) {
-    return (
-      <main className="h-full">
-        <EmptyCart />
-      </main>
-    );
-  }
-
-  const hasBlockingIssues = cartHasBlockingIssues(cart.items);
-  const totalUnits = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+  const isEmpty = cart.itemCount === 0;
+  const hasBlockingIssues = !isEmpty && cartHasBlockingIssues(cart.items);
+  const totalUnits = isEmpty ? 0 : cart.items.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleProceedToCheckout = () => {
     validateMutation.mutate(undefined, {
       onSuccess: (result) => {
         if (result.ok) {
-          // TODO(checkout-dialog): open Modal/CheckoutDialog here.
+          setCheckoutOpen(true);
           return;
         }
         setIssuesModal({
@@ -70,52 +64,60 @@ export function CartPage() {
   };
 
   return (
-    <main className="flex h-full w-full flex-col gap-6 px-6 py-3 lg:px-10 2xl:px-14">
-      <header className="flex items-center justify-between">
-        <h1 className="text-body-large font-semibold text-text-primary">
-          Shopping Cart ({cart.itemCount} {cart.itemCount === 1 ? "item" : "items"})
-        </h1>
-        <RefreshButton
-          onClick={() => syncMutation.mutate()}
-          isPending={syncMutation.isPending}
-          ariaLabel="Refresh cart"
-        />
-      </header>
+    <>
+      {isEmpty ? (
+        <main className="h-full">
+          <EmptyCart />
+        </main>
+      ) : (
+        <main className="flex h-full w-full flex-col gap-6 px-6 py-3 lg:px-10 2xl:px-14">
+          <header className="flex items-center justify-between">
+            <h1 className="text-body-large font-semibold text-text-primary">
+              Shopping Cart ({cart.itemCount} {cart.itemCount === 1 ? "item" : "items"})
+            </h1>
+            <RefreshButton
+              onClick={() => syncMutation.mutate()}
+              isPending={syncMutation.isPending}
+              ariaLabel="Refresh cart"
+            />
+          </header>
 
-      <div className="grid min-h-0 grid-cols-1 gap-6 lg:flex-1 lg:grid-cols-[1fr_auto] lg:grid-rows-1 lg:gap-12">
-        <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
-          {hasBlockingIssues && (
-            <Notice
-              variant="error"
-              message="Some items have availability issues. Please update your cart to proceed."
-            />
-          )}
-          {validateMutation.isError && (
-            <Notice
-              variant="error"
-              message={`Couldn't validate cart: ${validateMutation.error.message}`}
-            />
-          )}
-          {syncMutation.isError && (
-            <Notice
-              variant="error"
-              message={`Couldn't refresh cart: ${syncMutation.error.message}`}
-            />
-          )}
-          <CartItemsList items={cart.items} />
-        </div>
+          <div className="grid min-h-0 grid-cols-1 gap-6 lg:flex-1 lg:grid-cols-[1fr_auto] lg:grid-rows-1 lg:gap-12">
+            <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
+              {hasBlockingIssues && (
+                <Notice
+                  variant="error"
+                  message="Some items have availability issues. Please update your cart to proceed."
+                />
+              )}
+              {validateMutation.isError && (
+                <Notice
+                  variant="error"
+                  message={`Couldn't validate cart: ${validateMutation.error.message}`}
+                />
+              )}
+              {syncMutation.isError && (
+                <Notice
+                  variant="error"
+                  message={`Couldn't refresh cart: ${syncMutation.error.message}`}
+                />
+              )}
+              <CartItemsList items={cart.items} />
+            </div>
 
-        <div className="lg:w-104">
-          <OrderSummary
-            itemCount={cart.itemCount}
-            totalUnits={totalUnits}
-            subtotal={cart.subtotal}
-            hasBlockingIssues={hasBlockingIssues}
-            onProceedToCheckout={handleProceedToCheckout}
-            isValidating={validateMutation.isPending}
-          />
-        </div>
-      </div>
+            <div className="lg:w-104">
+              <OrderSummary
+                itemCount={cart.itemCount}
+                totalUnits={totalUnits}
+                subtotal={cart.subtotal}
+                hasBlockingIssues={hasBlockingIssues}
+                onProceedToCheckout={handleProceedToCheckout}
+                isValidating={validateMutation.isPending}
+              />
+            </div>
+          </div>
+        </main>
+      )}
 
       {issuesModal && (
         <CartIssuesModal
@@ -127,6 +129,8 @@ export function CartPage() {
           stockIssues={issuesModal.stockIssues}
         />
       )}
-    </main>
+
+      <CheckoutDialog open={checkoutOpen} onOpenChange={setCheckoutOpen} subtotal={cart.subtotal} />
+    </>
   );
 }
