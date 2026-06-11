@@ -10,15 +10,17 @@ type FailureStateProps = {
 
 export function FailureState({ message, onClose, onTryAgain }: FailureStateProps) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-error-bg">
-        <AlertIcon />
-      </div>
+    <>
+      <div className="flex flex-1 flex-col items-center justify-center text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-error-bg">
+          <AlertIcon />
+        </div>
 
-      <h3 className="mt-4 text-heading-l text-text-primary">Something went wrong</h3>
+        <h3 className="mt-4 text-heading-l text-text-primary">Something went wrong</h3>
 
-      <div className="mt-6 w-full">
-        <Notice variant="error" message={message} />
+        <div className="mt-6 w-full">
+          <Notice variant="error" message={message} />
+        </div>
       </div>
 
       <CheckoutFooter
@@ -29,7 +31,7 @@ export function FailureState({ message, onClose, onTryAgain }: FailureStateProps
         }
         right={<Button onClick={onTryAgain}>Try Again</Button>}
       />
-    </div>
+    </>
   );
 }
 

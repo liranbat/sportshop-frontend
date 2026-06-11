@@ -23,30 +23,26 @@ export function SuccessState({ result, onClose }: SuccessStateProps) {
   };
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success-bg">
-        <CheckIcon />
-      </div>
+    <>
+      <div className="flex flex-1 flex-col items-center justify-center text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success-bg">
+          <CheckIcon />
+        </div>
 
-      <h3 className="mt-4 text-heading-l text-text-primary">Order confirmed</h3>
+        <h3 className="mt-4 text-heading-l text-text-primary">Order confirmed</h3>
 
-      <p className="mt-2 text-body-regular text-text-secondary">
-        Thanks for your purchase! Your order is on its way.
-      </p>
+        <p className="mt-2 text-body-regular text-text-secondary">
+          Thanks for your purchase! Your order is on its way.
+        </p>
 
-      <p className="mt-4 text-body-small-bold text-text-primary tabular-nums">
-        Order # {result.orderNumber}
-      </p>
+        <p className="mt-4 text-body-small-bold text-text-primary tabular-nums">
+          Order # {result.orderNumber}
+        </p>
 
-      <div className="mt-6 flex w-full flex-col gap-3 rounded-xl border border-success-border bg-success-bg/60 p-4">
-        <div className="flex items-center justify-between text-body-small text-text-secondary">
-          <span>
+        <div className="mt-6 flex w-full items-center justify-between rounded-xl border border-success-border bg-success-bg/60 p-4">
+          <span className="text-body-regular font-semibold text-text-primary">
             {result.itemCount} {result.itemCount === 1 ? "item" : "items"}
           </span>
-        </div>
-        <div className="h-px w-full bg-success-border" />
-        <div className="flex items-center justify-between">
-          <span className="text-body-regular font-semibold text-text-primary">Total</span>
           <span className="text-price-card text-primary-blue tabular-nums">
             {priceFormatter.format(result.totalPrice)}
           </span>
@@ -61,7 +57,7 @@ export function SuccessState({ result, onClose }: SuccessStateProps) {
         }
         right={<Button onClick={handleViewOrder}>View Order</Button>}
       />
-    </div>
+    </>
   );
 }
 
