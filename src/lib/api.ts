@@ -91,7 +91,7 @@ function paramsSerializer(params: Record<string, unknown>): string {
 
 export const api: AxiosInstance = axios.create({
   baseURL: env.VITE_API_URL,
-  timeout: 10_000,
+  timeout: 30_000,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
   paramsSerializer,
