@@ -77,3 +77,56 @@ export const PaymentFormSchema = z.object({
   cvc: cvcSchema,
 });
 export type PaymentForm = z.infer<typeof PaymentFormSchema>;
+
+export const ShippingDetailsSchema = z.object({
+  fullName: z.string().min(1).max(100),
+  email: z.string().email().max(254),
+  phone: z.string().min(1).max(40),
+  country: z.string().min(1).max(100),
+  city: z.string().min(1).max(100),
+  addressLine: z.string().min(1).max(200),
+});
+export type ShippingDetails = z.infer<typeof ShippingDetailsSchema>;
+
+export const PaymentDetailsSchema = z.object({
+  cardNumber: z.string().min(13).max(19),
+  expiry: z.string().regex(/^\d{2}\/\d{2}$/),
+  cvv: z.string().regex(/^\d{3,4}$/),
+  nameOnCard: z.string().min(1).max(100),
+});
+export type PaymentDetails = z.infer<typeof PaymentDetailsSchema>;
+
+export const CheckoutRequestSchema = z.object({
+  shipping: ShippingDetailsSchema,
+  payment: PaymentDetailsSchema,
+});
+export type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
+
+export const CheckoutResultSchema = z.object({
+  orderNumber: z
+    .string()
+    .regex(/^ORD-\d{8}-[A-Z0-9]{10}$/, "Invalid order number format")
+    .length(23),
+  itemCount: z.number().int().min(1),
+  totalPrice: z.number().min(0),
+});
+export type CheckoutResult = z.infer<typeof CheckoutResultSchema>;
+
+export function toCheckoutRequest(shipping: ShippingForm, payment: PaymentForm): CheckoutRequest {
+  return {
+    shipping: {
+      fullName: shipping.fullName.trim(),
+      email: shipping.email.trim(),
+      phone: shipping.phone.trim(),
+      country: shipping.country.trim(),
+      city: shipping.city.trim(),
+      addressLine: shipping.addressLine.trim(),
+    },
+    payment: {
+      cardNumber: payment.cardNumber.replace(/\s/g, ""),
+      expiry: payment.expiry.trim(),
+      cvv: payment.cvc.trim(),
+      nameOnCard: payment.cardholderName.trim(),
+    },
+  };
+}
