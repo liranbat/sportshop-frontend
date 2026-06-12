@@ -18,8 +18,7 @@ export function SuccessState({ result, onClose }: SuccessStateProps) {
 
   const handleViewOrder = () => {
     onClose();
-    // TODO: once the order details page exists, navigate to /orders/<orderNumber> instead.
-    void navigate("/orders");
+    void navigate(`/orders/${result.orderNumber}`);
   };
 
   return (
