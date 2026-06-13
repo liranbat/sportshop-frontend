@@ -1,8 +1,9 @@
-import { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { api, ApiError } from "@/lib/api";
 import { queryClient } from "@/lib/query";
 import { refresh } from "@/features/auth/api";
 import { authQueryKeys } from "@/features/auth/queries";
+import type { UserResponse } from "@/features/auth/schema";
 
 // Endpoints whose 401 is the expected protocol answer, NOT "your access token timed out":
 //   /refresh -- a 401 here IS the refresh failure; another retry would loop.
@@ -14,6 +15,10 @@ const REFRESH_PATH = "/api/auth/refresh";
 const LOGIN_PATH = "/api/auth/login";
 const ME_PATH = "/api/auth/me";
 
+const ROLE_HEADER = "x-auth-role";
+const ROLE_ADMIN = "admin";
+const ROLE_USER = "user";
+
 type RetryableConfig = InternalAxiosRequestConfig & { _retriedAfterRefresh?: boolean };
 
 let installed = false;
@@ -24,9 +29,16 @@ export function installAuthInterceptor() {
   installed = true;
 
   api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      syncRoleFromResponse(response);
+      return response;
+    },
     async (error: unknown) => {
       const axiosError = unwrapAxiosError(error);
+      // Even failed responses carry the header; flip the cache before deciding what to do
+      // so a 403 from a freshly-demoted admin updates the navbar without waiting for /me.
+      syncRoleFromResponse(axiosError?.response);
+
       const config = axiosError?.config as RetryableConfig | undefined;
       const status = axiosError?.response?.status;
       const url = config?.url;
@@ -83,4 +95,19 @@ function runRefreshOnce(): Promise<void> {
 function handleSessionDead(): void {
   queryClient.setQueryData(authQueryKeys.me(), null);
   window.location.assign("/sign-in?reason=expired");
+}
+
+// Patches `me.isAdmin` from the backend-supplied X-Auth-Role header. Called on every
+// axios response (success OR error) so promotion/demotion converges within one round-trip,
+// without spending an extra /me call. Absent header = no-op (anonymous responses, or any
+// non-API origin that didn't set it).
+function syncRoleFromResponse(response: AxiosResponse | undefined): void {
+  if (!response) return;
+  const raw = response.headers[ROLE_HEADER];
+  if (typeof raw !== "string") return;
+  if (raw !== ROLE_ADMIN && raw !== ROLE_USER) return;
+  const isAdmin = raw === ROLE_ADMIN;
+  queryClient.setQueryData<UserResponse | null>(authQueryKeys.me(), (prev) =>
+    prev && prev.isAdmin !== isAdmin ? { ...prev, isAdmin } : prev,
+  );
 }
