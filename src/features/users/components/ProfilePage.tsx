@@ -1,7 +1,7 @@
 import { Navigate } from "react-router";
 import { useMeQuery } from "@/features/auth/queries";
-import { ProfileCard } from "@/features/profile/components/ProfileCard";
-import { SecurityCard } from "@/features/profile/components/SecurityCard";
+import { ProfileCard } from "@/features/users/components/ProfileCard";
+import { SecurityCard } from "@/features/users/components/SecurityCard";
 
 export function ProfilePage() {
   // refetchOnMount: 'always' forces a fresh /me on every visit so the form never

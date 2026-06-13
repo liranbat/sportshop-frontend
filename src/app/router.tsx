@@ -77,7 +77,7 @@ export const router = createBrowserRouter([
           {
             path: "profile",
             lazy: async () => {
-              const { ProfilePage } = await import("@/features/profile");
+              const { ProfilePage } = await import("@/features/users");
               return { Component: ProfilePage };
             },
           },

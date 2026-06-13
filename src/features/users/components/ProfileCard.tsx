@@ -5,8 +5,8 @@ import { Button } from "@/components/Button";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import type { UserResponse } from "@/features/auth/schema";
-import { useUpdateProfileMutation } from "@/features/profile/queries";
-import { UpdateProfileRequestSchema, type UpdateProfileRequest } from "@/features/profile/schema";
+import { useUpdateProfileMutation } from "@/features/users/queries";
+import { UpdateProfileRequestSchema, type UpdateProfileRequest } from "@/features/users/schema";
 
 const SUCCESS_NOTICE_TIMEOUT_MS = 4000;
 

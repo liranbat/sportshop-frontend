@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
-import { ChangePasswordModal } from "@/features/profile/components/ChangePasswordModal";
-import { DeleteAccountModal } from "@/features/profile/components/DeleteAccountModal";
+import { ChangePasswordModal } from "@/features/users/components/ChangePasswordModal";
+import { DeleteAccountModal } from "@/features/users/components/DeleteAccountModal";
 
 export function SecurityCard() {
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);

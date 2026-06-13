@@ -1,24 +1,29 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router";
 import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
-import { WarningTile } from "@/components/WarningTile";
-import { useDeleteAccountMutation } from "@/features/profile/queries";
-import { DeleteAccountRequestSchema, type DeleteAccountRequest } from "@/features/profile/schema";
+import { useChangePasswordMutation } from "@/features/users/queries";
+import {
+  ChangePasswordFormSchema,
+  type ChangePasswordFormValues,
+  type ChangePasswordRequest,
+} from "@/features/users/schema";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-const EMPTY_VALUES: DeleteAccountRequest = { currentPassword: "" };
+const EMPTY_VALUES: ChangePasswordFormValues = {
+  currentPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+};
 
-export function DeleteAccountModal({ open, onOpenChange }: Props) {
-  const navigate = useNavigate();
-  const mutation = useDeleteAccountMutation();
+export function ChangePasswordModal({ open, onOpenChange }: Props) {
+  const mutation = useChangePasswordMutation();
 
   const {
     register,
@@ -26,15 +31,15 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
     reset,
     control,
     formState: { errors },
-  } = useForm<DeleteAccountRequest>({
-    resolver: zodResolver(DeleteAccountRequestSchema),
+  } = useForm<ChangePasswordFormValues>({
+    resolver: zodResolver(ChangePasswordFormSchema),
     mode: "onTouched",
     reValidateMode: "onChange",
     defaultValues: EMPTY_VALUES,
   });
 
   const values = useWatch({ control });
-  const isFormValid = DeleteAccountRequestSchema.safeParse(values).success;
+  const isFormValid = ChangePasswordFormSchema.safeParse(values).success;
 
   const handleClose = () => {
     reset(EMPTY_VALUES);
@@ -42,12 +47,13 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
     onOpenChange(false);
   };
 
-  const onValid = (payload: DeleteAccountRequest) => {
+  const onValid = (form: ChangePasswordFormValues) => {
+    const payload: ChangePasswordRequest = {
+      currentPassword: form.currentPassword,
+      newPassword: form.newPassword,
+    };
     mutation.mutate(payload, {
-      onSuccess: () => {
-        // queryClient.clear() already ran inside the mutation hook
-        navigate("/sign-in?reason=deleted", { replace: true });
-      },
+      onSuccess: handleClose,
     });
   };
 
@@ -55,10 +61,8 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
     <AlertModal
       open={open}
       onOpenChange={onOpenChange}
-      width="36rem"
-      icon={<WarningTile />}
-      title="Delete your account?"
-      subtitle="This removes your profile, saved cart, and active sessions. Orders you have already placed will remain in our records. Your email address will stay reserved and cannot be used to register again."
+      title="Change Password"
+      subtitle="Enter your current password and choose a new one."
       errorBanner={
         mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
       }
@@ -70,22 +74,21 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
             onClick={handleClose}
             disabled={mutation.isPending}
           >
-            Keep Account
+            Cancel
           </Button>
           <Button
             type="submit"
-            form="delete-account-form"
-            variant="danger"
+            form="change-password-form"
             isLoading={mutation.isPending}
             disabled={!isFormValid}
           >
-            Delete account
+            Update Password
           </Button>
         </div>
       }
     >
       <form
-        id="delete-account-form"
+        id="change-password-form"
         onSubmit={handleSubmit(onValid)}
         noValidate
         className="flex flex-col gap-3"
@@ -93,9 +96,23 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
         <PasswordField
           label="Current password"
           autoComplete="current-password"
-          placeholder="Enter your password to confirm"
+          placeholder="Enter current password"
           error={errors.currentPassword?.message}
           {...register("currentPassword")}
+        />
+        <PasswordField
+          label="New password"
+          autoComplete="new-password"
+          placeholder="Enter new password"
+          error={errors.newPassword?.message}
+          {...register("newPassword")}
+        />
+        <PasswordField
+          label="Confirm new password"
+          autoComplete="new-password"
+          placeholder="Re-enter new password"
+          error={errors.confirmPassword?.message}
+          {...register("confirmPassword")}
         />
       </form>
     </AlertModal>

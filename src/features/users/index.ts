@@ -1,12 +1,12 @@
-export { ProfilePage } from "@/features/profile/components/ProfilePage";
+export { ProfilePage } from "@/features/users/components/ProfilePage";
 export {
   useChangePasswordMutation,
   useDeleteAccountMutation,
   useUpdateProfileMutation,
-} from "@/features/profile/queries";
+} from "@/features/users/queries";
 export type {
   ChangePasswordFormValues,
   ChangePasswordRequest,
   DeleteAccountRequest,
   UpdateProfileRequest,
-} from "@/features/profile/schema";
+} from "@/features/users/schema";

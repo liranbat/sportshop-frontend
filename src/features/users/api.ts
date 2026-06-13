@@ -4,7 +4,7 @@ import type {
   ChangePasswordRequest,
   DeleteAccountRequest,
   UpdateProfileRequest,
-} from "@/features/profile/schema";
+} from "@/features/users/schema";
 
 export async function updateProfile(payload: UpdateProfileRequest): Promise<UserResponse> {
   const { data } = await api.patch<unknown>("/api/users/me", payload);

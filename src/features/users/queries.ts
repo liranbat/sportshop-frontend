@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authQueryKeys } from "@/features/auth/queries";
-import { changePassword, deleteAccount, updateProfile } from "@/features/profile/api";
+import { changePassword, deleteAccount, updateProfile } from "@/features/users/api";
 
 /** PATCH /api/users/me returns the updated user. Writes the me cache so Navbar/Profile re-render. */
 export function useUpdateProfileMutation() {
