@@ -4,6 +4,7 @@ import {
   lastNameSchema,
   passwordSchema,
   phoneSchema,
+  UserResponseSchema,
 } from "@/features/auth/schema";
 
 export const UpdateProfileRequestSchema = z.object({
@@ -33,3 +34,12 @@ export const DeleteAccountRequestSchema = z.object({
   currentPassword: currentPasswordField,
 });
 export type DeleteAccountRequest = z.infer<typeof DeleteAccountRequestSchema>;
+
+export const UserListPageSchema = z.object({
+  items: z.array(UserResponseSchema),
+  page: z.number().int().nonnegative(),
+  pageSize: z.number().int().positive(),
+  totalElements: z.number().int().nonnegative(),
+  totalPages: z.number().int().nonnegative(),
+});
+export type UserListPage = z.infer<typeof UserListPageSchema>;

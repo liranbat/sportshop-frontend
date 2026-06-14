@@ -1,6 +1,21 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authQueryKeys } from "@/features/auth/queries";
-import { changePassword, deleteAccount, updateProfile } from "@/features/users/api";
+import { changePassword, deleteAccount, listUsers, updateProfile } from "@/features/users/api";
+import type { UserListParams } from "@/features/users/filters";
+
+export const userQueryKeys = {
+  all: ["users"] as const,
+  lists: () => [...userQueryKeys.all, "list"] as const,
+  list: (params: UserListParams) => [...userQueryKeys.lists(), params] as const,
+};
+
+export function useUsersListQuery(params: UserListParams) {
+  return useQuery({
+    queryKey: userQueryKeys.list(params),
+    queryFn: () => listUsers(params),
+    placeholderData: keepPreviousData,
+  });
+}
 
 /** PATCH /api/users/me returns the updated user. Writes the me cache so Navbar/Profile re-render. */
 export function useUpdateProfileMutation() {
