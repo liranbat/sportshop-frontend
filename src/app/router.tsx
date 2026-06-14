@@ -92,6 +92,13 @@ export const router = createBrowserRouter([
                   return { Component: AdminUserListPage };
                 },
               },
+              {
+                path: "profile/:userId",
+                lazy: async () => {
+                  const { AdminUserDetailPage } = await import("@/features/users");
+                  return { Component: AdminUserDetailPage };
+                },
+              },
             ],
           },
         ],

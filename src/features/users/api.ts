@@ -28,3 +28,16 @@ export async function listUsers(params: UserListParams): Promise<UserListPage> {
   const { data } = await api.get<unknown>("/api/admin/users", { params });
   return UserListPageSchema.parse(data);
 }
+
+export async function getAdminUser(id: number): Promise<UserResponse> {
+  const { data } = await api.get<unknown>(`/api/admin/users/${id}`);
+  return UserResponseSchema.parse(data);
+}
+
+export async function updateAdminUser(
+  id: number,
+  payload: UpdateProfileRequest,
+): Promise<UserResponse> {
+  const { data } = await api.patch<unknown>(`/api/admin/users/${id}`, payload);
+  return UserResponseSchema.parse(data);
+}

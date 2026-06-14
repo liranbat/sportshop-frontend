@@ -2,40 +2,42 @@ import { Navigate } from "react-router";
 import { useMeQuery } from "@/features/auth/queries";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { SecurityCard } from "@/features/users/components/SecurityCard";
+import { useUpdateProfileMutation } from "@/features/users/queries";
 
 export function ProfilePage() {
-  // refetchOnMount: 'always' forces a fresh /me on every visit so the form never
-  // shows stale data (e.g. after an admin-side edit during the user's session).
-  // isFetching covers both the first-ever fetch and the forced refetch.
   const { data: user, isFetching } = useMeQuery({ refetchOnMount: "always" });
+  const updateMutation = useUpdateProfileMutation();
 
   if (isFetching) {
     return (
-      <div className="flex h-full items-center justify-center text-text-secondary">
+      <main className="flex h-full items-center justify-center text-text-secondary">
         Loading profile…
-      </div>
+      </main>
     );
   }
 
   if (!user) {
-    // /me 401 is caught in queryFn and resolved to null -> redirect.
-    // Network errors keep `data` pointing at the last successful value, so we
-    // silently fall back to the cached user instead of redirecting.
     return <Navigate to="/sign-in" replace />;
   }
 
   return (
-    <main className="h-full overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-150 flex-col gap-6 px-4 py-8">
+    <main className="h-full overflow-hidden">
+      <div className="flex h-full flex-col gap-4 px-6 py-4 lg:px-10 2xl:px-14">
         <header className="flex flex-col gap-1">
-          <h1 className="text-heading-l text-text-primary">My Profile</h1>
+          <h1 className="text-body-large font-semibold text-text-primary">My Profile</h1>
           <p className="text-body-small text-text-secondary">
             Manage your personal details, password, and account.
           </p>
         </header>
 
-        <ProfileCard user={user} />
-        <SecurityCard />
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_44rem]">
+          <div className="min-h-0 overflow-y-auto">
+            <ProfileCard user={user} mutation={updateMutation} />
+          </div>
+          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+            <SecurityCard />
+          </div>
+        </div>
       </div>
     </main>
   );
