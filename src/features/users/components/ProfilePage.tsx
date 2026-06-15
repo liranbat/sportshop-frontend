@@ -1,0 +1,44 @@
+import { Navigate } from "react-router";
+import { useMeQuery } from "@/features/auth/queries";
+import { ProfileCard } from "@/features/users/components/ProfileCard";
+import { SecurityCard } from "@/features/users/components/SecurityCard";
+import { useUpdateProfileMutation } from "@/features/users/queries";
+
+export function ProfilePage() {
+  const { data: user, isFetching } = useMeQuery({ refetchOnMount: "always" });
+  const updateMutation = useUpdateProfileMutation();
+
+  if (isFetching) {
+    return (
+      <main className="flex h-full items-center justify-center text-text-secondary">
+        Loading profile…
+      </main>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/sign-in" replace />;
+  }
+
+  return (
+    <main className="h-full overflow-hidden">
+      <div className="flex h-full flex-col gap-4 px-6 py-4 lg:px-10 2xl:px-14">
+        <header className="flex flex-col gap-1">
+          <h1 className="text-body-large font-semibold text-text-primary">My Profile</h1>
+          <p className="text-body-small text-text-secondary">
+            Manage your personal details, password, and account.
+          </p>
+        </header>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_44rem]">
+          <div className="min-h-0 overflow-y-auto">
+            <ProfileCard user={user} mutation={updateMutation} />
+          </div>
+          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+            <SecurityCard />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
