@@ -25,23 +25,12 @@ export function OrderRow({ order }: Props) {
     void navigate(href);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTableRowElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      void navigate(href);
-    }
-  };
-
   const itemCountLabel = order.itemCount === 1 ? "1 item" : `${order.itemCount} items`;
 
   return (
     <tr
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-      role="link"
-      aria-label={`View order ${order.orderNumber}`}
-      className="cursor-pointer border-t border-cart-line-divider hover:bg-primary-blue-light focus-visible:bg-primary-blue-light focus-visible:outline-none"
+      className="cursor-pointer border-t border-cart-line-divider hover:bg-primary-blue-light"
     >
       <td className="px-4 py-3 align-middle text-body-small-bold wrap-break-word text-text-primary">
         {order.orderNumber}

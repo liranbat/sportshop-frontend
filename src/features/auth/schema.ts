@@ -68,5 +68,6 @@ export const UserResponseSchema = z.object({
   email: z.email(),
   phone: z.string(),
   isAdmin: z.boolean(),
+  isDeleted: z.boolean(),
 });
 export type UserResponse = z.infer<typeof UserResponseSchema>;

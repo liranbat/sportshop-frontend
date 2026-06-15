@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import App from "@/app/App";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { RequireAdmin } from "@/components/RequireAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
 import { RequireGuest } from "@/components/RequireGuest";
 
@@ -77,9 +78,35 @@ export const router = createBrowserRouter([
           {
             path: "profile",
             lazy: async () => {
-              const { ProfilePage } = await import("@/features/profile");
+              const { ProfilePage } = await import("@/features/users");
               return { Component: ProfilePage };
             },
+          },
+          {
+            Component: RequireAdmin,
+            children: [
+              {
+                path: "admin/users",
+                lazy: async () => {
+                  const { AdminUserListPage } = await import("@/features/users");
+                  return { Component: AdminUserListPage };
+                },
+              },
+              {
+                path: "admin/sessions",
+                lazy: async () => {
+                  const { AdminSessionsPage } = await import("@/features/sessions");
+                  return { Component: AdminSessionsPage };
+                },
+              },
+              {
+                path: "profile/:userId",
+                lazy: async () => {
+                  const { AdminUserDetailPage } = await import("@/features/users");
+                  return { Component: AdminUserDetailPage };
+                },
+              },
+            ],
           },
         ],
       },
