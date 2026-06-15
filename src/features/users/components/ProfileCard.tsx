@@ -74,13 +74,13 @@ export function ProfileCard({ user, mutation }: Props) {
         <Notice variant="error" message={mutation.error.message} />
       )}
 
-      <form onSubmit={handleSubmit(onValid)} noValidate className="flex flex-col gap-4">
-        <div className="flex gap-4">
+      <form onSubmit={handleSubmit(onValid)} noValidate className="@container flex flex-col gap-4">
+        <div className="flex flex-col gap-4 @sm:flex-row">
           <InputFieldStacked
             label="First Name"
             autoComplete="given-name"
             error={errors.firstName?.message}
-            containerClassName="flex-1"
+            containerClassName="min-w-0 flex-1"
             reserveErrorSpace
             {...register("firstName")}
           />
@@ -88,7 +88,7 @@ export function ProfileCard({ user, mutation }: Props) {
             label="Last Name"
             autoComplete="family-name"
             error={errors.lastName?.message}
-            containerClassName="flex-1"
+            containerClassName="min-w-0 flex-1"
             reserveErrorSpace
             {...register("lastName")}
           />

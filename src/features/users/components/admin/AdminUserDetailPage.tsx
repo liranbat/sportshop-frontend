@@ -3,6 +3,7 @@ import { Notice } from "@/components/Notice";
 import { RoleBadge } from "@/components/RoleBadge";
 import { UserStatusBadge } from "@/components/UserStatusBadge";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
+import { AdminActionsCard } from "@/features/users/components/admin/AdminActionsCard";
 import { useAdminUserQuery, useUpdateAdminUserMutation } from "@/features/users/queries";
 
 export function AdminUserDetailPage() {
@@ -67,8 +68,9 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
           <div className="min-h-0 overflow-y-auto">
             <ProfileCard user={user} mutation={updateMutation} />
           </div>
-          {/* sidebar reserved for the Admin Actions card landing in §2.5 / §2.7 */}
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto" />
+          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+            <AdminActionsCard user={user} />
+          </div>
         </div>
       </div>
     </main>

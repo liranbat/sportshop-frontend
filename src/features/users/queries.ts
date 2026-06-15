@@ -3,8 +3,10 @@ import { authQueryKeys } from "@/features/auth/queries";
 import {
   changePassword,
   deleteAccount,
+  demoteAdminUser,
   getAdminUser,
   listUsers,
+  promoteAdminUser,
   updateAdminUser,
   updateProfile,
 } from "@/features/users/api";
@@ -49,6 +51,29 @@ export function useUpdateAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: Parameters<typeof updateAdminUser>[1]) => updateAdminUser(id, payload),
+    onSuccess: (user) => {
+      queryClient.setQueryData(userQueryKeys.detail(id), user);
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
+    },
+  });
+}
+
+export function usePromoteAdminUserMutation(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => promoteAdminUser(id),
+    onSuccess: (user) => {
+      queryClient.setQueryData(userQueryKeys.detail(id), user);
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
+    },
+  });
+}
+
+// self-demote: auth-interceptor flips me.isAdmin from X-Auth-Role; no me-cache write needed
+export function useDemoteAdminUserMutation(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => demoteAdminUser(id),
     onSuccess: (user) => {
       queryClient.setQueryData(userQueryKeys.detail(id), user);
       void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
