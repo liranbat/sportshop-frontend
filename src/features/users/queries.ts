@@ -7,6 +7,8 @@ import {
   getAdminUser,
   listUsers,
   promoteAdminUser,
+  restoreAdminUser,
+  softDeleteAdminUser,
   updateAdminUser,
   updateProfile,
 } from "@/features/users/api";
@@ -74,6 +76,28 @@ export function useDemoteAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => demoteAdminUser(id),
+    onSuccess: (user) => {
+      queryClient.setQueryData(userQueryKeys.detail(id), user);
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
+    },
+  });
+}
+
+export function useSoftDeleteAdminUserMutation(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => softDeleteAdminUser(id),
+    onSuccess: (user) => {
+      queryClient.setQueryData(userQueryKeys.detail(id), user);
+      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
+    },
+  });
+}
+
+export function useRestoreAdminUserMutation(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => restoreAdminUser(id),
     onSuccess: (user) => {
       queryClient.setQueryData(userQueryKeys.detail(id), user);
       void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });

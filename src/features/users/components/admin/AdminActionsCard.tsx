@@ -3,22 +3,23 @@ import { Button } from "@/components/Button";
 import type { UserResponse } from "@/features/auth/schema";
 import { AdminUserDemoteModal } from "@/features/users/components/admin/AdminUserDemoteModal";
 import { AdminUserPromoteModal } from "@/features/users/components/admin/AdminUserPromoteModal";
+import { AdminUserRestoreModal } from "@/features/users/components/admin/AdminUserRestoreModal";
+import { AdminUserSoftDeleteModal } from "@/features/users/components/admin/AdminUserSoftDeleteModal";
 
 type Props = {
   user: UserResponse;
 };
 
-// hidden entirely for soft-deleted users
 export function AdminActionsCard({ user }: Props) {
   const [promoteOpen, setPromoteOpen] = useState(false);
   const [demoteOpen, setDemoteOpen] = useState(false);
+  const [softDeleteOpen, setSoftDeleteOpen] = useState(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
 
   const showPromote = !user.isAdmin && !user.isDeleted;
   const showDemote = user.isAdmin && !user.isDeleted;
-
-  if (!showPromote && !showDemote) {
-    return null;
-  }
+  const showSoftDelete = !user.isDeleted;
+  const showRestore = user.isDeleted;
 
   return (
     <section className="flex w-full flex-col gap-4 rounded-2xl bg-background-card p-6 shadow-card">
@@ -56,8 +57,46 @@ export function AdminActionsCard({ user }: Props) {
         </div>
       )}
 
+      {showSoftDelete && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <p className="text-body-small-bold text-text-primary">Delete User</p>
+            <p className="text-body-small text-text-secondary">
+              Soft-delete this user. Their cart and sessions will be permanently removed.
+            </p>
+          </div>
+          <Button
+            variant="outlined"
+            onClick={() => setSoftDeleteOpen(true)}
+            className="w-32 shrink-0 border-error-red text-error-red hover:bg-error-bg"
+          >
+            Delete
+          </Button>
+        </div>
+      )}
+
+      {showRestore && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <p className="text-body-small-bold text-text-primary">Restore User</p>
+            <p className="text-body-small text-text-secondary">
+              Re-activate this user&apos;s account. Cart and sessions are not recovered.
+            </p>
+          </div>
+          <Button variant="outlined" onClick={() => setRestoreOpen(true)} className="w-32 shrink-0">
+            Restore
+          </Button>
+        </div>
+      )}
+
       <AdminUserPromoteModal open={promoteOpen} onOpenChange={setPromoteOpen} user={user} />
       <AdminUserDemoteModal open={demoteOpen} onOpenChange={setDemoteOpen} user={user} />
+      <AdminUserSoftDeleteModal
+        open={softDeleteOpen}
+        onOpenChange={setSoftDeleteOpen}
+        user={user}
+      />
+      <AdminUserRestoreModal open={restoreOpen} onOpenChange={setRestoreOpen} user={user} />
     </section>
   );
 }

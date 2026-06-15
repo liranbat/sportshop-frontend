@@ -51,3 +51,13 @@ export async function demoteAdminUser(id: number): Promise<UserResponse> {
   const { data } = await api.put<unknown>(`/api/admin/users/${id}/demote`);
   return UserResponseSchema.parse(data);
 }
+
+export async function softDeleteAdminUser(id: number): Promise<UserResponse> {
+  const { data } = await api.post<unknown>(`/api/admin/users/${id}/soft-delete`);
+  return UserResponseSchema.parse(data);
+}
+
+export async function restoreAdminUser(id: number): Promise<UserResponse> {
+  const { data } = await api.post<unknown>(`/api/admin/users/${id}/restore`);
+  return UserResponseSchema.parse(data);
+}
