@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
+import { RefreshButton } from "@/components/RefreshButton";
 import { RoleBadge } from "@/components/RoleBadge";
 import { UserStatusBadge } from "@/components/UserStatusBadge";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
@@ -60,6 +61,11 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
               <RoleBadge role={role} />
             </div>
           </div>
+          <RefreshButton
+            onClick={() => void userQuery.refetch()}
+            isPending={userQuery.isFetching}
+            ariaLabel="Refresh user details"
+          />
         </header>
 
         <BackRow />
