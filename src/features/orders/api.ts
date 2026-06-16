@@ -12,6 +12,11 @@ export async function listOrders(params: OrderListParams): Promise<OrderListPage
   return OrderListPageSchema.parse(data);
 }
 
+export async function listAdminOrders(params: OrderListParams): Promise<OrderListPage> {
+  const { data } = await api.get<unknown>("/api/admin/orders", { params });
+  return OrderListPageSchema.parse(data);
+}
+
 export async function getOrderByNumber(orderNumber: string): Promise<OrderDetail> {
   const { data } = await api.get<unknown>(`/api/orders/${orderNumber}`);
   return OrderDetailSchema.parse(data);

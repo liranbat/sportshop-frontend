@@ -40,6 +40,13 @@
   --color-success-border: #a7f3d0;
   --color-success-text: #065f46;
 
+  --color-status-shipped-bg: #d1fae5;
+  --color-status-shipped-text: #065f46;
+  --color-status-delivered-bg: #a7f3d0;
+  --color-status-delivered-text: #064e3b;
+  --color-status-done-bg: #6ee7b7;
+  --color-status-done-text: #022c22;
+
   --color-info-blue: #2563eb;
   --color-info-bg: #eff6ff;
   --color-info-border: #bfdbfe;

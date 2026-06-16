@@ -1,7 +1,16 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
 
-export function EmptyOrderHistory() {
+type Props = {
+  view: "user" | "admin";
+};
+
+export function EmptyOrderHistory({ view }: Props) {
+  const body =
+    view === "admin"
+      ? "Orders will appear here as customers place them."
+      : "Once you place your first order it will appear here.";
+
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 px-4 py-12 text-center">
       <div
@@ -25,12 +34,12 @@ export function EmptyOrderHistory() {
         </svg>
       </div>
       <h2 className="text-heading-l text-text-primary">No orders yet</h2>
-      <p className="max-w-80 text-body-small text-text-secondary">
-        Once you place your first order it will appear here.
-      </p>
-      <Link to="/catalog" className="mt-2">
-        <Button variant="primary">Browse Products</Button>
-      </Link>
+      <p className="max-w-80 text-body-small text-text-secondary">{body}</p>
+      {view === "user" && (
+        <Link to="/catalog" className="mt-2">
+          <Button variant="primary">Browse Products</Button>
+        </Link>
+      )}
     </div>
   );
 }

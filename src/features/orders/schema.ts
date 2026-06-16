@@ -9,6 +9,13 @@ export const OrderStatusSchema = z.enum([
   "DONE",
 ]);
 
+export const CustomerForOrderSchema = z.object({
+  id: z.number().int().positive(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.email(),
+});
+
 export const OrderSummarySchema = z.object({
   orderNumber: z
     .string()
@@ -19,6 +26,7 @@ export const OrderSummarySchema = z.object({
   createdAt: z.string().datetime({ offset: true }),
   itemCount: z.number().int().positive(),
   totalPrice: z.number().min(0),
+  customer: CustomerForOrderSchema,
 });
 
 export const OrderListPageSchema = z.object({
@@ -85,6 +93,7 @@ export const OrderDetailSchema = z.object({
 });
 
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
+export type CustomerForOrder = z.infer<typeof CustomerForOrderSchema>;
 export type OrderSummary = z.infer<typeof OrderSummarySchema>;
 export type OrderListPage = z.infer<typeof OrderListPageSchema>;
 export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
