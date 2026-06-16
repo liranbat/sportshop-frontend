@@ -1,4 +1,5 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
+import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import { queryClient } from "@/lib/query";
 import { refresh } from "@/features/auth/api";
@@ -101,13 +102,29 @@ function handleSessionDead(): void {
 // axios response (success OR error) so promotion/demotion converges within one round-trip,
 // without spending an extra /me call. Absent header = no-op (anonymous responses, or any
 // non-API origin that didn't set it).
+//
+// On a true role flip for an already-authenticated user, also fires a top-center toast.
+// The `prev` guard suppresses the toast in two cases that aren't real transitions:
+//   - cold boot / signed-out: prev is null or undefined, no role to compare against
+//   - duplicate concurrent responses with the same header: prev.isAdmin already matches
 function syncRoleFromResponse(response: AxiosResponse | undefined): void {
   if (!response) return;
   const raw = response.headers[ROLE_HEADER];
   if (typeof raw !== "string") return;
   if (raw !== ROLE_ADMIN && raw !== ROLE_USER) return;
   const isAdmin = raw === ROLE_ADMIN;
-  queryClient.setQueryData<UserResponse | null>(authQueryKeys.me(), (prev) =>
-    prev && prev.isAdmin !== isAdmin ? { ...prev, isAdmin } : prev,
-  );
+
+  let transition: "promoted" | "demoted" | null = null;
+  queryClient.setQueryData<UserResponse | null>(authQueryKeys.me(), (prev) => {
+    if (!prev) return prev;
+    if (prev.isAdmin === isAdmin) return prev;
+    transition = isAdmin ? "promoted" : "demoted";
+    return { ...prev, isAdmin };
+  });
+
+  if (transition === "demoted") {
+    toast.error("Your admin access was revoked.");
+  } else if (transition === "promoted") {
+    toast.success("You now have admin access.");
+  }
 }
