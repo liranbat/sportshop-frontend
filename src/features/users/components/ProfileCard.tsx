@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { UseMutationResult } from "@tanstack/react-query";
@@ -7,8 +7,6 @@ import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import type { UserResponse } from "@/features/auth/schema";
 import { UpdateProfileRequestSchema, type UpdateProfileRequest } from "@/features/users/schema";
-
-const SUCCESS_NOTICE_TIMEOUT_MS = 4000;
 
 type UpdateProfileMutation = UseMutationResult<UserResponse, Error, UpdateProfileRequest>;
 
@@ -39,12 +37,6 @@ export function ProfileCard({ user, mutation }: Props) {
 
   const values = useWatch({ control });
   const isFormValid = UpdateProfileRequestSchema.safeParse(values).success;
-
-  useEffect(() => {
-    if (!showSuccess) return;
-    const timer = window.setTimeout(() => setShowSuccess(false), SUCCESS_NOTICE_TIMEOUT_MS);
-    return () => window.clearTimeout(timer);
-  }, [showSuccess]);
 
   const onValid = (payload: UpdateProfileRequest) => {
     mutation.mutate(payload, {
