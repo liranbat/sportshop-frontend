@@ -30,3 +30,7 @@ export async function getAdminOrderByNumber(orderNumber: string): Promise<OrderD
 export async function cancelOrder(orderNumber: string): Promise<void> {
   await api.post(`/api/orders/${orderNumber}/cancel`);
 }
+
+export async function cancelAdminOrder(orderNumber: string): Promise<void> {
+  await api.post(`/api/admin/orders/${orderNumber}/cancel`);
+}

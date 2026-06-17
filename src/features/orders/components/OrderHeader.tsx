@@ -26,6 +26,8 @@ type Props = {
 
 export function OrderHeader({ order, view, onCancelClick, onRefresh, isRefreshing }: Props) {
   const canUserCancel = order.status === "PAID";
+  const canAdminCancel =
+    order.status === "PAID" || order.status === "SHIPPED" || order.status === "DELIVERED";
   const customerName = `${order.customer.firstName} ${order.customer.lastName}`.trim();
 
   return (
@@ -69,9 +71,11 @@ export function OrderHeader({ order, view, onCancelClick, onRefresh, isRefreshin
             <Button variant="outlined" disabled title={PLACEHOLDER_TITLE}>
               Update Status
             </Button>
-            <Button variant="danger" disabled title={PLACEHOLDER_TITLE}>
-              Cancel Order
-            </Button>
+            {canAdminCancel && (
+              <Button variant="danger" onClick={onCancelClick}>
+                Cancel Order
+              </Button>
+            )}
           </div>
         ) : (
           canUserCancel && (

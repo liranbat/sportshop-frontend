@@ -91,6 +91,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
         orderNumber={order.orderNumber}
         open={isCancelOpen}
         onOpenChange={setIsCancelOpen}
+        variant={isAdmin ? "admin" : "user"}
       />
     </main>
   );

@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  cancelAdminOrder,
   cancelOrder,
   getAdminOrderByNumber,
   getOrderByNumber,
@@ -56,13 +57,14 @@ export function useAdminOrderDetailQuery(orderNumber: string, enabled: boolean) 
   });
 }
 
-// Backend returns 204; success invalidates the detail (forces refetch -> new state) and
-// both list scopes (badge moves from PAID -> CANCELLED_BY_USER on the user History page
-// and on the admin Order Monitoring page).
-export function useCancelOrderMutation() {
+// Invalidates all four scopes -- a cancel can flip the badge on either history page and
+// either detail page, regardless of which path issued it.
+export function useCancelOrderMutation(options?: { admin?: boolean }) {
+  const admin = options?.admin ?? false;
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, string>({
-    mutationFn: (orderNumber: string) => cancelOrder(orderNumber),
+    mutationFn: (orderNumber: string) =>
+      admin ? cancelAdminOrder(orderNumber) : cancelOrder(orderNumber),
     onSuccess: (_data, orderNumber) => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
