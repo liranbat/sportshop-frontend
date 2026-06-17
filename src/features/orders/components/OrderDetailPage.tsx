@@ -1,15 +1,20 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
+import { useMeQuery } from "@/features/auth/queries";
+import { EditShippingAddressModal } from "@/features/orders/components/admin/EditShippingAddressModal";
+import { UpdateOrderStatusModal } from "@/features/orders/components/admin/UpdateOrderStatusModal";
 import { CancelOrderModal } from "@/features/orders/components/CancelOrderModal";
 import { OrderHeader } from "@/features/orders/components/OrderHeader";
 import { OrderLineItems } from "@/features/orders/components/OrderLineItems";
 import { PaymentInfoCard } from "@/features/orders/components/PaymentInfoCard";
 import { ShippingCard } from "@/features/orders/components/ShippingCard";
-import { useOrderDetailQuery } from "@/features/orders/queries";
+import { useAdminOrderDetailQuery, useOrderDetailQuery } from "@/features/orders/queries";
 import { ApiError } from "@/lib/api";
 
 const ORDER_NUMBER_PATTERN = /^ORD-\d{8}-[A-Z0-9]{10}$/;
+
+const ADMIN_NOTICE_MESSAGE = "You are viewing this order in admin mode.";
 
 export function OrderDetailPage() {
   const { orderNumber: raw } = useParams<{ orderNumber: string }>();
@@ -22,10 +27,18 @@ export function OrderDetailPage() {
 }
 
 function OrderDetailView({ orderNumber }: { orderNumber: string }) {
-  const { data: order, isPending, isError, error } = useOrderDetailQuery(orderNumber);
-  const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const meQuery = useMeQuery();
+  const isAdmin = meQuery.data?.isAdmin === true;
 
-  if (isPending) {
+  const userDetailQuery = useOrderDetailQuery(orderNumber, !isAdmin);
+  const adminDetailQuery = useAdminOrderDetailQuery(orderNumber, isAdmin);
+  const detailQuery = isAdmin ? adminDetailQuery : userDetailQuery;
+
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
+  const [isEditShippingOpen, setIsEditShippingOpen] = useState(false);
+
+  if (detailQuery.isPending) {
     return (
       <main className="flex h-full items-center justify-center text-text-secondary">
         Loading order…
@@ -33,8 +46,8 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
     );
   }
 
-  if (isError) {
-    if (error instanceof ApiError && error.status === 404) {
+  if (detailQuery.isError) {
+    if (detailQuery.error instanceof ApiError && detailQuery.error.status === 404) {
       return <OrderNotFound />;
     }
     return (
@@ -47,18 +60,38 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
     );
   }
 
+  const order = detailQuery.data;
+  const handleRefresh = () => {
+    void adminDetailQuery.refetch();
+  };
+
   return (
     <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-4 px-6 py-4 lg:px-10 2xl:px-14">
         <BackRow />
-        <OrderHeader order={order} onCancelClick={() => setIsCancelOpen(true)} />
+
+        {isAdmin && <Notice variant="info" message={ADMIN_NOTICE_MESSAGE} />}
+
+        <OrderHeader
+          order={order}
+          view={isAdmin ? "admin" : "user"}
+          onCancelClick={() => setIsCancelOpen(true)}
+          onUpdateStatusClick={() => setIsUpdateStatusOpen(true)}
+          onRefresh={handleRefresh}
+          isRefreshing={adminDetailQuery.isFetching}
+        />
 
         <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
           <div className="min-h-0">
             <OrderLineItems items={order.items} total={order.totalPrice} />
           </div>
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <ShippingCard shipping={order.shipping} />
+            <ShippingCard
+              status={order.status}
+              shipping={order.shipping}
+              isAdmin={isAdmin}
+              onEditClick={() => setIsEditShippingOpen(true)}
+            />
             <PaymentInfoCard payment={order.payment} />
           </div>
         </div>
@@ -68,7 +101,27 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
         orderNumber={order.orderNumber}
         open={isCancelOpen}
         onOpenChange={setIsCancelOpen}
+        variant={isAdmin ? "admin" : "user"}
       />
+
+      {isAdmin && (
+        <UpdateOrderStatusModal
+          orderNumber={order.orderNumber}
+          currentStatus={order.status}
+          open={isUpdateStatusOpen}
+          onOpenChange={setIsUpdateStatusOpen}
+        />
+      )}
+
+      {isAdmin && (
+        <EditShippingAddressModal
+          orderNumber={order.orderNumber}
+          currentStatus={order.status}
+          currentShipping={order.shipping}
+          open={isEditShippingOpen}
+          onOpenChange={setIsEditShippingOpen}
+        />
+      )}
     </main>
   );
 }

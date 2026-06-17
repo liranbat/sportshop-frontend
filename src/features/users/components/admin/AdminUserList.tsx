@@ -17,11 +17,8 @@ export function AdminUserList({ users, isLoading }: Props) {
               <th className="w-[8%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
                 ID
               </th>
-              <th className="w-[22%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
-                Name
-              </th>
-              <th className="w-[26%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
-                Email
+              <th className="w-[48%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
+                User
               </th>
               <th className="w-[16%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
                 Phone

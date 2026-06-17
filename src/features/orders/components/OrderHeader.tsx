@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
-import type { OrderDetail } from "@/features/orders/schema";
+import { RefreshButton } from "@/components/RefreshButton";
+import { legalTargetStatusesFor, type OrderDetail } from "@/features/orders/schema";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -15,11 +16,26 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
 
 type Props = {
   order: OrderDetail;
+  view: "user" | "admin";
   onCancelClick: () => void;
+  onUpdateStatusClick: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 };
 
-export function OrderHeader({ order, onCancelClick }: Props) {
-  const canCancel = order.status === "PAID";
+export function OrderHeader({
+  order,
+  view,
+  onCancelClick,
+  onUpdateStatusClick,
+  onRefresh,
+  isRefreshing,
+}: Props) {
+  const canUserCancel = order.status === "PAID";
+  const canAdminCancel =
+    order.status === "PAID" || order.status === "SHIPPED" || order.status === "DELIVERED";
+  const canAdminUpdateStatus = legalTargetStatusesFor(order.status).length > 0;
+  const customerName = `${order.customer.firstName} ${order.customer.lastName}`.trim();
 
   return (
     <header className="flex items-start justify-between gap-4">
@@ -38,16 +54,44 @@ export function OrderHeader({ order, onCancelClick }: Props) {
             Cancelled on {dateFormatter.format(new Date(order.cancelledAt))}
           </p>
         )}
+        {view === "admin" && (
+          <p className="text-body-small text-text-secondary">
+            Customer: <span className="text-body-small-bold text-text-primary">{customerName}</span>{" "}
+            — {order.customer.email}
+          </p>
+        )}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-2">
         <p className="text-price-card text-text-primary tabular-nums">
           {priceFormatter.format(order.totalPrice)}
         </p>
-        {canCancel && (
-          <Button variant="danger" onClick={onCancelClick}>
-            Cancel Order
-          </Button>
+        {view === "admin" ? (
+          <div className="flex items-center gap-2">
+            {onRefresh && (
+              <RefreshButton
+                onClick={onRefresh}
+                isPending={isRefreshing ?? false}
+                ariaLabel="Refresh order"
+              />
+            )}
+            {canAdminUpdateStatus && (
+              <Button variant="outlined" onClick={onUpdateStatusClick}>
+                Update Status
+              </Button>
+            )}
+            {canAdminCancel && (
+              <Button variant="danger" onClick={onCancelClick}>
+                Cancel Order
+              </Button>
+            )}
+          </div>
+        ) : (
+          canUserCancel && (
+            <Button variant="danger" onClick={onCancelClick}>
+              Cancel Order
+            </Button>
+          )
         )}
       </div>
     </header>

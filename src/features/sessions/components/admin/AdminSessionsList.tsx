@@ -22,11 +22,8 @@ export function AdminSessionsList({ sessions, isLoading, actorUserId, onRevoke }
               <th className="w-[9%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
                 User ID
               </th>
-              <th className="w-[18%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
-                Name
-              </th>
-              <th className="w-[28%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
-                Email
+              <th className="w-[46%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
+                User
               </th>
               <th className="w-[22%] px-4 py-3 text-left text-caption-regular font-semibold tracking-wider text-text-secondary uppercase">
                 Expires at
