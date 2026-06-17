@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
+import { EditShippingAddressModal } from "@/features/orders/components/admin/EditShippingAddressModal";
 import { UpdateOrderStatusModal } from "@/features/orders/components/admin/UpdateOrderStatusModal";
 import { CancelOrderModal } from "@/features/orders/components/CancelOrderModal";
 import { OrderHeader } from "@/features/orders/components/OrderHeader";
@@ -35,6 +36,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
 
   const [isCancelOpen, setIsCancelOpen] = useState(false);
   const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
+  const [isEditShippingOpen, setIsEditShippingOpen] = useState(false);
 
   if (detailQuery.isPending) {
     return (
@@ -84,7 +86,12 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
             <OrderLineItems items={order.items} total={order.totalPrice} />
           </div>
           <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <ShippingCard shipping={order.shipping} />
+            <ShippingCard
+              status={order.status}
+              shipping={order.shipping}
+              isAdmin={isAdmin}
+              onEditClick={() => setIsEditShippingOpen(true)}
+            />
             <PaymentInfoCard payment={order.payment} />
           </div>
         </div>
@@ -103,6 +110,16 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
           currentStatus={order.status}
           open={isUpdateStatusOpen}
           onOpenChange={setIsUpdateStatusOpen}
+        />
+      )}
+
+      {isAdmin && (
+        <EditShippingAddressModal
+          orderNumber={order.orderNumber}
+          currentStatus={order.status}
+          currentShipping={order.shipping}
+          open={isEditShippingOpen}
+          onOpenChange={setIsEditShippingOpen}
         />
       )}
     </main>

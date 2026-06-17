@@ -6,10 +6,15 @@ import {
   getOrderByNumber,
   listAdminOrders,
   listOrders,
+  updateAdminOrderShipping,
   updateAdminOrderStatus,
 } from "@/features/orders/api";
 import type { OrderListParams } from "@/features/orders/filters";
-import type { OrderDetail, UpdateOrderStatusRequest } from "@/features/orders/schema";
+import type {
+  OrderDetail,
+  UpdateOrderStatusRequest,
+  UpdateShippingAddressRequest,
+} from "@/features/orders/schema";
 import { ApiError } from "@/lib/api";
 
 export const orderQueryKeys = {
@@ -79,6 +84,19 @@ export function useUpdateOrderStatusMutation(orderNumber: string) {
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, UpdateOrderStatusRequest>({
     mutationFn: (body) => updateAdminOrderStatus(orderNumber, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
+    },
+  });
+}
+
+export function useUpdateShippingAddressMutation(orderNumber: string) {
+  const queryClient = useQueryClient();
+  return useMutation<void, ApiError, UpdateShippingAddressRequest>({
+    mutationFn: (body) => updateAdminOrderShipping(orderNumber, body),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
