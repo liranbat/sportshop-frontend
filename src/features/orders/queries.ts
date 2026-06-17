@@ -1,5 +1,11 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { cancelOrder, getOrderByNumber, listAdminOrders, listOrders } from "@/features/orders/api";
+import {
+  cancelOrder,
+  getAdminOrderByNumber,
+  getOrderByNumber,
+  listAdminOrders,
+  listOrders,
+} from "@/features/orders/api";
 import type { OrderListParams } from "@/features/orders/filters";
 import type { OrderDetail } from "@/features/orders/schema";
 import { ApiError } from "@/lib/api";
@@ -12,6 +18,8 @@ export const orderQueryKeys = {
   adminList: (params: OrderListParams) => [...orderQueryKeys.adminLists(), params] as const,
   details: () => [...orderQueryKeys.all, "detail"] as const,
   detail: (orderNumber: string) => [...orderQueryKeys.details(), orderNumber] as const,
+  adminDetails: () => [...orderQueryKeys.all, "adminDetail"] as const,
+  adminDetail: (orderNumber: string) => [...orderQueryKeys.adminDetails(), orderNumber] as const,
 };
 
 export function useOrdersListQuery(params: OrderListParams, enabled: boolean = true) {
@@ -32,10 +40,19 @@ export function useAdminOrdersListQuery(params: OrderListParams, enabled: boolea
   });
 }
 
-export function useOrderDetailQuery(orderNumber: string) {
+export function useOrderDetailQuery(orderNumber: string, enabled: boolean = true) {
   return useQuery<OrderDetail, ApiError>({
     queryKey: orderQueryKeys.detail(orderNumber),
     queryFn: () => getOrderByNumber(orderNumber),
+    enabled,
+  });
+}
+
+export function useAdminOrderDetailQuery(orderNumber: string, enabled: boolean) {
+  return useQuery<OrderDetail, ApiError>({
+    queryKey: orderQueryKeys.adminDetail(orderNumber),
+    queryFn: () => getAdminOrderByNumber(orderNumber),
+    enabled,
   });
 }
 
@@ -48,6 +65,7 @@ export function useCancelOrderMutation() {
     mutationFn: (orderNumber: string) => cancelOrder(orderNumber),
     onSuccess: (_data, orderNumber) => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
+      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
     },

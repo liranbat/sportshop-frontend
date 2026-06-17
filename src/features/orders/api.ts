@@ -22,6 +22,11 @@ export async function getOrderByNumber(orderNumber: string): Promise<OrderDetail
   return OrderDetailSchema.parse(data);
 }
 
+export async function getAdminOrderByNumber(orderNumber: string): Promise<OrderDetail> {
+  const { data } = await api.get<unknown>(`/api/admin/orders/${orderNumber}`);
+  return OrderDetailSchema.parse(data);
+}
+
 export async function cancelOrder(orderNumber: string): Promise<void> {
   await api.post(`/api/orders/${orderNumber}/cancel`);
 }

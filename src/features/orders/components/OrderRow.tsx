@@ -20,10 +20,9 @@ type Props = {
 
 export function OrderRow({ order, view }: Props) {
   const navigate = useNavigate();
-  const href = `/orders/${order.orderNumber}`;
 
   const handleClick = () => {
-    void navigate(href);
+    void navigate(`/orders/${order.orderNumber}`);
   };
 
   const itemCountLabel = order.itemCount === 1 ? "1 item" : `${order.itemCount} items`;

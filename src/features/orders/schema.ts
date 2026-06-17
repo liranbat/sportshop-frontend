@@ -90,6 +90,7 @@ export const OrderDetailSchema = z.object({
   items: z.array(OrderItemSchema).min(1),
   shipping: OrderShippingSchema,
   payment: OrderPaymentSchema,
+  customer: CustomerForOrderSchema,
 });
 
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
