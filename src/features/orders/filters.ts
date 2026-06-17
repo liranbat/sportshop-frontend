@@ -13,6 +13,7 @@ export function isPageSize(value: number): value is PageSize {
 
 export type StagedOrderFilters = {
   search: string;
+  customer: string;
   status: OrderStatus | null;
   amountEnabled: boolean;
   amountMin: number | null;
@@ -28,6 +29,7 @@ export type StagedOrderFilters = {
 
 export const DEFAULT_FILTERS: StagedOrderFilters = {
   search: "",
+  customer: "",
   status: null,
   amountEnabled: false,
   amountMin: null,
@@ -44,6 +46,7 @@ export const DEFAULT_FILTERS: StagedOrderFilters = {
 export type OrderListParams = {
   status?: OrderStatus;
   orderNumber?: string;
+  customer?: string;
   amountMin?: number;
   amountMax?: number;
   dateFrom?: string;
@@ -59,6 +62,9 @@ export function toOrderListParams(filters: StagedOrderFilters, page: number): Or
 
   const trimmedSearch = filters.search.trim();
   if (trimmedSearch.length > 0) params.orderNumber = trimmedSearch;
+
+  const trimmedCustomer = filters.customer.trim();
+  if (trimmedCustomer.length > 0) params.customer = trimmedCustomer;
 
   if (filters.status !== null) params.status = filters.status;
 
@@ -83,6 +89,7 @@ export function toOrderListParams(filters: StagedOrderFilters, page: number): Or
 export function filtersEqual(a: StagedOrderFilters, b: StagedOrderFilters): boolean {
   return (
     a.search === b.search &&
+    a.customer === b.customer &&
     a.status === b.status &&
     a.amountEnabled === b.amountEnabled &&
     a.amountMin === b.amountMin &&

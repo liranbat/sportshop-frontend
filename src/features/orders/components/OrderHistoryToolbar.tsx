@@ -5,6 +5,7 @@ import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { FilterPriceRange } from "@/components/FilterPriceRange";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { FilterSort } from "@/components/FilterSort";
+import { RefreshButton } from "@/components/RefreshButton";
 import type { OrderSortField, StagedOrderFilters } from "@/features/orders/filters";
 import { OrderStatusSchema, type OrderStatus } from "@/features/orders/schema";
 
@@ -39,21 +40,25 @@ type Props = {
   staged: StagedOrderFilters;
   setStaged: (next: StagedOrderFilters) => void;
   hasPendingEdits: boolean;
+  isRefreshing: boolean;
   onApply: () => void;
   onClear: () => void;
+  onRefresh: () => void;
+  view: "user" | "admin";
 };
 
 export function OrderHistoryToolbar({
   staged,
   setStaged,
   hasPendingEdits,
+  isRefreshing,
   onApply,
   onClear,
+  onRefresh,
+  view,
 }: Props) {
   return (
     <section aria-label="Order history filters" className="relative z-20 flex flex-col gap-1">
-      <h1 className="text-body-large font-semibold text-text-primary">My Orders</h1>
-
       <div className="flex flex-wrap items-end gap-2">
         <FilterSearchBar
           value={staged.search}
@@ -62,6 +67,16 @@ export function OrderHistoryToolbar({
           ariaLabel="Search by order number"
           className="w-60"
         />
+
+        {view === "admin" && (
+          <FilterSearchBar
+            value={staged.customer}
+            onChange={(customer) => setStaged({ ...staged, customer })}
+            placeholder="Search by name or email..."
+            ariaLabel="Search by customer name or email"
+            className="w-60"
+          />
+        )}
 
         <FilterDropdownLabeled label="STATUS">
           <FilterDropdown
@@ -128,6 +143,15 @@ export function OrderHistoryToolbar({
         <Button variant="outlined" className="h-7 px-3 text-body-small" onClick={onClear}>
           Clear
         </Button>
+        {view === "admin" && (
+          <div className="ml-auto">
+            <RefreshButton
+              onClick={onRefresh}
+              isPending={isRefreshing}
+              ariaLabel="Refresh orders"
+            />
+          </div>
+        )}
       </div>
     </section>
   );

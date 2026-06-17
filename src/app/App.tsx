@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { Outlet } from "react-router";
+import { Toaster } from "sonner";
 import { Navbar } from "@/components/Navbar";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Outlet />
         </Suspense>
       </div>
+      <Toaster position="top-center" closeButton richColors duration={5000} />
     </div>
   );
 }

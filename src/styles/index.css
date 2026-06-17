@@ -40,6 +40,13 @@
   --color-success-border: #a7f3d0;
   --color-success-text: #065f46;
 
+  --color-status-shipped-bg: #d1fae5;
+  --color-status-shipped-text: #065f46;
+  --color-status-delivered-bg: #a7f3d0;
+  --color-status-delivered-text: #064e3b;
+  --color-status-done-bg: #6ee7b7;
+  --color-status-done-text: #022c22;
+
   --color-info-blue: #2563eb;
   --color-info-bg: #eff6ff;
   --color-info-border: #bfdbfe;
@@ -78,4 +85,21 @@
   html {
     background-color: var(--color-background-page);
   }
+}
+
+/* Map sonner's per-type vars to our Notice palette. Three attribute selectors
+   outrank sonner's own defaults; takes effect only with <Toaster richColors>. */
+[data-sonner-toaster][data-sonner-theme][dir] {
+  --success-bg: var(--color-success-bg);
+  --success-border: var(--color-success-border);
+  --success-text: var(--color-success-text);
+  --error-bg: var(--color-error-bg);
+  --error-border: var(--color-error-border);
+  --error-text: var(--color-error-text);
+  --warning-bg: var(--color-warning-bg);
+  --warning-border: var(--color-warning-border);
+  --warning-text: var(--color-warning-text);
+  --info-bg: var(--color-info-bg);
+  --info-border: var(--color-info-border);
+  --info-text: var(--color-info-text);
 }

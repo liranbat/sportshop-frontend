@@ -18,11 +18,11 @@ export function AdminSessionRow({ session, isOwnSession, onRevoke }: Props) {
       <td className="px-4 py-3 align-middle text-body-small-bold text-text-primary">
         {session.userId}
       </td>
-      <td className="px-4 py-3 align-middle text-body-small text-text-primary wrap-break-word">
-        {fullName}
-      </td>
-      <td className="px-4 py-3 align-middle text-body-small text-text-secondary wrap-break-word">
-        {session.email}
+      <td className="px-4 py-3 align-middle">
+        <div className="flex flex-col">
+          <span className="text-body-small-bold text-text-primary">{fullName}</span>
+          <span className="text-caption-regular text-text-secondary">{session.email}</span>
+        </div>
       </td>
       <td className="px-4 py-3 align-middle text-body-small text-text-secondary">
         {formatExpiresAt(session.expiresAt)}
