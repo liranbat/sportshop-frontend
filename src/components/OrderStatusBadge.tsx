@@ -1,3 +1,4 @@
+import { ORDER_STATUS_LABEL } from "@/features/orders/labels";
 import { cn } from "@/lib/cn";
 
 export type OrderStatusKind =
@@ -14,15 +15,6 @@ type Props = {
   className?: string;
 };
 
-const DEFAULT_LABEL: Record<OrderStatusKind, string> = {
-  PAID: "Paid",
-  CANCELLED_BY_USER: "Cancelled",
-  CANCELLED_BY_ADMIN: "Cancelled by admin",
-  SHIPPED: "Shipped",
-  DELIVERED: "Delivered",
-  DONE: "Done",
-};
-
 const VARIANT: Record<OrderStatusKind, { bg: string; text: string }> = {
   PAID: { bg: "bg-success-bg", text: "text-success-text" },
   CANCELLED_BY_USER: { bg: "bg-quantity-control-bg", text: "text-text-secondary" },
@@ -34,7 +26,7 @@ const VARIANT: Record<OrderStatusKind, { bg: string; text: string }> = {
 
 export function OrderStatusBadge({ status, label, className }: Props) {
   const v = VARIANT[status];
-  const text = label ?? DEFAULT_LABEL[status];
+  const text = label ?? ORDER_STATUS_LABEL[status];
   return (
     <span
       role="status"

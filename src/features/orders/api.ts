@@ -5,6 +5,7 @@ import {
   OrderListPageSchema,
   type OrderDetail,
   type OrderListPage,
+  type UpdateOrderStatusRequest,
 } from "@/features/orders/schema";
 
 export async function listOrders(params: OrderListParams): Promise<OrderListPage> {
@@ -33,4 +34,11 @@ export async function cancelOrder(orderNumber: string): Promise<void> {
 
 export async function cancelAdminOrder(orderNumber: string): Promise<void> {
   await api.post(`/api/admin/orders/${orderNumber}/cancel`);
+}
+
+export async function updateAdminOrderStatus(
+  orderNumber: string,
+  body: UpdateOrderStatusRequest,
+): Promise<void> {
+  await api.post(`/api/admin/orders/${orderNumber}/update-status`, body);
 }

@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { RefreshButton } from "@/components/RefreshButton";
-import type { OrderDetail } from "@/features/orders/schema";
+import { legalTargetStatusesFor, type OrderDetail } from "@/features/orders/schema";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -14,20 +14,27 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-const PLACEHOLDER_TITLE = "Available next phase";
-
 type Props = {
   order: OrderDetail;
   view: "user" | "admin";
   onCancelClick: () => void;
+  onUpdateStatusClick: () => void;
   onRefresh?: () => void;
   isRefreshing?: boolean;
 };
 
-export function OrderHeader({ order, view, onCancelClick, onRefresh, isRefreshing }: Props) {
+export function OrderHeader({
+  order,
+  view,
+  onCancelClick,
+  onUpdateStatusClick,
+  onRefresh,
+  isRefreshing,
+}: Props) {
   const canUserCancel = order.status === "PAID";
   const canAdminCancel =
     order.status === "PAID" || order.status === "SHIPPED" || order.status === "DELIVERED";
+  const canAdminUpdateStatus = legalTargetStatusesFor(order.status).length > 0;
   const customerName = `${order.customer.firstName} ${order.customer.lastName}`.trim();
 
   return (
@@ -68,9 +75,11 @@ export function OrderHeader({ order, view, onCancelClick, onRefresh, isRefreshin
                 ariaLabel="Refresh order"
               />
             )}
-            <Button variant="outlined" disabled title={PLACEHOLDER_TITLE}>
-              Update Status
-            </Button>
+            {canAdminUpdateStatus && (
+              <Button variant="outlined" onClick={onUpdateStatusClick}>
+                Update Status
+              </Button>
+            )}
             {canAdminCancel && (
               <Button variant="danger" onClick={onCancelClick}>
                 Cancel Order

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
+import { UpdateOrderStatusModal } from "@/features/orders/components/admin/UpdateOrderStatusModal";
 import { CancelOrderModal } from "@/features/orders/components/CancelOrderModal";
 import { OrderHeader } from "@/features/orders/components/OrderHeader";
 import { OrderLineItems } from "@/features/orders/components/OrderLineItems";
@@ -33,6 +34,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
   const detailQuery = isAdmin ? adminDetailQuery : userDetailQuery;
 
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isUpdateStatusOpen, setIsUpdateStatusOpen] = useState(false);
 
   if (detailQuery.isPending) {
     return (
@@ -72,6 +74,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
           order={order}
           view={isAdmin ? "admin" : "user"}
           onCancelClick={() => setIsCancelOpen(true)}
+          onUpdateStatusClick={() => setIsUpdateStatusOpen(true)}
           onRefresh={handleRefresh}
           isRefreshing={adminDetailQuery.isFetching}
         />
@@ -93,6 +96,15 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
         onOpenChange={setIsCancelOpen}
         variant={isAdmin ? "admin" : "user"}
       />
+
+      {isAdmin && (
+        <UpdateOrderStatusModal
+          orderNumber={order.orderNumber}
+          currentStatus={order.status}
+          open={isUpdateStatusOpen}
+          onOpenChange={setIsUpdateStatusOpen}
+        />
+      )}
     </main>
   );
 }

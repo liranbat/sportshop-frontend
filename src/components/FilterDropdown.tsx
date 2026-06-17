@@ -16,6 +16,8 @@ type Props = {
   ariaLabel: string;
   disabled?: boolean;
   className?: string;
+  // extra classes for the open listbox (e.g. width or z-index tweaks)
+  listboxClassName?: string;
   // open the listbox above the trigger; default is below
   openUpward?: boolean;
 };
@@ -28,6 +30,7 @@ export function FilterDropdown({
   ariaLabel,
   disabled = false,
   className,
+  listboxClassName,
   openUpward = false,
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -62,6 +65,7 @@ export function FilterDropdown({
           className={cn(
             "absolute right-0 left-0 z-10 max-h-60 overflow-y-auto rounded-lg border border-border-default bg-background-card shadow-card",
             openUpward ? "bottom-full mb-1" : "top-full mt-1",
+            listboxClassName,
           )}
         >
           {options.map((option) => (

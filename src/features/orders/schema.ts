@@ -93,6 +93,11 @@ export const OrderDetailSchema = z.object({
   customer: CustomerForOrderSchema,
 });
 
+export const UpdateOrderStatusRequestSchema = z.object({
+  targetStatus: OrderStatusSchema,
+  priorStatus: OrderStatusSchema,
+});
+
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
 export type CustomerForOrder = z.infer<typeof CustomerForOrderSchema>;
 export type OrderSummary = z.infer<typeof OrderSummarySchema>;
@@ -102,3 +107,16 @@ export type OrderItem = z.infer<typeof OrderItemSchema>;
 export type OrderShipping = z.infer<typeof OrderShippingSchema>;
 export type OrderPayment = z.infer<typeof OrderPaymentSchema>;
 export type OrderDetail = z.infer<typeof OrderDetailSchema>;
+export type UpdateOrderStatusRequest = z.infer<typeof UpdateOrderStatusRequestSchema>;
+
+// Which statuses an admin is allowed to move an order to, keyed by the current status.
+// Terminal statuses (DONE, CANCELLED_*) and self-loops aren't listed -> they return [].
+const LEGAL_STATUS_TRANSITIONS: Partial<Record<OrderStatus, readonly OrderStatus[]>> = {
+  PAID: ["SHIPPED", "DELIVERED", "DONE"],
+  SHIPPED: ["PAID", "DELIVERED", "DONE"],
+  DELIVERED: ["PAID", "SHIPPED", "DONE"],
+};
+
+export function legalTargetStatusesFor(priorStatus: OrderStatus): readonly OrderStatus[] {
+  return LEGAL_STATUS_TRANSITIONS[priorStatus] ?? [];
+}
