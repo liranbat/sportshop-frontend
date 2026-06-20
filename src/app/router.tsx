@@ -100,10 +100,26 @@ export const router = createBrowserRouter([
                 },
               },
               {
+                path: "admin/category-management",
+                lazy: async () => {
+                  const { CategoryManagementPage } = await import("@/features/categories");
+                  return { Component: CategoryManagementPage };
+                },
+              },
+              {
                 path: "profile/:userId",
                 lazy: async () => {
                   const { AdminUserDetailPage } = await import("@/features/users");
                   return { Component: AdminUserDetailPage };
+                },
+              },
+              {
+                // TEMP: smoke-test playground for the Form/ImageUpload primitive
+                // (Phase 0 Step C). Remove when Phase 1.B / 3.B integrate the widget.
+                path: "admin/image-upload-test",
+                lazy: async () => {
+                  const { ImageUploadTestPage } = await import("@/features/images");
+                  return { Component: ImageUploadTestPage };
                 },
               },
             ],

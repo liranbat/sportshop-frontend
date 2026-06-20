@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button";
+import { cn } from "@/lib/cn";
 
 type Props = {
   onClick: () => void;
@@ -12,7 +13,8 @@ export function RefreshButton({ onClick, isPending, ariaLabel }: Props) {
       type="button"
       variant="outlined"
       onClick={onClick}
-      isLoading={isPending}
+      disabled={isPending}
+      aria-busy={isPending || undefined}
       aria-label={ariaLabel}
       className="h-7 w-7 px-0"
     >
@@ -23,7 +25,7 @@ export function RefreshButton({ onClick, isPending, ariaLabel }: Props) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="h-3.5 w-3.5"
+        className={cn("h-3.5 w-3.5", isPending && "animate-spin")}
         aria-hidden="true"
       >
         <polyline points="23 4 23 10 17 10" />

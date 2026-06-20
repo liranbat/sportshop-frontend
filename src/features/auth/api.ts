@@ -26,6 +26,6 @@ export async function refresh(): Promise<UserResponse> {
 }
 
 export async function getMe(): Promise<UserResponse> {
-  const { data } = await api.get<unknown>("/api/auth/me");
+  const { data } = await api.get<unknown>("/api/auth/me", { timeout: 5_000 });
   return UserResponseSchema.parse(data);
 }

@@ -36,7 +36,7 @@ export function CatalogPage() {
 
   const [intentResolved, setIntentResolved] = useState(intentCategoryId === null);
 
-  const categoriesQuery = useCategoriesQuery({ active: true });
+  const categoriesQuery = useCategoriesQuery();
   const categories = categoriesQuery.data ?? [];
 
   if (!intentResolved && categoriesQuery.isSuccess) {
