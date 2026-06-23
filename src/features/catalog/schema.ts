@@ -9,6 +9,11 @@ export const ProductSchema = z.object({
   imageUrl: z.string().nullable(),
   price: z.number().min(0),
   version: z.number().int().nonnegative(),
+  isArchived: z.boolean(),
+  updatedAt: z.string().nullable().optional(),
+  updatedBy: z.number().int().positive().nullable().optional(),
+  archivedAt: z.string().nullable().optional(),
+  archivedBy: z.number().int().positive().nullable().optional(),
 });
 
 export const ProductPageSchema = z.object({

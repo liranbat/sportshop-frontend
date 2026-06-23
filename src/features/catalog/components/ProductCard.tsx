@@ -1,5 +1,8 @@
 import { Link } from "react-router";
+import { StatusBadge } from "@/components/StatusBadge";
 import { cn } from "@/lib/cn";
+
+export type ProductCardView = "user" | "admin";
 
 type Props = {
   id: number;
@@ -7,6 +10,9 @@ type Props = {
   categoryName: string | null;
   price: number;
   imageUrl: string | null;
+  view: ProductCardView;
+  isArchived: boolean;
+  updatedAt: string | null;
   className?: string;
 };
 
@@ -15,17 +21,29 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export function ProductCard({ id, name, categoryName, price, imageUrl, className }: Props) {
+export function ProductCard({
+  id,
+  name,
+  categoryName,
+  price,
+  imageUrl,
+  view,
+  isArchived,
+  updatedAt,
+  className,
+}: Props) {
+  const isAdmin = view === "admin";
   const ariaParts = [name, categoryName, priceFormatter.format(price)].filter(
     (part): part is string => part !== null,
   );
+  if (isAdmin && isArchived) ariaParts.push("Archived");
+
   return (
     <Link
       to={`/products/${id}`}
       aria-label={ariaParts.join(", ")}
       className={cn(
-        // em-based sizing so the whole card scales with the grid's font-size
-        "flex h-full w-full flex-col overflow-hidden rounded-[0.6em] bg-background-card shadow-card transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue",
+        "relative flex h-full w-full flex-col overflow-hidden rounded-[0.6em] bg-background-card shadow-card transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue",
         className,
       )}
     >
@@ -36,6 +54,7 @@ export function ProductCard({ id, name, categoryName, price, imageUrl, className
           <span className="text-[0.85em] text-text-placeholder">Product Image</span>
         )}
       </div>
+
       <div className="flex shrink-0 flex-col gap-[0.15em] px-[0.6em] py-[0.4em]">
         <span
           title={name}
@@ -51,12 +70,31 @@ export function ProductCard({ id, name, categoryName, price, imageUrl, className
             {categoryName}
           </span>
         )}
-        <span className="text-[1em] font-semibold leading-tight text-primary-blue">
-          {priceFormatter.format(price)}
-        </span>
+        <div className="flex items-center justify-between gap-[0.5em]">
+          <span className="text-[1em] font-semibold leading-tight text-primary-blue">
+            {priceFormatter.format(price)}
+          </span>
+          {isAdmin && isArchived && <StatusBadge state="ARCHIVED" />}
+        </div>
+        {isAdmin && (
+          <div className="mt-[0.2em] flex items-center justify-between gap-[0.5em] text-[0.7em] text-text-secondary">
+            <span>ID: {id}</span>
+            {updatedAt && (
+              <span title={updatedAt} className="truncate">
+                Updated at {formatEditedAt(updatedAt)}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </Link>
   );
+}
+
+function formatEditedAt(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleString();
 }
 
 // invisible spacer — fills unused N x N cells on partial last page

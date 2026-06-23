@@ -63,9 +63,6 @@ function AuthedLinks({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () =
         <>
           <NavButton to="/admin/users" label="Users" variant="outlined" />
           <NavButton to="/admin/sessions" label="Sessions" variant="outlined" />
-          {/* TEMP: Phase 1 entry point. Sub-topic 9.8 reserves the entry for the
-              Catalog admin variant header (Phase 2.B); remove this link then. */}
-          <NavButton to="/admin/category-management" label="Categories" variant="outlined" />
         </>
       )}
       <NavButton onClick={onSignOut} label="Sign Out" variant="filled" />

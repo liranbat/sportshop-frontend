@@ -1,16 +1,23 @@
 import { Button } from "@/components/Button";
-import type { DropdownOption } from "@/components/FilterDropdown";
+import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
+import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { FilterMultiDropdown } from "@/components/FilterMultiDropdown";
 import { FilterPriceRange } from "@/components/FilterPriceRange";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { FilterSort } from "@/components/FilterSort";
 import type { Category } from "@/features/categories";
-import type { StagedFilters } from "@/features/catalog/filters";
+import type { ArchiveStatus, StagedFilters } from "@/features/catalog/filters";
 
 const SORT_OPTIONS: readonly DropdownOption[] = [
   { value: "name", label: "Name" },
   { value: "price", label: "Price" },
   { value: "category", label: "Category" },
+];
+
+const ARCHIVE_OPTIONS: readonly DropdownOption[] = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "ARCHIVED", label: "Archived" },
+  { value: "ALL", label: "All" },
 ];
 
 type Props = {
@@ -20,6 +27,8 @@ type Props = {
   hasPendingEdits: boolean;
   onApply: () => void;
   onClear: () => void;
+  isAdmin: boolean;
+  showTitle?: boolean;
 };
 
 export function CatalogToolbar({
@@ -29,6 +38,8 @@ export function CatalogToolbar({
   hasPendingEdits,
   onApply,
   onClear,
+  isAdmin,
+  showTitle = true,
 }: Props) {
   const categoryOptions: readonly DropdownOption[] = categories.map((c) => ({
     value: String(c.id),
@@ -37,7 +48,7 @@ export function CatalogToolbar({
 
   return (
     <section aria-label="Catalog filters" className="flex flex-col gap-1">
-      <h1 className="text-body-large font-semibold text-text-primary">Catalog</h1>
+      {showTitle && <h1 className="text-body-large font-semibold text-text-primary">Catalog</h1>}
 
       <div className="flex flex-wrap items-end gap-2">
         <FilterSearchBar
@@ -65,6 +76,22 @@ export function CatalogToolbar({
           onMinChange={(priceMin) => setStaged({ ...staged, priceMin })}
           onMaxChange={(priceMax) => setStaged({ ...staged, priceMax })}
         />
+
+        {isAdmin && (
+          <FilterDropdownLabeled label="Archive Status">
+            <FilterDropdown
+              options={ARCHIVE_OPTIONS}
+              value={staged.archiveStatus}
+              onChange={(next) => {
+                if (isArchiveStatus(next)) {
+                  setStaged({ ...staged, archiveStatus: next });
+                }
+              }}
+              ariaLabel="Filter by archive status"
+              className="w-40"
+            />
+          </FilterDropdownLabeled>
+        )}
 
         <div className="flex-1" />
 
@@ -107,4 +134,8 @@ export function CatalogToolbar({
       </div>
     </section>
   );
+}
+
+function isArchiveStatus(value: string): value is ArchiveStatus {
+  return value === "ACTIVE" || value === "ARCHIVED" || value === "ALL";
 }

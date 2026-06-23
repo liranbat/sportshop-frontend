@@ -1,5 +1,9 @@
 import { Notice } from "@/components/Notice";
-import { ProductCard, ProductCardPlaceholder } from "@/features/catalog/components/ProductCard";
+import {
+  ProductCard,
+  ProductCardPlaceholder,
+  type ProductCardView,
+} from "@/features/catalog/components/ProductCard";
 import type { PageSize } from "@/features/catalog/filters";
 import type { Product } from "@/features/catalog/schema";
 import type { Category } from "@/features/categories";
@@ -8,9 +12,10 @@ type Props = {
   products: readonly Product[];
   categories: readonly Category[];
   pageSize: PageSize;
+  view: ProductCardView;
 };
 
-export function CatalogGrid({ products, categories, pageSize }: Props) {
+export function CatalogGrid({ products, categories, pageSize, view }: Props) {
   if (products.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -51,6 +56,9 @@ export function CatalogGrid({ products, categories, pageSize }: Props) {
             }
             price={product.price}
             imageUrl={product.imageUrl}
+            view={view}
+            isArchived={product.isArchived}
+            updatedAt={product.updatedAt ?? null}
           />
         ))}
         {Array.from({ length: placeholderCount }, (_, i) => (
