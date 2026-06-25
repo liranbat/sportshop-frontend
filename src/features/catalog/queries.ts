@@ -1,6 +1,12 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getProduct, listAdminProducts, listProducts } from "@/features/catalog/api";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createAdminProduct,
+  getProduct,
+  listAdminProducts,
+  listProducts,
+} from "@/features/catalog/api";
 import type { ProductListParams } from "@/features/catalog/filters";
+import type { ProductCreateRequest } from "@/features/catalog/schema";
 
 export const catalogQueryKeys = {
   all: ["catalog"] as const,
@@ -39,5 +45,15 @@ export function useProductQuery(id: number) {
   return useQuery({
     queryKey: catalogQueryKeys.product(id),
     queryFn: () => getProduct(id),
+  });
+}
+
+export function useCreateAdminProductMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProductCreateRequest) => createAdminProduct(payload),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: catalogQueryKeys.all });
+    },
   });
 }

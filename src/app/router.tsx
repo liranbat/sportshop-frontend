@@ -86,6 +86,13 @@ export const router = createBrowserRouter([
             Component: RequireAdmin,
             children: [
               {
+                path: "products/new",
+                lazy: async () => {
+                  const { ProductCreatePage } = await import("@/features/catalog");
+                  return { Component: ProductCreatePage };
+                },
+              },
+              {
                 path: "admin/users",
                 lazy: async () => {
                   const { AdminUserListPage } = await import("@/features/users");

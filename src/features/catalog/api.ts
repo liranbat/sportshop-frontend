@@ -3,6 +3,7 @@ import type { ProductListParams } from "@/features/catalog/filters";
 import {
   ProductDetailSchema,
   ProductPageSchema,
+  type ProductCreateRequest,
   type ProductDetail,
   type ProductPage,
 } from "@/features/catalog/schema";
@@ -19,5 +20,10 @@ export async function listAdminProducts(params: ProductListParams): Promise<Prod
 
 export async function getProduct(id: number): Promise<ProductDetail> {
   const { data } = await api.get<unknown>(`/api/products/${id}`);
+  return ProductDetailSchema.parse(data);
+}
+
+export async function createAdminProduct(payload: ProductCreateRequest): Promise<ProductDetail> {
+  const { data } = await api.post<unknown>("/api/admin/products", payload);
   return ProductDetailSchema.parse(data);
 }
