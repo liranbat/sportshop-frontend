@@ -14,6 +14,8 @@ type Props = {
   onUploadError?: (error: ApiError) => void;
   onUploadingStateChange: (isUploading: boolean) => void;
   disabled?: boolean;
+  className?: string;
+  imageBoxClassName?: string;
 };
 
 const EXTENSION_TO_MIME: Record<string, string> = {
@@ -49,6 +51,8 @@ export function ImageUpload({
   onUploadError,
   onUploadingStateChange,
   disabled = false,
+  className,
+  imageBoxClassName,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -92,10 +96,13 @@ export function ImageUpload({
   }, [widgetDisabled]);
 
   return (
-    <div className="flex w-full max-w-120 flex-col gap-3">
+    <div className={cn("flex w-full max-w-120 flex-col gap-3", className)}>
       <div
         aria-busy={isUploading || undefined}
-        className="relative flex h-80 w-full items-center justify-center overflow-hidden rounded-lg border border-border-default bg-background-card p-4"
+        className={cn(
+          "relative flex h-80 w-full items-center justify-center overflow-hidden rounded-lg border border-border-default bg-background-card p-4",
+          imageBoxClassName,
+        )}
       >
         {hasImage ? (
           <img src={currentImageUrl ?? ""} alt="" className="h-full w-full object-contain" />

@@ -1,12 +1,20 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  archiveAdminProduct,
   createAdminProduct,
   getProduct,
   listAdminProducts,
   listProducts,
+  restoreAdminProduct,
+  updateAdminProduct,
 } from "@/features/catalog/api";
 import type { ProductListParams } from "@/features/catalog/filters";
-import type { ProductCreateRequest } from "@/features/catalog/schema";
+import type {
+  ProductCreateRequest,
+  ProductLifecycleRequest,
+  ProductUpdateRequest,
+} from "@/features/catalog/schema";
+import { categoriesQueryKeys } from "@/features/categories/queries";
 
 export const catalogQueryKeys = {
   all: ["catalog"] as const,
@@ -53,6 +61,40 @@ export function useCreateAdminProductMutation() {
   return useMutation({
     mutationFn: (payload: ProductCreateRequest) => createAdminProduct(payload),
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: catalogQueryKeys.all });
+    },
+  });
+}
+
+export function useUpdateAdminProductMutation(productId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProductUpdateRequest) => updateAdminProduct(productId, payload),
+    onSuccess: (detail) => {
+      queryClient.setQueryData(catalogQueryKeys.product(productId), detail);
+      void queryClient.invalidateQueries({ queryKey: catalogQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: categoriesQueryKeys.all });
+    },
+  });
+}
+
+export function useArchiveAdminProductMutation(productId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProductLifecycleRequest) => archiveAdminProduct(productId, payload),
+    onSuccess: (detail) => {
+      queryClient.setQueryData(catalogQueryKeys.product(productId), detail);
+      void queryClient.invalidateQueries({ queryKey: catalogQueryKeys.all });
+    },
+  });
+}
+
+export function useRestoreAdminProductMutation(productId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: ProductLifecycleRequest) => restoreAdminProduct(productId, payload),
+    onSuccess: (detail) => {
+      queryClient.setQueryData(catalogQueryKeys.product(productId), detail);
       void queryClient.invalidateQueries({ queryKey: catalogQueryKeys.all });
     },
   });

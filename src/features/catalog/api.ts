@@ -5,7 +5,9 @@ import {
   ProductPageSchema,
   type ProductCreateRequest,
   type ProductDetail,
+  type ProductLifecycleRequest,
   type ProductPage,
+  type ProductUpdateRequest,
 } from "@/features/catalog/schema";
 
 export async function listProducts(params: ProductListParams): Promise<ProductPage> {
@@ -25,5 +27,29 @@ export async function getProduct(id: number): Promise<ProductDetail> {
 
 export async function createAdminProduct(payload: ProductCreateRequest): Promise<ProductDetail> {
   const { data } = await api.post<unknown>("/api/admin/products", payload);
+  return ProductDetailSchema.parse(data);
+}
+
+export async function updateAdminProduct(
+  id: number,
+  payload: ProductUpdateRequest,
+): Promise<ProductDetail> {
+  const { data } = await api.put<unknown>(`/api/admin/products/${id}`, payload);
+  return ProductDetailSchema.parse(data);
+}
+
+export async function archiveAdminProduct(
+  id: number,
+  payload: ProductLifecycleRequest,
+): Promise<ProductDetail> {
+  const { data } = await api.post<unknown>(`/api/admin/products/${id}/archive`, payload);
+  return ProductDetailSchema.parse(data);
+}
+
+export async function restoreAdminProduct(
+  id: number,
+  payload: ProductLifecycleRequest,
+): Promise<ProductDetail> {
+  const { data } = await api.post<unknown>(`/api/admin/products/${id}/restore`, payload);
   return ProductDetailSchema.parse(data);
 }

@@ -160,3 +160,51 @@ export function toProductCreateRequest(form: ProductCreateForm): ProductCreateRe
     stockBySize,
   };
 }
+
+export const ProductUpdateRequestSchema = z.object({
+  name: z.string().min(1).max(NAME_MAX_LENGTH),
+  description: z.string().max(DESCRIPTION_MAX_LENGTH).nullable().optional(),
+  categoryId: z.number().int().positive(),
+  isMultiSize: z.boolean(),
+  imageUrl: z.string().max(IMAGE_URL_MAX_LENGTH).nullable().optional(),
+  price: z.number().min(0),
+  version: z.number().int().nonnegative(),
+});
+export type ProductUpdateRequest = z.infer<typeof ProductUpdateRequestSchema>;
+
+export const ProductUpdateFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, "Product name is required.")
+    .max(NAME_MAX_LENGTH, `Name must be ≤ ${NAME_MAX_LENGTH} characters.`),
+  description: z
+    .string()
+    .max(DESCRIPTION_MAX_LENGTH, `Description must be ≤ ${DESCRIPTION_MAX_LENGTH} characters.`),
+  categoryId: z
+    .number({ message: "Category is required." })
+    .int()
+    .positive("Category is required."),
+  imageUrl: z.string().min(1, "Product image is required."),
+  price: z.number({ message: "Price is required." }).min(0, "Price must be ≥ 0."),
+  isMultiSize: z.boolean(),
+  version: z.number().int().nonnegative(),
+});
+export type ProductUpdateForm = z.infer<typeof ProductUpdateFormSchema>;
+
+export function toProductUpdateRequest(form: ProductUpdateForm): ProductUpdateRequest {
+  return {
+    name: form.name.trim(),
+    description: form.description.trim().length === 0 ? null : form.description.trim(),
+    categoryId: form.categoryId,
+    isMultiSize: form.isMultiSize,
+    imageUrl: form.imageUrl,
+    price: form.price,
+    version: form.version,
+  };
+}
+
+export const ProductLifecycleRequestSchema = z.object({
+  version: z.number().int().nonnegative(),
+});
+export type ProductLifecycleRequest = z.infer<typeof ProductLifecycleRequestSchema>;

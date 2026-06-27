@@ -105,177 +105,186 @@ export function ProductCreatePage() {
 
         <BackRow />
 
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 lg:overflow-hidden">
           {mutation.isError && (
-            <Notice variant="error" message={mutation.error.message} className="mb-4 max-w-200" />
+            <Notice variant="error" message={mutation.error.message} className="mb-4" />
           )}
 
           {mutation.isSuccess && mutation.data && (
             <Notice
               variant="success"
               message={`Product "${mutation.data.name}" created (ID ${mutation.data.id}).`}
-              className="mb-4 max-w-200"
+              className="mb-4"
             />
           )}
 
           <form
             onSubmit={handleSubmit(onSubmit)}
             noValidate
-            className="flex max-w-200 flex-col gap-6 pb-6"
+            className="flex flex-col lg:min-h-0 lg:flex-1"
           >
-            <InputFieldStacked
-              label="Product name"
-              placeholder="e.g. Sample Product"
-              maxLength={200}
-              error={errors.name?.message}
-              disabled={mutation.isPending}
-              {...register("name")}
-            />
-
-            <Textarea
-              label="Description"
-              placeholder="Describe the product..."
-              rows={4}
-              maxLength={2000}
-              error={errors.description?.message}
-              disabled={mutation.isPending}
-              {...register("description")}
-            />
-
-            <FilterDropdownLabeled label="Category">
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FilterDropdown
-                    ariaLabel="Category"
-                    placeholder="Choose a category..."
-                    options={activeCategoryOptions}
-                    value={field.value > 0 ? String(field.value) : null}
-                    onChange={(next) => field.onChange(Number(next))}
-                    disabled={mutation.isPending || categoriesQuery.isPending}
-                    className="w-full"
-                  />
-                )}
-              />
-              {errors.categoryId && (
-                <p role="alert" className="text-caption-regular text-error-red">
-                  {errors.categoryId.message}
-                </p>
-              )}
-            </FilterDropdownLabeled>
-
-            <InputFieldStacked
-              label="Price"
-              type="number"
-              step="0.01"
-              min={0}
-              placeholder="e.g. 99.00"
-              containerClassName="max-w-60"
-              error={errors.price?.message}
-              disabled={mutation.isPending}
-              {...register("price", { valueAsNumber: true })}
-            />
-
-            <div className="flex flex-col gap-2">
-              <span className="text-body-small-bold text-text-primary">Image</span>
-              <Controller
-                control={control}
-                name="imageUrl"
-                render={({ field }) => (
-                  <ImageUpload
-                    acceptedFormats={PRODUCT_IMAGE_FORMATS}
-                    currentImageUrl={field.value.length > 0 ? field.value : null}
-                    resourceType="products"
-                    onUploadSuccess={(url) => field.onChange(url)}
-                    onUploadingStateChange={setIsUploading}
-                    disabled={mutation.isPending}
-                  />
-                )}
-              />
-              {errors.imageUrl && (
-                <p role="alert" className="text-caption-regular text-error-red">
-                  {errors.imageUrl.message}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <span className="text-body-small-bold text-text-primary">Size variants</span>
-              <SegmentedControl
-                ariaLabel="Size variants"
-                options={[
-                  { value: "single", label: "Single size" },
-                  { value: "multi", label: "Multiple sizes" },
-                ]}
-                value={isMultiSize ? "multi" : "single"}
-                onChange={handleSizeModeChange}
-                disabled={mutation.isPending}
-              />
-            </div>
-
-            <section
-              aria-label="Stock"
-              className="flex flex-col gap-4 rounded-lg border border-border-default bg-background-card p-4"
-            >
-              <header className="flex items-center justify-between">
-                <h2 className="text-body-regular font-semibold text-text-primary">Stock</h2>
-                <span className="text-caption-regular text-text-secondary">
-                  {stockFields.length === 1 ? "1 size" : `${stockFields.length} sizes`}
-                </span>
-              </header>
-
-              <div className="grid grid-cols-[1fr_8rem_8rem_2rem] gap-x-4 gap-y-2 text-caption-regular text-text-secondary">
-                <span>Size</span>
-                <span>Quantity</span>
-                <span>Threshold</span>
-                <span aria-hidden="true" />
-
-                {stockFields.map((row, index) => {
-                  const sizeError = errors.stockRows?.[index]?.size?.message;
-                  const qtyError = errors.stockRows?.[index]?.quantity?.message;
-                  const thresholdError = errors.stockRows?.[index]?.lowStockThreshold?.message;
-                  const isOneSizeLocked = !isMultiSize;
-                  return (
-                    <RowCells
-                      key={row.id}
-                      index={index}
-                      isOneSizeLocked={isOneSizeLocked}
-                      sizeError={sizeError}
-                      qtyError={qtyError}
-                      thresholdError={thresholdError}
+            <div className="flex flex-col gap-8 lg:min-h-0 lg:flex-1 lg:flex-row">
+              <div className="flex flex-col gap-2 lg:min-h-0 lg:flex-1">
+                <span className="text-body-small-bold text-text-primary">Image</span>
+                <Controller
+                  control={control}
+                  name="imageUrl"
+                  render={({ field }) => (
+                    <ImageUpload
+                      acceptedFormats={PRODUCT_IMAGE_FORMATS}
+                      currentImageUrl={field.value.length > 0 ? field.value : null}
+                      resourceType="products"
+                      onUploadSuccess={(url) => field.onChange(url)}
+                      onUploadingStateChange={setIsUploading}
                       disabled={mutation.isPending}
-                      register={register}
-                      onRemove={() => removeStockRow(index)}
+                      className="max-w-none lg:min-h-0 lg:flex-1"
+                      imageBoxClassName="h-auto aspect-square lg:aspect-auto lg:min-h-0 lg:flex-1"
                     />
-                  );
-                })}
+                  )}
+                />
+                {errors.imageUrl && (
+                  <p role="alert" className="text-caption-regular text-error-red">
+                    {errors.imageUrl.message}
+                  </p>
+                )}
               </div>
 
-              {typeof errors.stockRows?.message === "string" && (
-                <p role="alert" className="text-caption-regular text-error-red">
-                  {errors.stockRows.message}
-                </p>
-              )}
+              <div className="flex min-w-0 flex-col gap-6 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-2">
+                <InputFieldStacked
+                  label="Product name"
+                  placeholder="e.g. Sample Product"
+                  maxLength={200}
+                  error={errors.name?.message}
+                  disabled={mutation.isPending}
+                  {...register("name")}
+                />
 
-              {isMultiSize && (
-                <div>
-                  <Button
-                    type="button"
-                    variant="outlined"
-                    onClick={() =>
-                      appendStockRow({ size: "", quantity: 0, lowStockThreshold: null })
-                    }
+                <Textarea
+                  label="Description"
+                  placeholder="Describe the product..."
+                  rows={4}
+                  maxLength={2000}
+                  error={errors.description?.message}
+                  disabled={mutation.isPending}
+                  {...register("description")}
+                />
+
+                <div className="flex flex-wrap items-start gap-6">
+                  <FilterDropdownLabeled label="Category" className="w-80">
+                    <Controller
+                      control={control}
+                      name="categoryId"
+                      render={({ field }) => (
+                        <FilterDropdown
+                          ariaLabel="Category"
+                          placeholder="Choose a category..."
+                          options={activeCategoryOptions}
+                          value={field.value > 0 ? String(field.value) : null}
+                          onChange={(next) => field.onChange(Number(next))}
+                          disabled={mutation.isPending || categoriesQuery.isPending}
+                          className="w-full"
+                        />
+                      )}
+                    />
+                    {errors.categoryId && (
+                      <p role="alert" className="text-caption-regular text-error-red">
+                        {errors.categoryId.message}
+                      </p>
+                    )}
+                  </FilterDropdownLabeled>
+
+                  <InputFieldStacked
+                    label="Price"
+                    type="number"
+                    step="0.01"
+                    min={0}
+                    placeholder="e.g. 99.00"
+                    containerClassName="max-w-60"
+                    error={errors.price?.message}
                     disabled={mutation.isPending}
-                    className="h-9 px-4 text-body-small"
-                  >
-                    + Add Size
-                  </Button>
+                    {...register("price", { valueAsNumber: true })}
+                  />
                 </div>
-              )}
-            </section>
 
-            <div className="flex justify-end gap-3">
+                <div className="flex flex-col gap-2">
+                  <span className="text-body-small-bold text-text-primary">Size variants</span>
+                  <SegmentedControl
+                    ariaLabel="Size variants"
+                    options={[
+                      { value: "single", label: "Single size" },
+                      { value: "multi", label: "Multiple sizes" },
+                    ]}
+                    value={isMultiSize ? "multi" : "single"}
+                    onChange={handleSizeModeChange}
+                    disabled={mutation.isPending}
+                    className="self-start"
+                  />
+                </div>
+
+                <section
+                  aria-label="Stock"
+                  className="flex flex-col gap-4 rounded-lg border border-border-default bg-background-card p-4 lg:min-h-0 lg:flex-1"
+                >
+                  <header className="flex items-center justify-between">
+                    <h2 className="text-body-regular font-semibold text-text-primary">Stock</h2>
+                    <span className="text-caption-regular text-text-secondary">
+                      {stockFields.length === 1 ? "1 size" : `${stockFields.length} sizes`}
+                    </span>
+                  </header>
+
+                  <div className="grid grid-cols-[1fr_8rem_8rem_2rem] gap-x-4 gap-y-2 text-caption-regular text-text-secondary lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+                    <span>Size</span>
+                    <span>Quantity</span>
+                    <span>Threshold</span>
+                    <span aria-hidden="true" />
+
+                    {stockFields.map((row, index) => {
+                      const sizeError = errors.stockRows?.[index]?.size?.message;
+                      const qtyError = errors.stockRows?.[index]?.quantity?.message;
+                      const thresholdError = errors.stockRows?.[index]?.lowStockThreshold?.message;
+                      const isOneSizeLocked = !isMultiSize;
+                      return (
+                        <RowCells
+                          key={row.id}
+                          index={index}
+                          isOneSizeLocked={isOneSizeLocked}
+                          sizeError={sizeError}
+                          qtyError={qtyError}
+                          thresholdError={thresholdError}
+                          disabled={mutation.isPending}
+                          register={register}
+                          onRemove={() => removeStockRow(index)}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {typeof errors.stockRows?.message === "string" && (
+                    <p role="alert" className="text-caption-regular text-error-red">
+                      {errors.stockRows.message}
+                    </p>
+                  )}
+
+                  {isMultiSize && (
+                    <div>
+                      <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={() =>
+                          appendStockRow({ size: "", quantity: 0, lowStockThreshold: null })
+                        }
+                        disabled={mutation.isPending}
+                        className="h-9 px-4 text-body-small"
+                      >
+                        + Add Size
+                      </Button>
+                    </div>
+                  )}
+                </section>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outlined"
