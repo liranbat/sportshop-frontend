@@ -114,6 +114,13 @@ export const router = createBrowserRouter([
                 },
               },
               {
+                path: "admin/stock-management",
+                lazy: async () => {
+                  const { StockManagementPage } = await import("@/features/stock");
+                  return { Component: StockManagementPage };
+                },
+              },
+              {
                 path: "profile/:userId",
                 lazy: async () => {
                   const { AdminUserDetailPage } = await import("@/features/users");

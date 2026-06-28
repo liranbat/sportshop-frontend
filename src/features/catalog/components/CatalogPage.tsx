@@ -118,6 +118,12 @@ export function CatalogPage() {
               >
                 Category Management
               </Link>
+              <Link
+                to="/admin/stock-management"
+                className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
+              >
+                Stock Management
+              </Link>
               <RefreshButton
                 onClick={() => void productsQuery.refetch()}
                 isPending={productsQuery.isFetching}

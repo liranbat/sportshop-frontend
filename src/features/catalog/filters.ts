@@ -47,6 +47,7 @@ export type ProductListParams = {
   page?: number;
   pageSize?: number;
   archiveStatus?: "ACTIVE" | "ARCHIVED";
+  isMultiSize?: boolean;
 };
 
 export function toProductListParams(
