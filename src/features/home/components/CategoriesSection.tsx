@@ -2,7 +2,7 @@ import { useCategoriesQuery } from "@/features/categories";
 import { CategoriesCarousel } from "@/features/home/components/CategoriesCarousel";
 
 export function CategoriesSection() {
-  const { data: categories } = useCategoriesQuery({ active: true });
+  const { data: categories } = useCategoriesQuery();
 
   return (
     <section className="flex h-full w-full snap-start flex-col items-center justify-center gap-12 bg-section-categories px-16 py-20">

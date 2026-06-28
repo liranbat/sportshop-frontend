@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type WheelEvent } from "react";
 import { cn } from "@/lib/cn";
 
 const ERROR_LEFT_PADDING = "pl-39";
@@ -19,12 +19,23 @@ export function InputField({
   className,
   ref,
   type = "text",
+  onWheel,
   ...inputProps
 }: Props) {
   const reactId = useId();
   const inputId = `inputfield-${reactId}`;
   const errorId = error ? `${inputId}-error` : undefined;
   const hasError = Boolean(error);
+
+  // chrome silently mutates focused <input type="number"> on wheel — blur on scroll so the
+  // page scrolls instead of decrementing/incrementing the value
+  const wheelHandler =
+    type === "number"
+      ? (e: WheelEvent<HTMLInputElement>) => {
+          e.currentTarget.blur();
+          onWheel?.(e);
+        }
+      : onWheel;
 
   return (
     <div className={cn("flex w-full flex-col gap-1", containerClassName)}>
@@ -46,6 +57,7 @@ export function InputField({
             type={type}
             aria-invalid={hasError || undefined}
             aria-describedby={errorId}
+            onWheel={wheelHandler}
             className={cn(
               "min-w-0 flex-1 bg-transparent text-body-regular text-text-primary placeholder:text-text-placeholder focus:outline-none",
               className,

@@ -1,7 +1,9 @@
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
+import { useMeQuery } from "@/features/auth/queries";
 import { ProductImageSection } from "@/features/catalog/components/ProductImageSection";
 import { ProductInfoSection } from "@/features/catalog/components/ProductInfoSection";
+import { ProductDetailsAdminView } from "@/features/catalog/components/admin/ProductDetailsAdminView";
 import { useProductQuery } from "@/features/catalog/queries";
 import { ApiError } from "@/lib/api";
 
@@ -19,13 +21,16 @@ export function ProductDetailsPage() {
     return <ProductNotFound />;
   }
 
-  return <ProductDetailsView productId={productId} />;
+  return <ProductDetailsRouter productId={productId} />;
 }
 
-function ProductDetailsView({ productId }: { productId: number }) {
-  const { data: product, isPending, isError, error } = useProductQuery(productId);
+function ProductDetailsRouter({ productId }: { productId: number }) {
+  const meQuery = useMeQuery();
+  const productQuery = useProductQuery(productId);
+  const isAuthResolved = meQuery.isSuccess || meQuery.isError;
+  const isAdmin = meQuery.data?.isAdmin === true;
 
-  if (isPending) {
+  if (!isAuthResolved || productQuery.isPending) {
     return (
       <main className="flex h-full items-center justify-center text-text-secondary">
         Loading product…
@@ -33,8 +38,8 @@ function ProductDetailsView({ productId }: { productId: number }) {
     );
   }
 
-  if (isError) {
-    if (error instanceof ApiError && error.status === 404) {
+  if (productQuery.isError) {
+    if (productQuery.error instanceof ApiError && productQuery.error.status === 404) {
       return <ProductNotFound />;
     }
     return (
@@ -44,6 +49,18 @@ function ProductDetailsView({ productId }: { productId: number }) {
           message="Could not load this product. Please refresh and try again."
         />
       </main>
+    );
+  }
+
+  const product = productQuery.data;
+
+  if (isAdmin) {
+    return (
+      <ProductDetailsAdminView
+        product={product}
+        onRefresh={() => void productQuery.refetch()}
+        isRefreshing={productQuery.isFetching}
+      />
     );
   }
 

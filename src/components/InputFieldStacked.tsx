@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type Ref } from "react";
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type WheelEvent } from "react";
 import { cn } from "@/lib/cn";
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
@@ -24,6 +24,7 @@ export function InputFieldStacked({
   disabled,
   reserveErrorSpace,
   ref,
+  onWheel,
   ...inputProps
 }: Props) {
   const reactId = useId();
@@ -32,6 +33,16 @@ export function InputFieldStacked({
   const hintId = hint ? `${inputId}-hint` : undefined;
   const describedBy = [errorId, hintId].filter(Boolean).join(" ") || undefined;
   const hasError = Boolean(error);
+
+  // chrome silently mutates focused <input type="number"> on wheel — blur on scroll so the
+  // page scrolls instead of decrementing/incrementing the value
+  const wheelHandler =
+    type === "number"
+      ? (e: WheelEvent<HTMLInputElement>) => {
+          e.currentTarget.blur();
+          onWheel?.(e);
+        }
+      : onWheel;
 
   return (
     <div className={cn("flex w-full flex-col gap-1", containerClassName)}>
@@ -61,6 +72,7 @@ export function InputFieldStacked({
           disabled={disabled}
           aria-invalid={hasError || undefined}
           aria-describedby={describedBy}
+          onWheel={wheelHandler}
           className={cn(
             "min-w-0 flex-1 bg-transparent text-body-regular placeholder:text-text-placeholder focus:outline-none",
             disabled ? "cursor-not-allowed text-text-secondary" : "text-text-primary",
