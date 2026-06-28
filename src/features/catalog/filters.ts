@@ -5,6 +5,8 @@ export const PAGE_SIZE_OPTIONS = [4, 9, 16, 25] as const;
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 export const DEFAULT_PAGE_SIZE: PageSize = 9;
 
+export type ArchiveStatus = "ACTIVE" | "ARCHIVED" | "ALL";
+
 export function isPageSize(value: number): value is PageSize {
   return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
 }
@@ -19,6 +21,7 @@ export type StagedFilters = {
   sortEnabled: boolean;
   sortDirection: SortDirection;
   pageSize: PageSize;
+  archiveStatus: ArchiveStatus;
 };
 
 export const DEFAULT_FILTERS: StagedFilters = {
@@ -31,10 +34,10 @@ export const DEFAULT_FILTERS: StagedFilters = {
   sortEnabled: false,
   sortDirection: "asc",
   pageSize: DEFAULT_PAGE_SIZE,
+  archiveStatus: "ACTIVE",
 };
 
 export type ProductListParams = {
-  active: boolean;
   search?: string;
   categoryIds?: readonly number[];
   priceMin?: number;
@@ -43,10 +46,16 @@ export type ProductListParams = {
   sortDirection?: SortDirection;
   page?: number;
   pageSize?: number;
+  archiveStatus?: "ACTIVE" | "ARCHIVED";
+  isMultiSize?: boolean;
 };
 
-export function toProductListParams(filters: StagedFilters, page: number): ProductListParams {
-  const params: ProductListParams = { active: true, page, pageSize: filters.pageSize };
+export function toProductListParams(
+  filters: StagedFilters,
+  page: number,
+  isAdmin: boolean,
+): ProductListParams {
+  const params: ProductListParams = { page, pageSize: filters.pageSize };
 
   const trimmedSearch = filters.search.trim();
   if (trimmedSearch.length > 0) params.search = trimmedSearch;
@@ -63,6 +72,10 @@ export function toProductListParams(filters: StagedFilters, page: number): Produ
     params.sortDirection = filters.sortDirection;
   }
 
+  if (isAdmin && filters.archiveStatus !== "ALL") {
+    params.archiveStatus = filters.archiveStatus;
+  }
+
   return params;
 }
 
@@ -76,6 +89,7 @@ export function filtersEqual(a: StagedFilters, b: StagedFilters): boolean {
     a.sortEnabled === b.sortEnabled &&
     a.sortDirection === b.sortDirection &&
     a.pageSize === b.pageSize &&
+    a.archiveStatus === b.archiveStatus &&
     a.categoryIds.length === b.categoryIds.length &&
     a.categoryIds.every((id, i) => id === b.categoryIds[i])
   );

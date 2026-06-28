@@ -80,11 +80,16 @@ export function ProductInfoSection({ product }: Props) {
         <span className="text-text-primary">{product.name}</span>
       </nav>
 
-      <h1 className="text-heading-l text-text-primary">{product.name}</h1>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-heading-l text-text-primary">{product.name}</h1>
+        {product.isArchived && <StatusBadge state="ARCHIVED" />}
+      </div>
 
-      <p className="text-heading-m leading-none text-primary-blue">
-        {priceFormatter.format(product.price)}
-      </p>
+      {!product.isArchived && (
+        <p className="text-heading-m leading-none text-primary-blue">
+          {priceFormatter.format(product.price)}
+        </p>
+      )}
 
       {product.description !== null && (
         <p className="text-body-small text-text-secondary">{product.description}</p>
@@ -92,57 +97,63 @@ export function ProductInfoSection({ product }: Props) {
 
       <div className="h-px w-full bg-border-default" />
 
-      {product.isMultiSize && sizes.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <p className="text-body-small-bold text-text-primary">Select Size</p>
-          <div className="flex flex-wrap items-center gap-3">
-            {sizes.map((s) => (
-              <SizeButton
-                key={s.size}
-                label={s.size}
-                variant={
-                  s.state === "OUT_OF_STOCK"
-                    ? "outOfStock"
-                    : s.size === selectedSize
-                      ? "selected"
-                      : "default"
-                }
-                onClick={() => handleSelectSize(s.size)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <StatusBadge state={stockState} className="self-start" />
-
-      {isAuthed && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            {canPurchase && (
-              <QuantityControl
-                value={quantity}
-                onChange={setQuantity}
-                min={1}
-                ariaLabel={`Quantity for ${product.name}`}
-              />
-            )}
-            <Button
-              variant="primary"
-              disabled={!canPurchase}
-              isLoading={addCartItemMutation.isPending}
-              onClick={handleAddToCart}
-            >
-              {canPurchase ? "Add to Cart" : "Out of Stock"}
-            </Button>
-          </div>
-          {addCartItemMutation.isError && (
-            <Notice variant="error" message={addCartItemMutation.error.message} />
+      {product.isArchived ? (
+        <Notice variant="info" message="This product is no longer available." />
+      ) : (
+        <>
+          {product.isMultiSize && sizes.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <p className="text-body-small-bold text-text-primary">Select Size</p>
+              <div className="flex flex-wrap items-center gap-3">
+                {sizes.map((s) => (
+                  <SizeButton
+                    key={s.size}
+                    label={s.size}
+                    variant={
+                      s.state === "OUT_OF_STOCK"
+                        ? "outOfStock"
+                        : s.size === selectedSize
+                          ? "selected"
+                          : "default"
+                    }
+                    onClick={() => handleSelectSize(s.size)}
+                  />
+                ))}
+              </div>
+            </div>
           )}
-          {addCartItemMutation.isSuccess && (
-            <Notice variant="success" message="Added to your cart." />
+
+          <StatusBadge state={stockState} className="self-start" />
+
+          {isAuthed && (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                {canPurchase && (
+                  <QuantityControl
+                    value={quantity}
+                    onChange={setQuantity}
+                    min={1}
+                    ariaLabel={`Quantity for ${product.name}`}
+                  />
+                )}
+                <Button
+                  variant="primary"
+                  disabled={!canPurchase}
+                  isLoading={addCartItemMutation.isPending}
+                  onClick={handleAddToCart}
+                >
+                  {canPurchase ? "Add to Cart" : "Out of Stock"}
+                </Button>
+              </div>
+              {addCartItemMutation.isError && (
+                <Notice variant="error" message={addCartItemMutation.error.message} />
+              )}
+              {addCartItemMutation.isSuccess && (
+                <Notice variant="success" message="Added to your cart." />
+              )}
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

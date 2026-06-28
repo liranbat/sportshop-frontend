@@ -33,6 +33,7 @@ export function FilterNumberInput({
         const parsed = Number(raw);
         onChange(Number.isFinite(parsed) ? parsed : null);
       }}
+      onWheel={(e) => e.currentTarget.blur()}
       placeholder={placeholder}
       aria-label={ariaLabel}
       disabled={disabled}

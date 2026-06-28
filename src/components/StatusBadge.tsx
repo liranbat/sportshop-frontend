@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-type BadgeKind = "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK" | "DELETED";
+type BadgeKind = "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK" | "DELETED" | "ARCHIVED";
 
 type Props = {
   state: BadgeKind;
@@ -13,6 +13,7 @@ const DEFAULT_LABEL: Record<BadgeKind, string> = {
   LOW_STOCK: "Low stock",
   OUT_OF_STOCK: "Out of stock",
   DELETED: "Deleted",
+  ARCHIVED: "Archived",
 };
 
 const VARIANT: Record<BadgeKind, { bg: string; text: string }> = {
@@ -20,6 +21,7 @@ const VARIANT: Record<BadgeKind, { bg: string; text: string }> = {
   LOW_STOCK: { bg: "bg-warning-bg", text: "text-warning-text" },
   OUT_OF_STOCK: { bg: "bg-error-bg", text: "text-error-text" },
   DELETED: { bg: "bg-error-bg", text: "text-error-text" },
+  ARCHIVED: { bg: "bg-background-page", text: "text-text-secondary" },
 };
 
 export function StatusBadge({ state, label, className }: Props) {
