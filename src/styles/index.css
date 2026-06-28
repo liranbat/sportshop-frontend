@@ -103,3 +103,20 @@
   --info-border: var(--color-info-border);
   --info-text: var(--color-info-text);
 }
+
+/* Categories carousel sizing. Padding + negative margin (not `gap`) so embla's
+   loop wrap has no seam. Keep --slides-visible in sync with VISIBLE_CARDS. */
+.categories-carousel {
+  --slide-size: 12.5rem;
+  --slide-spacing: 1.5rem;
+  --slides-visible: 5;
+  width: calc(
+    var(--slides-visible) * var(--slide-size) + (var(--slides-visible) - 1) * var(--slide-spacing)
+  );
+}
+.categories-carousel-track {
+  margin-left: calc(var(--slide-spacing) * -1);
+}
+.categories-carousel-slide {
+  padding-left: var(--slide-spacing);
+}

@@ -3,10 +3,8 @@ import useEmblaCarousel from "embla-carousel-react";
 import type { Category } from "@/features/categories";
 import { CategoryCard } from "@/features/home/components/CategoryCard";
 
+// keep in sync with --slides-visible in styles/index.css
 const VISIBLE_CARDS = 5;
-const CARD_WIDTH_REM = 12.5;
-const SLIDE_SPACING_REM = 1.5;
-const VIEWPORT_WIDTH_REM = VISIBLE_CARDS * CARD_WIDTH_REM + (VISIBLE_CARDS - 1) * SLIDE_SPACING_REM;
 
 type ArrowButtonProps = {
   direction: "left" | "right";
@@ -44,8 +42,6 @@ function ArrowButton({ direction, onClick, disabled }: ArrowButtonProps) {
 
 type Props = { categories: readonly Category[] };
 
-// padding-based spacing (not css `gap`) — `gap` doesn't count toward slide width
-// so embla's loop wrap leaves no space between last and first slide.
 function ScrollableCarousel({ categories }: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" });
 
@@ -78,13 +74,9 @@ function ScrollableCarousel({ categories }: Props) {
   return (
     <>
       <div ref={emblaRef} className="overflow-hidden">
-        <div className="flex touch-pan-y" style={{ marginLeft: `-${SLIDE_SPACING_REM}rem` }}>
+        <div className="categories-carousel-track flex touch-pan-y">
           {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="shrink-0"
-              style={{ paddingLeft: `${SLIDE_SPACING_REM}rem` }}
-            >
+            <div key={cat.id} className="categories-carousel-slide shrink-0">
               <CategoryCard id={cat.id} name={cat.name} iconSrc={cat.icon} />
             </div>
           ))}
@@ -102,7 +94,7 @@ export function CategoriesCarousel({ categories }: Props) {
   const hasOverflow = categories.length > VISIBLE_CARDS;
 
   return (
-    <div style={{ width: `${VIEWPORT_WIDTH_REM}rem` }} className="flex flex-col gap-4">
+    <div className="categories-carousel flex flex-col gap-4">
       {hasOverflow ? (
         <ScrollableCarousel categories={categories} />
       ) : (
