@@ -1,5 +1,4 @@
 import axios, { AxiosError, type AxiosInstance } from "axios";
-import { env } from "@/lib/env";
 
 export class ApiError extends Error {
   readonly status: number | undefined;
@@ -89,8 +88,10 @@ function paramsSerializer(params: Record<string, unknown>): string {
   return parts.join("&");
 }
 
+// Relative baseURL — same-origin in dev (Vite proxy) and prod (Caddy).
+// Call sites stay prefix-free; the /api hop is added once, here.
 export const api: AxiosInstance = axios.create({
-  baseURL: env.VITE_API_URL,
+  baseURL: "/api",
   timeout: 30_000,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },

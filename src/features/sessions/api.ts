@@ -8,16 +8,16 @@ import {
 } from "@/features/sessions/schema";
 
 export async function listAdminSessions(params: SessionListParams): Promise<SessionListPage> {
-  const { data } = await api.get<unknown>("/api/admin/sessions", { params });
+  const { data } = await api.get<unknown>("/admin/sessions", { params });
   return SessionListPageSchema.parse(data);
 }
 
 export async function revokeAdminSession(sessionId: number): Promise<void> {
-  await api.delete(`/api/admin/sessions/${sessionId}`);
+  await api.delete(`/admin/sessions/${sessionId}`);
 }
 
 export async function revokeAllAdminSessions(): Promise<SessionRevokeAllResponse> {
-  const { data } = await api.delete<unknown>("/api/admin/sessions", {
+  const { data } = await api.delete<unknown>("/admin/sessions", {
     params: { scope: "others" },
   });
   return SessionRevokeAllResponseSchema.parse(data);

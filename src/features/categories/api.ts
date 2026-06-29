@@ -8,17 +8,17 @@ import {
 } from "@/features/categories/schema";
 
 export async function listCategories(): Promise<Category[]> {
-  const { data } = await api.get<unknown>("/api/categories");
+  const { data } = await api.get<unknown>("/categories");
   return CategoriesSchema.parse(data);
 }
 
 export async function listAdminCategories(): Promise<Category[]> {
-  const { data } = await api.get<unknown>("/api/admin/categories");
+  const { data } = await api.get<unknown>("/admin/categories");
   return CategoriesSchema.parse(data);
 }
 
 export async function createAdminCategory(payload: CategoryWriteRequest): Promise<Category> {
-  const { data } = await api.post<unknown>("/api/admin/categories", payload);
+  const { data } = await api.post<unknown>("/admin/categories", payload);
   return CategorySchema.parse(data);
 }
 
@@ -26,7 +26,7 @@ export async function updateAdminCategory(
   id: number,
   payload: CategoryWriteRequest,
 ): Promise<Category> {
-  const { data } = await api.put<unknown>(`/api/admin/categories/${id}`, payload);
+  const { data } = await api.put<unknown>(`/admin/categories/${id}`, payload);
   return CategorySchema.parse(data);
 }
 
@@ -34,11 +34,11 @@ export async function softDeleteAdminCategory(
   id: number,
   payload: CategorySoftDeleteRequest,
 ): Promise<Category> {
-  const { data } = await api.post<unknown>(`/api/admin/categories/${id}/delete`, payload);
+  const { data } = await api.post<unknown>(`/admin/categories/${id}/delete`, payload);
   return CategorySchema.parse(data);
 }
 
 export async function restoreAdminCategory(id: number): Promise<Category> {
-  const { data } = await api.post<unknown>(`/api/admin/categories/${id}/restore`);
+  const { data } = await api.post<unknown>(`/admin/categories/${id}/restore`);
   return CategorySchema.parse(data);
 }
