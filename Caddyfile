@@ -1,0 +1,25 @@
+{$PUBLIC_HOST:localhost} {
+	# Self-signed cert + local CA — see deploy/docker-compose.yml header for the
+	# per-OS trust commands.
+	tls internal
+
+	encode zstd gzip
+
+	handle /api/* {
+		reverse_proxy backend:8080
+	}
+
+	handle /images/* {
+		reverse_proxy backend:8080
+	}
+
+	# SPA fallback: serve from /srv (baked from frontend/dist) and rewrite
+	# unknown paths to /index.html so client-side routing survives a refresh.
+	# /config.js is generated once at container start by entrypoint.sh from
+	# APP_* env vars, then served like any other static file.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

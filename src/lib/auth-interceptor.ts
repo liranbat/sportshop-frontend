@@ -12,9 +12,9 @@ import type { UserResponse } from "@/features/auth/schema";
 //   /me      -- on cold boot a guest's /me 401s by definition; we still attempt refresh
 //               (so an expired-but-recoverable session is auto-renewed), but if THAT also
 //               401s we treat it as "just a guest" and don't redirect to /sign-in.
-const REFRESH_PATH = "/api/auth/refresh";
-const LOGIN_PATH = "/api/auth/login";
-const ME_PATH = "/api/auth/me";
+const REFRESH_PATH = "/auth/refresh";
+const LOGIN_PATH = "/auth/login";
+const ME_PATH = "/auth/me";
 
 const ROLE_HEADER = "x-auth-role";
 const ROLE_ADMIN = "admin";

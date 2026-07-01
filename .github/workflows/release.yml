@@ -1,0 +1,188 @@
+name: Release frontend
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE_REPO: ghcr.io/${{ github.repository_owner }}/sportshop-frontend
+  DIST_ARTIFACT: sportshop-frontend-dist
+
+jobs:
+  setup:
+    name: Setup & version
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+      asset: ${{ steps.version.outputs.asset }}
+    steps:
+      - name: Compute version
+        id: version
+        run: |
+          # Format: {branch}.1.0.{run_number} — mirrors sportshop-backend + sportshop-swagger.
+          VERSION="${{ github.ref_name }}.1.0.${{ github.run_number }}"
+          ASSET="sportshop-frontend-dist-${VERSION}.zip"
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "asset=$ASSET" >> "$GITHUB_OUTPUT"
+          echo "Releasing version: $VERSION"
+
+  quality:
+    name: Quality checks
+    needs: setup
+    # Non-blocking: lint/format issues surface as ::warning:: annotations
+    # and never fail downstream jobs. Type errors still fail via tsc in build.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: ESLint (informational)
+        run: |
+          if ! npm run lint; then
+            echo "::warning::ESLint reported issues. Run 'npm run lint:fix' locally."
+          fi
+
+      - name: Prettier check (informational)
+        run: |
+          if ! npm run format:check; then
+            echo "::warning::Prettier reported formatting issues. Run 'npm run format' locally."
+          fi
+
+  build:
+    name: Build & upload dist
+    needs: [setup, quality]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Zip dist for release
+        run: |
+          set -euo pipefail
+          if [ ! -d dist ]; then
+            echo "::error::dist/ not produced by build"
+            exit 1
+          fi
+          # cd + zip -r keeps paths relative to dist root (index.html at zip root).
+          cd dist && zip -r "../${{ needs.setup.outputs.asset }}" .
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.DIST_ARTIFACT }}
+          path: ${{ needs.setup.outputs.asset }}
+          if-no-files-found: error
+          retention-days: 1
+
+  docker:
+    name: Build image & push to GHCR
+    needs: [setup, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          VERSION="${{ needs.setup.outputs.version }}"
+          docker build -t "${IMAGE_REPO}:${VERSION}" .
+
+      - name: Tag + push versioned + per-branch latest
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.setup.outputs.version }}"
+          # Per-branch floating tag (e.g. main-latest, feature-ci-latest).
+          # Avoids a single :latest that would jump between branches.
+          BRANCH_LATEST="${{ github.ref_name }}-latest"
+          docker tag "${IMAGE_REPO}:${VERSION}" "${IMAGE_REPO}:${BRANCH_LATEST}"
+          docker push "${IMAGE_REPO}:${VERSION}"
+          docker push "${IMAGE_REPO}:${BRANCH_LATEST}"
+
+  release:
+    name: Finalize release
+    needs: [setup, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.DIST_ARTIFACT }}
+
+      - name: Create GitHub Release with dist (tags the commit)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          VERSION="${{ needs.setup.outputs.version }}"
+          ASSET="${{ needs.setup.outputs.asset }}"
+          # Tag name = version exactly (no `v` prefix). Same convention as sportshop-backend + sportshop-swagger.
+          gh release create "$VERSION" "$ASSET" \
+            --title "sportshop-frontend $VERSION" \
+            --target "${{ github.sha }}" \
+            --generate-notes
+
+      - name: Job summary
+        run: |
+          VERSION="${{ needs.setup.outputs.version }}"
+          BRANCH_LATEST="${{ github.ref_name }}-latest"
+          REPO="${{ github.repository }}"
+          {
+            echo "## Released sportshop-frontend ${VERSION}"
+            echo ""
+            echo "**Tag:** \`${VERSION}\` on commit \`${{ github.sha }}\`"
+            echo ""
+            echo "**Docker image:**"
+            echo ""
+            echo "\`\`\`"
+            echo "${IMAGE_REPO}:${VERSION}"
+            echo "${IMAGE_REPO}:${BRANCH_LATEST}"
+            echo "\`\`\`"
+            echo ""
+            echo "**Pull anonymously:**"
+            echo ""
+            echo "\`\`\`"
+            echo "docker pull ${IMAGE_REPO}:${VERSION}"
+            echo "\`\`\`"
+            echo ""
+            echo "**Dist zip:** [Release page](https://github.com/${REPO}/releases/tag/${VERSION})"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -5,7 +5,7 @@ export const ONE_SIZE_TOKEN = "ONE_SIZE";
 export const StockRowSchema = z.object({
   productId: z.number().int().positive(),
   productName: z.string(),
-  productImageUrl: z.url().nullable().optional(),
+  productImageUrl: z.string().nullable().optional(),
   productIsArchived: z.boolean(),
   productIsMultiSize: z.boolean().optional(),
   size: z.string(),
