@@ -6,5 +6,9 @@ COPY . .
 RUN npm run build
 
 FROM caddy:2-alpine
+RUN apk add --no-cache jq
 COPY --from=build /app/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
