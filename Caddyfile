@@ -15,6 +15,8 @@
 
 	# SPA fallback: serve from /srv (baked from frontend/dist) and rewrite
 	# unknown paths to /index.html so client-side routing survives a refresh.
+	# /config.js is generated once at container start by entrypoint.sh from
+	# APP_* env vars, then served like any other static file.
 	handle {
 		root * /srv
 		try_files {path} /index.html
