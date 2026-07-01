@@ -136,25 +136,6 @@ jobs:
           docker push "${IMAGE_REPO}:${VERSION}"
           docker push "${IMAGE_REPO}:${BRANCH_LATEST}"
 
-      - name: Ensure GHCR package is public
-        continue-on-error: true
-        env:
-          # Prefer a user PAT (write:packages scope) if provided; fall back to
-          # GITHUB_TOKEN which works for some repo-linked packages but may lack
-          # scope for user-owned containers.
-          GH_TOKEN: ${{ secrets.GHCR_VISIBILITY_PAT || secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          # First push usually inherits visibility from the source repo;
-          # this step is a safety net for the cases where it doesn't.
-          if gh api --method PATCH \
-              "/user/packages/container/sportshop-frontend/visibility" \
-              -f visibility=public 2>/dev/null; then
-            echo "::notice::GHCR package visibility set to public"
-          else
-            echo "::warning::Could not set GHCR package visibility automatically. If pulls hit 401, flip it manually at https://github.com/${{ github.repository_owner }}?tab=packages, or add a repo secret GHCR_VISIBILITY_PAT (PAT with write:packages scope)."
-          fi
-
   release:
     name: Finalize release
     needs: [setup, docker]
