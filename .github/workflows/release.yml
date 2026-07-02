@@ -112,7 +112,7 @@ jobs:
           cd dist && zip -r "../${{ needs.setup.outputs.asset }}" .
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.DIST_ARTIFACT }}
           path: ${{ needs.setup.outputs.asset }}
@@ -157,7 +157,7 @@ jobs:
       - uses: actions/checkout@v5
 
       - name: Download dist artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: ${{ env.DIST_ARTIFACT }}
 
