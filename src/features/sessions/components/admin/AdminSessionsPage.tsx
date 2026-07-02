@@ -103,28 +103,36 @@ export function AdminSessionsPage() {
               onRevokeAll={() => setRevokeAllOpen(true)}
             />
 
-            <div className="min-h-0 flex-1">
-              {sessionsQuery.isError ? (
-                <div className="flex h-full items-center justify-center">
-                  <Notice
-                    variant="error"
-                    message="Could not load sessions. Please refresh and try again."
+            <div
+              aria-busy={sessionsQuery.isFetching}
+              className={`min-h-0 flex-1 transition-opacity ${
+                sessionsQuery.isFetching ? "opacity-60" : ""
+              }`}
+            >
+              <fieldset disabled={sessionsQuery.isFetching} className="contents">
+                {sessionsQuery.isError ? (
+                  <div className="flex h-full items-center justify-center">
+                    <Notice
+                      variant="error"
+                      message="Could not load sessions. Please refresh and try again."
+                    />
+                  </div>
+                ) : (
+                  <AdminSessionsList
+                    sessions={sessions}
+                    isLoading={sessionsQuery.isPending}
+                    actorUserId={actorUserId}
+                    onRevoke={setRevokeTarget}
                   />
-                </div>
-              ) : (
-                <AdminSessionsList
-                  sessions={sessions}
-                  isLoading={sessionsQuery.isPending}
-                  actorUserId={actorUserId}
-                  onRevoke={setRevokeTarget}
-                />
-              )}
+                )}
+              </fieldset>
             </div>
 
             <AdminSessionsListPagination
               page={page}
               pageSize={staged.pageSize}
               totalPages={totalPages}
+              disabled={sessionsQuery.isFetching}
               onPageChange={setPage}
               onPageSizeChange={handleStagePageSize}
             />

@@ -107,34 +107,43 @@ export function StockManagementPage() {
               staged={staged}
               setStaged={setStaged}
               hasPendingEdits={hasPendingEdits}
+              isRefreshing={stockQuery.isFetching}
               onApply={handleApply}
               onClear={handleClear}
             />
 
-            <div className="min-h-0 flex-1 overflow-auto">
-              {stockQuery.isError ? (
-                <div className="flex h-full items-center justify-center">
-                  <Notice
-                    variant="error"
-                    message="Could not load stock. Please refresh and try again."
+            <div
+              aria-busy={stockQuery.isFetching}
+              className={`min-h-0 flex-1 overflow-auto transition-opacity ${
+                stockQuery.isFetching ? "opacity-60" : ""
+              }`}
+            >
+              <fieldset disabled={stockQuery.isFetching} className="contents">
+                {stockQuery.isError ? (
+                  <div className="flex h-full items-center justify-center">
+                    <Notice
+                      variant="error"
+                      message="Could not load stock. Please refresh and try again."
+                    />
+                  </div>
+                ) : rows.length === 0 && !stockQuery.isPending ? (
+                  <EmptyStockManagementList filtered={true} onClearFilters={handleClear} />
+                ) : (
+                  <StockManagementList
+                    rows={rows}
+                    isLoading={stockQuery.isPending}
+                    onStartEdit={handleStartEdit}
+                    onRemove={handleRemove}
                   />
-                </div>
-              ) : rows.length === 0 && !stockQuery.isPending ? (
-                <EmptyStockManagementList filtered={true} onClearFilters={handleClear} />
-              ) : (
-                <StockManagementList
-                  rows={rows}
-                  isLoading={stockQuery.isPending}
-                  onStartEdit={handleStartEdit}
-                  onRemove={handleRemove}
-                />
-              )}
+                )}
+              </fieldset>
             </div>
 
             <StockManagementListPagination
               page={page}
               pageSize={staged.pageSize}
               totalPages={totalPages}
+              disabled={stockQuery.isFetching}
               onPageChange={setPage}
               onPageSizeChange={handleStagePageSize}
             />

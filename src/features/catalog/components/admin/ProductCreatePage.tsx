@@ -8,6 +8,7 @@ import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown
 import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
+import { RefreshButton } from "@/components/RefreshButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import { useCategoriesQuery } from "@/features/categories";
 import { ImageUpload } from "@/features/images/components/ImageUpload";
@@ -170,28 +171,37 @@ export function ProductCreatePage() {
                 />
 
                 <div className="flex flex-wrap items-start gap-6">
-                  <FilterDropdownLabeled label="Category" className="w-80">
-                    <Controller
-                      control={control}
-                      name="categoryId"
-                      render={({ field }) => (
-                        <FilterDropdown
-                          ariaLabel="Category"
-                          placeholder="Choose a category..."
-                          options={activeCategoryOptions}
-                          value={field.value > 0 ? String(field.value) : null}
-                          onChange={(next) => field.onChange(Number(next))}
-                          disabled={mutation.isPending || categoriesQuery.isPending}
-                          className="w-full"
-                        />
+                  <div className="flex items-start gap-2">
+                    <FilterDropdownLabeled label="Category" className="w-80">
+                      <Controller
+                        control={control}
+                        name="categoryId"
+                        render={({ field }) => (
+                          <FilterDropdown
+                            ariaLabel="Category"
+                            placeholder="Choose a category..."
+                            options={activeCategoryOptions}
+                            value={field.value > 0 ? String(field.value) : null}
+                            onChange={(next) => field.onChange(Number(next))}
+                            disabled={mutation.isPending || categoriesQuery.isFetching}
+                            className="w-full"
+                          />
+                        )}
+                      />
+                      {errors.categoryId && (
+                        <p role="alert" className="text-caption-regular text-error-red">
+                          {errors.categoryId.message}
+                        </p>
                       )}
-                    />
-                    {errors.categoryId && (
-                      <p role="alert" className="text-caption-regular text-error-red">
-                        {errors.categoryId.message}
-                      </p>
-                    )}
-                  </FilterDropdownLabeled>
+                    </FilterDropdownLabeled>
+                    <div className="pt-6">
+                      <RefreshButton
+                        onClick={() => void categoriesQuery.refetch()}
+                        isPending={categoriesQuery.isFetching}
+                        ariaLabel="Refresh categories"
+                      />
+                    </div>
+                  </div>
 
                   <InputFieldStacked
                     label="Price"

@@ -68,7 +68,11 @@ function ProductDetailsRouter({ productId }: { productId: number }) {
     <main className="h-full overflow-hidden">
       <div className="grid h-full grid-cols-1 gap-8 px-6 py-6 lg:grid-cols-2 lg:px-10 lg:py-8 2xl:px-14">
         <ProductImageSection name={product.name} imageUrl={product.imageUrl} />
-        <ProductInfoSection product={product} />
+        <ProductInfoSection
+          product={product}
+          onRefresh={() => void productQuery.refetch()}
+          isRefreshing={productQuery.isFetching}
+        />
       </div>
     </main>
   );

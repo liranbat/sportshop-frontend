@@ -5,15 +5,16 @@ type Props = {
   onClick: () => void;
   isPending: boolean;
   ariaLabel: string;
+  disabled?: boolean;
 };
 
-export function RefreshButton({ onClick, isPending, ariaLabel }: Props) {
+export function RefreshButton({ onClick, isPending, ariaLabel, disabled = false }: Props) {
   return (
     <Button
       type="button"
       variant="outlined"
       onClick={onClick}
-      disabled={isPending}
+      disabled={isPending || disabled}
       aria-busy={isPending || undefined}
       aria-label={ariaLabel}
       className="h-7 w-7 px-0"

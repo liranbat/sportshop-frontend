@@ -11,9 +11,10 @@ type Props = {
   view: OrderListView;
   onViewChange: (next: OrderListView) => void;
   isAdmin: boolean;
+  isRefreshing: boolean;
 };
 
-export function OrderHistoryHeaderRow({ view, onViewChange, isAdmin }: Props) {
+export function OrderHistoryHeaderRow({ view, onViewChange, isAdmin, isRefreshing }: Props) {
   const title = view === "admin" ? "Orders" : "My Orders";
 
   return (
@@ -26,6 +27,7 @@ export function OrderHistoryHeaderRow({ view, onViewChange, isAdmin }: Props) {
           value={view}
           onChange={onViewChange}
           ariaLabel="Order list scope"
+          disabled={isRefreshing}
         />
       )}
     </div>

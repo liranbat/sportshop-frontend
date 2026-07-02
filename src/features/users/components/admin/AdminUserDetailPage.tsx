@@ -1,3 +1,4 @@
+import { useCallback, useState } from "react";
 import { Link, Navigate, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
 import { RefreshButton } from "@/components/RefreshButton";
@@ -21,6 +22,13 @@ export function AdminUserDetailPage() {
 function AdminUserDetailContent({ userId }: { userId: number }) {
   const userQuery = useAdminUserQuery(userId);
   const updateMutation = useUpdateAdminUserMutation(userId);
+  const [refreshNonce, setRefreshNonce] = useState(0);
+
+  const handleRefresh = useCallback(() => {
+    updateMutation.reset();
+    setRefreshNonce((n) => n + 1);
+    void userQuery.refetch();
+  }, [updateMutation, userQuery]);
 
   if (userQuery.isPending) {
     return (
@@ -47,6 +55,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
   const user = userQuery.data;
   const fullName = `${user.firstName} ${user.lastName}`.trim();
   const role = user.isAdmin ? "Admin" : "User";
+  const isRefreshing = userQuery.isFetching;
 
   return (
     <main className="h-full overflow-hidden">
@@ -62,21 +71,28 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
             </div>
           </div>
           <RefreshButton
-            onClick={() => void userQuery.refetch()}
-            isPending={userQuery.isFetching}
+            onClick={handleRefresh}
+            isPending={isRefreshing}
             ariaLabel="Refresh user details"
           />
         </header>
 
         <BackRow />
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_44rem]">
-          <div className="min-h-0 overflow-y-auto">
-            <ProfileCard user={user} mutation={updateMutation} />
-          </div>
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <AdminActionsCard user={user} />
-          </div>
+        <div
+          aria-busy={isRefreshing}
+          className={`grid min-h-0 flex-1 grid-cols-1 gap-6 transition-opacity lg:grid-cols-[1fr_44rem] ${
+            isRefreshing ? "opacity-60" : ""
+          }`}
+        >
+          <fieldset disabled={isRefreshing} className="contents">
+            <div className="min-h-0 overflow-y-auto">
+              <ProfileCard key={`profile-${refreshNonce}`} user={user} mutation={updateMutation} />
+            </div>
+            <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+              <AdminActionsCard key={`actions-${refreshNonce}`} user={user} />
+            </div>
+          </fieldset>
         </div>
       </div>
     </main>

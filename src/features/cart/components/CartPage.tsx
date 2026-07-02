@@ -47,6 +47,7 @@ export function CartPage() {
   const isEmpty = cart.itemCount === 0;
   const hasBlockingIssues = !isEmpty && cartHasBlockingIssues(cart.items);
   const totalUnits = isEmpty ? 0 : cart.items.reduce((acc, item) => acc + item.quantity, 0);
+  const isBusy = syncMutation.isPending || validateMutation.isPending;
 
   const handleProceedToCheckout = () => {
     validateMutation.mutate(undefined, {
@@ -78,43 +79,51 @@ export function CartPage() {
             <RefreshButton
               onClick={() => syncMutation.mutate()}
               isPending={syncMutation.isPending}
+              disabled={validateMutation.isPending}
               ariaLabel="Refresh cart"
             />
           </header>
 
-          <div className="grid min-h-0 grid-cols-1 gap-6 lg:flex-1 lg:grid-cols-[1fr_auto] lg:grid-rows-1 lg:gap-12">
-            <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
-              {hasBlockingIssues && (
-                <Notice
-                  variant="error"
-                  message="Some items have availability issues. Please update your cart to proceed."
-                />
-              )}
-              {validateMutation.isError && (
-                <Notice
-                  variant="error"
-                  message={`Couldn't validate cart: ${validateMutation.error.message}`}
-                />
-              )}
-              {syncMutation.isError && (
-                <Notice
-                  variant="error"
-                  message={`Couldn't refresh cart: ${syncMutation.error.message}`}
-                />
-              )}
-              <CartItemsList items={cart.items} />
-            </div>
+          <div
+            aria-busy={isBusy}
+            className={`grid min-h-0 grid-cols-1 gap-6 transition-opacity lg:flex-1 lg:grid-cols-[1fr_auto] lg:grid-rows-1 lg:gap-12 ${
+              isBusy ? "opacity-60" : ""
+            }`}
+          >
+            <fieldset disabled={isBusy} className="contents">
+              <div className="flex min-w-0 flex-col gap-4 lg:min-h-0">
+                {hasBlockingIssues && (
+                  <Notice
+                    variant="error"
+                    message="Some items have availability issues. Please update your cart to proceed."
+                  />
+                )}
+                {validateMutation.isError && (
+                  <Notice
+                    variant="error"
+                    message={`Couldn't validate cart: ${validateMutation.error.message}`}
+                  />
+                )}
+                {syncMutation.isError && (
+                  <Notice
+                    variant="error"
+                    message={`Couldn't refresh cart: ${syncMutation.error.message}`}
+                  />
+                )}
+                <CartItemsList items={cart.items} />
+              </div>
 
-            <div className="lg:w-104">
-              <OrderSummary
-                itemCount={cart.itemCount}
-                totalUnits={totalUnits}
-                subtotal={cart.subtotal}
-                hasBlockingIssues={hasBlockingIssues}
-                onProceedToCheckout={handleProceedToCheckout}
-                isValidating={validateMutation.isPending}
-              />
-            </div>
+              <div className="lg:w-104">
+                <OrderSummary
+                  itemCount={cart.itemCount}
+                  totalUnits={totalUnits}
+                  subtotal={cart.subtotal}
+                  hasBlockingIssues={hasBlockingIssues}
+                  onProceedToCheckout={handleProceedToCheckout}
+                  isValidating={validateMutation.isPending}
+                />
+              </div>
+            </fieldset>
           </div>
         </main>
       )}

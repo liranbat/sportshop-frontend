@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { QuantityControl } from "@/components/QuantityControl";
+import { RefreshButton } from "@/components/RefreshButton";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useMeQuery } from "@/features/auth";
 import { useAddCartItemMutation } from "@/features/cart/queries";
@@ -11,6 +12,8 @@ import type { ProductDetail, ProductSize, StockState } from "@/features/catalog/
 
 type Props = {
   product: ProductDetail;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 };
 
 const priceFormatter = new Intl.NumberFormat("en-US", {
@@ -34,7 +37,7 @@ function sortSizes(sizes: readonly ProductSize[]): ProductSize[] {
   });
 }
 
-export function ProductInfoSection({ product }: Props) {
+export function ProductInfoSection({ product, onRefresh, isRefreshing = false }: Props) {
   const { data: user, isPending: authPending } = useMeQuery();
   const isAuthed = !authPending && user !== null && user !== undefined;
   const addCartItemMutation = useAddCartItemMutation();
@@ -46,6 +49,24 @@ export function ProductInfoSection({ product }: Props) {
     return firstAvailable?.size ?? null;
   });
   const [quantity, setQuantity] = useState(1);
+  const [prevProductSizes, setPrevProductSizes] = useState(product.sizes);
+  const [sizeReplaceSignal, setSizeReplaceSignal] = useState(0);
+
+  // on refetch: if the previously-selected size vanished or became OOS, snap back
+  // to the "first available" pick used at mount and reset per-size local state.
+  if (prevProductSizes !== product.sizes) {
+    setPrevProductSizes(product.sizes);
+    const current = selectedSize !== null ? sizes.find((s) => s.size === selectedSize) : undefined;
+    if (current === undefined || current.state === "OUT_OF_STOCK") {
+      setSelectedSize(sizes.find((s) => s.state !== "OUT_OF_STOCK")?.size ?? null);
+      setQuantity(1);
+      setSizeReplaceSignal((n) => n + 1);
+    }
+  }
+
+  useEffect(() => {
+    if (sizeReplaceSignal > 0) addCartItemMutation.reset();
+  }, [sizeReplaceSignal, addCartItemMutation]);
 
   const selected = sizes.find((s) => s.size === selectedSize) ?? null;
   const stockState: StockState = selected?.state ?? "OUT_OF_STOCK";
@@ -71,90 +92,106 @@ export function ProductInfoSection({ product }: Props) {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-2">
-      <nav aria-label="Breadcrumb" className="text-caption-regular text-text-secondary">
-        <Link to="/catalog" className="hover:text-primary-blue hover:underline">
-          Catalog
-        </Link>
-        <span> {">"} </span>
-        <span className="text-text-primary">{product.name}</span>
-      </nav>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-heading-l text-text-primary">{product.name}</h1>
-        {product.isArchived && <StatusBadge state="ARCHIVED" />}
-      </div>
-
-      {!product.isArchived && (
-        <p className="text-heading-m leading-none text-primary-blue">
-          {priceFormatter.format(product.price)}
-        </p>
-      )}
-
-      {product.description !== null && (
-        <p className="text-body-small text-text-secondary">{product.description}</p>
-      )}
-
-      <div className="h-px w-full bg-border-default" />
-
-      {product.isArchived ? (
-        <Notice variant="info" message="This product is no longer available." />
-      ) : (
-        <>
-          {product.isMultiSize && sizes.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <p className="text-body-small-bold text-text-primary">Select Size</p>
-              <div className="flex flex-wrap items-center gap-3">
-                {sizes.map((s) => (
-                  <SizeButton
-                    key={s.size}
-                    label={s.size}
-                    variant={
-                      s.state === "OUT_OF_STOCK"
-                        ? "outOfStock"
-                        : s.size === selectedSize
-                          ? "selected"
-                          : "default"
-                    }
-                    onClick={() => handleSelectSize(s.size)}
-                  />
-                ))}
-              </div>
-            </div>
+    <div
+      className={`flex h-full min-h-0 flex-col gap-4 overflow-y-auto pr-2 transition-opacity ${
+        isRefreshing ? "opacity-60" : ""
+      }`}
+      aria-busy={isRefreshing}
+    >
+      <fieldset disabled={isRefreshing} className="contents">
+        <div className="flex items-center justify-between gap-2">
+          <nav aria-label="Breadcrumb" className="text-caption-regular text-text-secondary">
+            <Link to="/catalog" className="hover:text-primary-blue hover:underline">
+              Catalog
+            </Link>
+            <span> {">"} </span>
+            <span className="text-text-primary">{product.name}</span>
+          </nav>
+          {onRefresh && (
+            <RefreshButton
+              onClick={onRefresh}
+              isPending={isRefreshing}
+              ariaLabel="Refresh product details"
+            />
           )}
+        </div>
 
-          <StatusBadge state={stockState} className="self-start" />
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-heading-l text-text-primary">{product.name}</h1>
+          {product.isArchived && <StatusBadge state="ARCHIVED" />}
+        </div>
 
-          {isAuthed && (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3">
-                {canPurchase && (
-                  <QuantityControl
-                    value={quantity}
-                    onChange={setQuantity}
-                    min={1}
-                    ariaLabel={`Quantity for ${product.name}`}
-                  />
+        {!product.isArchived && (
+          <p className="text-heading-m leading-none text-primary-blue">
+            {priceFormatter.format(product.price)}
+          </p>
+        )}
+
+        {product.description !== null && (
+          <p className="text-body-small text-text-secondary">{product.description}</p>
+        )}
+
+        <div className="h-px w-full bg-border-default" />
+
+        {product.isArchived ? (
+          <Notice variant="info" message="This product is no longer available." />
+        ) : (
+          <>
+            {product.isMultiSize && sizes.length > 0 && (
+              <div className="flex flex-col gap-3">
+                <p className="text-body-small-bold text-text-primary">Select Size</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  {sizes.map((s) => (
+                    <SizeButton
+                      key={s.size}
+                      label={s.size}
+                      variant={
+                        s.state === "OUT_OF_STOCK"
+                          ? "outOfStock"
+                          : s.size === selectedSize
+                            ? "selected"
+                            : "default"
+                      }
+                      onClick={() => handleSelectSize(s.size)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <StatusBadge state={stockState} className="self-start" />
+
+            {isAuthed && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  {canPurchase && (
+                    <QuantityControl
+                      value={quantity}
+                      onChange={setQuantity}
+                      min={1}
+                      ariaLabel={`Quantity for ${product.name}`}
+                    />
+                  )}
+                  <Button
+                    variant="primary"
+                    disabled={!canPurchase}
+                    isLoading={addCartItemMutation.isPending}
+                    onClick={handleAddToCart}
+                  >
+                    {canPurchase ? "Add to Cart" : "Out of Stock"}
+                  </Button>
+                </div>
+                {addCartItemMutation.isError && (
+                  <Notice variant="error" message={addCartItemMutation.error.message} />
                 )}
-                <Button
-                  variant="primary"
-                  disabled={!canPurchase}
-                  isLoading={addCartItemMutation.isPending}
-                  onClick={handleAddToCart}
-                >
-                  {canPurchase ? "Add to Cart" : "Out of Stock"}
-                </Button>
+                {addCartItemMutation.isSuccess && (
+                  <Notice variant="success" message="Added to your cart." />
+                )}
               </div>
-              {addCartItemMutation.isError && (
-                <Notice variant="error" message={addCartItemMutation.error.message} />
-              )}
-              {addCartItemMutation.isSuccess && (
-                <Notice variant="success" message="Added to your cart." />
-              )}
-            </div>
-          )}
-        </>
-      )}
+            )}
+          </>
+        )}
+      </fieldset>
     </div>
   );
 }

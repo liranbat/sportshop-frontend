@@ -66,33 +66,30 @@ export function OrderHeader({
         <p className="text-price-card text-text-primary tabular-nums">
           {priceFormatter.format(order.totalPrice)}
         </p>
-        {view === "admin" ? (
-          <div className="flex items-center gap-2">
-            {onRefresh && (
-              <RefreshButton
-                onClick={onRefresh}
-                isPending={isRefreshing ?? false}
-                ariaLabel="Refresh order"
-              />
-            )}
-            {canAdminUpdateStatus && (
-              <Button variant="outlined" onClick={onUpdateStatusClick}>
-                Update Status
-              </Button>
-            )}
-            {canAdminCancel && (
-              <Button variant="danger" onClick={onCancelClick}>
-                Cancel Order
-              </Button>
-            )}
-          </div>
-        ) : (
-          canUserCancel && (
+        <div className="flex items-center gap-2">
+          {onRefresh && (
+            <RefreshButton
+              onClick={onRefresh}
+              isPending={isRefreshing ?? false}
+              ariaLabel="Refresh order"
+            />
+          )}
+          {view === "admin" && canAdminUpdateStatus && (
+            <Button variant="outlined" onClick={onUpdateStatusClick}>
+              Update Status
+            </Button>
+          )}
+          {view === "admin" && canAdminCancel && (
             <Button variant="danger" onClick={onCancelClick}>
               Cancel Order
             </Button>
-          )
-        )}
+          )}
+          {view === "user" && canUserCancel && (
+            <Button variant="danger" onClick={onCancelClick}>
+              Cancel Order
+            </Button>
+          )}
+        </div>
       </div>
     </header>
   );

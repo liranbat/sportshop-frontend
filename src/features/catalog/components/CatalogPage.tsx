@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
 import { Notice } from "@/components/Notice";
-import { RefreshButton } from "@/components/RefreshButton";
 import { useMeQuery } from "@/features/auth/queries";
 import { useCategoriesQuery } from "@/features/categories";
 import { CatalogGrid } from "@/features/catalog/components/CatalogGrid";
@@ -96,6 +95,32 @@ export function CatalogPage() {
     setStaged({ ...staged, pageSize: next });
   };
 
+  const isRefreshing = productsQuery.isFetching || categoriesQuery.isFetching;
+
+  // categories first so we can prune soft-deleted IDs from staged/applied before
+  // products refetches. toolbar+pagination are disabled during refresh, so the
+  // staged/applied closure snapshots can't be raced.
+  const handleRefresh = async () => {
+    const result = await categoriesQuery.refetch();
+
+    if (result.isError || !result.data) {
+      // categories refetch failed — still honor the click by refreshing products
+      void productsQuery.refetch();
+      return;
+    }
+
+    const knownIds = new Set(result.data.map((c) => c.id));
+    const nextStagedIds = staged.categoryIds.filter((id) => knownIds.has(id));
+    const nextAppliedIds = applied.categoryIds.filter((id) => knownIds.has(id));
+
+    const stagedChanged = nextStagedIds.length !== staged.categoryIds.length;
+    const appliedChanged = nextAppliedIds.length !== applied.categoryIds.length;
+
+    if (stagedChanged) setStaged({ ...staged, categoryIds: nextStagedIds });
+    if (appliedChanged) setApplied({ ...applied, categoryIds: nextAppliedIds });
+    if (!appliedChanged) void productsQuery.refetch();
+  };
+
   return (
     <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-2 px-6 py-3 lg:px-10 2xl:px-14">
@@ -124,11 +149,6 @@ export function CatalogPage() {
               >
                 Stock Management
               </Link>
-              <RefreshButton
-                onClick={() => void productsQuery.refetch()}
-                isPending={productsQuery.isFetching}
-                ariaLabel="Refresh product list"
-              />
             </div>
           </section>
         )}
@@ -138,8 +158,10 @@ export function CatalogPage() {
           setStaged={setStaged}
           categories={categories}
           hasPendingEdits={hasPendingEdits}
+          isRefreshing={isRefreshing}
           onApply={handleApply}
           onClear={handleClear}
+          onRefresh={handleRefresh}
           isAdmin={isAdmin}
           showTitle={!isAdmin}
         />
@@ -166,6 +188,7 @@ export function CatalogPage() {
           page={page}
           pageSize={staged.pageSize}
           totalPages={totalPages}
+          disabled={isRefreshing}
           onPageChange={setPage}
           onPageSizeChange={handleStagePageSize}
         />
