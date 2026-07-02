@@ -39,6 +39,7 @@ export function AdminProductDetailHeaderRow({
           options={VIEW_OPTIONS}
           value={adminView}
           onChange={onAdminViewChange}
+          disabled={isRefreshing}
         />
         <RefreshButton
           onClick={onRefresh}

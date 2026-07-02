@@ -72,8 +72,10 @@ export function OrderHistoryPage() {
   };
 
   const handleRefresh = () => {
-    void adminOrdersQuery.refetch();
+    void ordersQuery.refetch();
   };
+
+  const isRefreshing = ordersQuery.isFetching;
 
   const handleStagePageSize = (next: PageSize) => {
     setStaged({ ...staged, pageSize: next });
@@ -108,7 +110,12 @@ export function OrderHistoryPage() {
   return (
     <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-2 px-6 py-3 lg:px-10 2xl:px-14">
-        <OrderHistoryHeaderRow view={view} onViewChange={handleViewChange} isAdmin={isAdmin} />
+        <OrderHistoryHeaderRow
+          view={view}
+          onViewChange={handleViewChange}
+          isAdmin={isAdmin}
+          isRefreshing={isRefreshing}
+        />
 
         {isTrueEmpty ? (
           <EmptyOrderHistory view={view} />
@@ -118,7 +125,7 @@ export function OrderHistoryPage() {
               staged={staged}
               setStaged={setStaged}
               hasPendingEdits={hasPendingEdits}
-              isRefreshing={adminOrdersQuery.isFetching}
+              isRefreshing={isRefreshing}
               onApply={handleApply}
               onClear={handleClear}
               onRefresh={handleRefresh}
@@ -142,6 +149,7 @@ export function OrderHistoryPage() {
               page={page}
               pageSize={staged.pageSize}
               totalPages={totalPages}
+              disabled={isRefreshing}
               onPageChange={setPage}
               onPageSizeChange={handleStagePageSize}
             />

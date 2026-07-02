@@ -61,6 +61,7 @@ export function CategoryManagementPage() {
               variant="outlined"
               className="h-7 px-3 text-body-small"
               onClick={() => setEditTarget("create")}
+              disabled={query.isFetching}
             >
               + New Category
             </Button>
@@ -74,23 +75,30 @@ export function CategoryManagementPage() {
 
         <BackRow />
 
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">
-          {query.isError ? (
-            <div className="flex h-full items-center justify-center">
-              <Notice
-                variant="error"
-                message="Could not load categories. Please refresh and try again."
+        <div
+          aria-busy={query.isFetching}
+          className={`min-h-0 flex-1 overflow-y-auto py-2 transition-opacity ${
+            query.isFetching ? "opacity-60" : ""
+          }`}
+        >
+          <fieldset disabled={query.isFetching} className="contents">
+            {query.isError ? (
+              <div className="flex h-full items-center justify-center">
+                <Notice
+                  variant="error"
+                  message="Could not load categories. Please refresh and try again."
+                />
+              </div>
+            ) : isTrueEmpty ? (
+              <EmptyAdminCategoryList />
+            ) : (
+              <AdminCategoryGrid
+                active={active}
+                deleted={deleted}
+                onCardClick={(category) => setEditTarget(category)}
               />
-            </div>
-          ) : isTrueEmpty ? (
-            <EmptyAdminCategoryList />
-          ) : (
-            <AdminCategoryGrid
-              active={active}
-              deleted={deleted}
-              onCardClick={(category) => setEditTarget(category)}
-            />
-          )}
+            )}
+          </fieldset>
         </div>
       </div>
 

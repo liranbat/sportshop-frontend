@@ -83,6 +83,7 @@ export function AdminUserListPage() {
               page={page}
               pageSize={staged.pageSize}
               totalPages={totalPages}
+              disabled={usersQuery.isFetching}
               onPageChange={setPage}
               onPageSizeChange={handleStagePageSize}
             />

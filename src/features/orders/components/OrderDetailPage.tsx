@@ -62,8 +62,9 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
 
   const order = detailQuery.data;
   const handleRefresh = () => {
-    void adminDetailQuery.refetch();
+    void detailQuery.refetch();
   };
+  const isRefreshing = detailQuery.isFetching;
 
   return (
     <main className="h-full overflow-hidden">
@@ -72,28 +73,37 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
 
         {isAdmin && <Notice variant="info" message={ADMIN_NOTICE_MESSAGE} />}
 
-        <OrderHeader
-          order={order}
-          view={isAdmin ? "admin" : "user"}
-          onCancelClick={() => setIsCancelOpen(true)}
-          onUpdateStatusClick={() => setIsUpdateStatusOpen(true)}
-          onRefresh={handleRefresh}
-          isRefreshing={adminDetailQuery.isFetching}
-        />
-
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
-          <div className="min-h-0">
-            <OrderLineItems items={order.items} total={order.totalPrice} />
-          </div>
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <ShippingCard
-              status={order.status}
-              shipping={order.shipping}
-              isAdmin={isAdmin}
-              onEditClick={() => setIsEditShippingOpen(true)}
+        <div
+          aria-busy={isRefreshing}
+          className={`flex min-h-0 flex-1 flex-col gap-4 transition-opacity ${
+            isRefreshing ? "opacity-60" : ""
+          }`}
+        >
+          <fieldset disabled={isRefreshing} className="contents">
+            <OrderHeader
+              order={order}
+              view={isAdmin ? "admin" : "user"}
+              onCancelClick={() => setIsCancelOpen(true)}
+              onUpdateStatusClick={() => setIsUpdateStatusOpen(true)}
+              onRefresh={handleRefresh}
+              isRefreshing={isRefreshing}
             />
-            <PaymentInfoCard payment={order.payment} />
-          </div>
+
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_20rem]">
+              <div className="min-h-0">
+                <OrderLineItems items={order.items} total={order.totalPrice} />
+              </div>
+              <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+                <ShippingCard
+                  status={order.status}
+                  shipping={order.shipping}
+                  isAdmin={isAdmin}
+                  onEditClick={() => setIsEditShippingOpen(true)}
+                />
+                <PaymentInfoCard payment={order.payment} />
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
 

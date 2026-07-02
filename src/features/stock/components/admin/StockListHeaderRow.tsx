@@ -12,7 +12,12 @@ export function StockListHeaderRow({ isRefreshing, onRefresh, onAddSize }: Props
     <header className="flex items-center justify-between gap-2">
       <h1 className="text-body-large font-semibold text-text-primary">Stock Management</h1>
       <div className="flex items-center gap-2">
-        <Button variant="outlined" className="h-7 px-3 text-body-small" onClick={onAddSize}>
+        <Button
+          variant="outlined"
+          className="h-7 px-3 text-body-small"
+          onClick={onAddSize}
+          disabled={isRefreshing}
+        >
           + Add Size
         </Button>
         <RefreshButton

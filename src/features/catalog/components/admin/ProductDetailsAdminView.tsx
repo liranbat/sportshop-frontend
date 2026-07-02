@@ -109,11 +109,12 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
               key={refreshNonce}
               product={product}
               mutation={updateMutation}
+              isRefreshing={isRefreshing}
               onArchive={() => setIsArchiveOpen(true)}
               onRestore={() => setIsRestoreOpen(true)}
             />
           ) : (
-            <CustomerPreview product={product} />
+            <CustomerPreview product={product} isRefreshing={isRefreshing} />
           )}
         </div>
       </div>
@@ -137,11 +138,17 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
   );
 }
 
-function CustomerPreview({ product }: { product: ProductDetail }) {
+function CustomerPreview({
+  product,
+  isRefreshing,
+}: {
+  product: ProductDetail;
+  isRefreshing: boolean;
+}) {
   return (
     <div className="grid h-full grid-cols-1 gap-8 lg:grid-cols-2">
       <ProductImageSection name={product.name} imageUrl={product.imageUrl} />
-      <ProductInfoSection product={product} />
+      <ProductInfoSection product={product} isRefreshing={isRefreshing} />
     </div>
   );
 }
@@ -149,11 +156,18 @@ function CustomerPreview({ product }: { product: ProductDetail }) {
 type AdminEditFormProps = {
   product: ProductDetail;
   mutation: ReturnType<typeof useUpdateAdminProductMutation>;
+  isRefreshing: boolean;
   onArchive: () => void;
   onRestore: () => void;
 };
 
-function AdminEditForm({ product, mutation, onArchive, onRestore }: AdminEditFormProps) {
+function AdminEditForm({
+  product,
+  mutation,
+  isRefreshing,
+  onArchive,
+  onRestore,
+}: AdminEditFormProps) {
   const categoriesQuery = useCategoriesQuery();
 
   const [isUploading, setIsUploading] = useState(false);
@@ -196,8 +210,8 @@ function AdminEditForm({ product, mutation, onArchive, onRestore }: AdminEditFor
     mutation.mutate(toProductUpdateRequest(form));
   };
 
-  const submitDisabled = !isFormValid || mutation.isPending || isUploading;
-  const formDisabled = mutation.isPending;
+  const submitDisabled = !isFormValid || mutation.isPending || isUploading || isRefreshing;
+  const formDisabled = mutation.isPending || isRefreshing;
 
   return (
     <>
@@ -212,7 +226,11 @@ function AdminEditForm({ product, mutation, onArchive, onRestore }: AdminEditFor
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="flex flex-col lg:min-h-0 lg:flex-1"
+        aria-busy={isRefreshing}
+        className={cn(
+          "flex flex-col transition-opacity lg:min-h-0 lg:flex-1",
+          isRefreshing && "opacity-60",
+        )}
       >
         <div className="flex flex-col gap-8 lg:min-h-0 lg:flex-1 lg:flex-row">
           <div className="flex flex-col gap-2 lg:min-h-0 lg:flex-1">
@@ -320,21 +338,11 @@ function AdminEditForm({ product, mutation, onArchive, onRestore }: AdminEditFor
 
         <div className="flex justify-end gap-3 pt-4">
           {product.isArchived ? (
-            <Button
-              type="button"
-              variant="outlined"
-              onClick={onRestore}
-              disabled={mutation.isPending}
-            >
+            <Button type="button" variant="outlined" onClick={onRestore} disabled={formDisabled}>
               Restore
             </Button>
           ) : (
-            <Button
-              type="button"
-              variant="danger"
-              onClick={onArchive}
-              disabled={mutation.isPending}
-            >
+            <Button type="button" variant="danger" onClick={onArchive} disabled={formDisabled}>
               Archive
             </Button>
           )}

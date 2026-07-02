@@ -1,14 +1,23 @@
+import { useCallback, useState } from "react";
 import { Navigate } from "react-router";
+import { RefreshButton } from "@/components/RefreshButton";
 import { useMeQuery } from "@/features/auth/queries";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { SecurityCard } from "@/features/users/components/SecurityCard";
 import { useUpdateProfileMutation } from "@/features/users/queries";
 
 export function ProfilePage() {
-  const { data: user, isFetching } = useMeQuery({ refetchOnMount: "always" });
+  const { data: user, isPending, isFetching, refetch } = useMeQuery({ refetchOnMount: "always" });
   const updateMutation = useUpdateProfileMutation();
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
-  if (isFetching) {
+  const handleRefresh = useCallback(() => {
+    updateMutation.reset();
+    setRefreshNonce((n) => n + 1);
+    void refetch();
+  }, [updateMutation, refetch]);
+
+  if (isPending) {
     return (
       <main className="flex h-full items-center justify-center text-text-secondary">
         Loading profile…
@@ -23,20 +32,34 @@ export function ProfilePage() {
   return (
     <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-4 px-6 py-4 lg:px-10 2xl:px-14">
-        <header className="flex flex-col gap-1">
-          <h1 className="text-body-large font-semibold text-text-primary">My Profile</h1>
-          <p className="text-body-small text-text-secondary">
-            Manage your personal details, password, and account.
-          </p>
+        <header className="flex items-start justify-between gap-2">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-body-large font-semibold text-text-primary">My Profile</h1>
+            <p className="text-body-small text-text-secondary">
+              Manage your personal details, password, and account.
+            </p>
+          </div>
+          <RefreshButton
+            onClick={handleRefresh}
+            isPending={isFetching}
+            ariaLabel="Refresh profile"
+          />
         </header>
 
-        <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 lg:grid-cols-[1fr_44rem]">
-          <div className="min-h-0 overflow-y-auto">
-            <ProfileCard user={user} mutation={updateMutation} />
-          </div>
-          <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
-            <SecurityCard />
-          </div>
+        <div
+          aria-busy={isFetching}
+          className={`grid min-h-0 flex-1 grid-cols-1 gap-6 transition-opacity lg:grid-cols-[1fr_44rem] ${
+            isFetching ? "opacity-60" : ""
+          }`}
+        >
+          <fieldset disabled={isFetching} className="contents">
+            <div className="min-h-0 overflow-y-auto">
+              <ProfileCard key={`profile-${refreshNonce}`} user={user} mutation={updateMutation} />
+            </div>
+            <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+              <SecurityCard key={`security-${refreshNonce}`} />
+            </div>
+          </fieldset>
         </div>
       </div>
     </main>
