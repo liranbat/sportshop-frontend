@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import type { Ref, TextareaHTMLAttributes } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { BackLink } from "@/components/BackLink";
 import { Button } from "@/components/Button";
 import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
 import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
@@ -104,7 +105,7 @@ export function ProductCreatePage() {
           <h1 className="text-body-large font-semibold text-text-primary">New Product</h1>
         </section>
 
-        <BackRow />
+        <BackLink to="/catalog" label="Back to Catalog" />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 lg:overflow-hidden">
           {mutation.isError && (
@@ -486,37 +487,6 @@ function Textarea({
         </p>
       )}
     </div>
-  );
-}
-
-function BackRow() {
-  return (
-    <nav aria-label="Breadcrumb">
-      <Link
-        to="/catalog"
-        className="inline-flex items-center gap-1 text-caption-regular text-text-secondary hover:text-primary-blue hover:underline focus-visible:text-primary-blue focus-visible:outline-none"
-      >
-        <ChevronLeft />
-        Back to Catalog
-      </Link>
-    </nav>
-  );
-}
-
-function ChevronLeft() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="h-3.5 w-3.5"
-    >
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { BackLink } from "@/components/BackLink";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { RefreshButton } from "@/components/RefreshButton";
@@ -73,7 +73,7 @@ export function CategoryManagementPage() {
           </div>
         </section>
 
-        <BackRow />
+        <BackLink to="/catalog" label="Back to Catalog" />
 
         <div
           aria-busy={query.isFetching}
@@ -134,35 +134,4 @@ export function CategoryManagementPage() {
 
 function byNameAsc(a: Category, b: Category): number {
   return a.name.localeCompare(b.name);
-}
-
-function BackRow() {
-  return (
-    <nav aria-label="Breadcrumb">
-      <Link
-        to="/catalog"
-        className="inline-flex items-center gap-1 text-caption-regular text-text-secondary hover:text-primary-blue hover:underline focus-visible:text-primary-blue focus-visible:outline-none"
-      >
-        <ChevronLeft />
-        Back to Catalog
-      </Link>
-    </nav>
-  );
-}
-
-function ChevronLeft() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="h-3.5 w-3.5"
-    >
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  );
 }

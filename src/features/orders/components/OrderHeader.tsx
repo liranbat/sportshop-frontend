@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { Button } from "@/components/Button";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { RefreshButton } from "@/components/RefreshButton";
@@ -56,7 +57,13 @@ export function OrderHeader({
         )}
         {view === "admin" && (
           <p className="text-body-small text-text-secondary">
-            Customer: <span className="text-body-small-bold text-text-primary">{customerName}</span>{" "}
+            Customer:{" "}
+            <Link
+              to={`/profile/${order.customer.id}`}
+              className="text-body-small-bold text-primary-blue hover:underline focus-visible:underline focus-visible:outline-none"
+            >
+              {customerName}
+            </Link>{" "}
             — {order.customer.email}
           </p>
         )}

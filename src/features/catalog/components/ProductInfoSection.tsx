@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { BackLink } from "@/components/BackLink";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { QuantityControl } from "@/components/QuantityControl";
@@ -100,13 +100,7 @@ export function ProductInfoSection({ product, onRefresh, isRefreshing = false }:
     >
       <fieldset disabled={isRefreshing} className="contents">
         <div className="flex items-center justify-between gap-2">
-          <nav aria-label="Breadcrumb" className="text-caption-regular text-text-secondary">
-            <Link to="/catalog" className="hover:text-primary-blue hover:underline">
-              Catalog
-            </Link>
-            <span> {">"} </span>
-            <span className="text-text-primary">{product.name}</span>
-          </nav>
+          <BackLink to="/catalog" label="Back to Catalog" />
           {onRefresh && (
             <RefreshButton
               onClick={onRefresh}
