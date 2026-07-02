@@ -99,7 +99,9 @@ export const ProductCreateFormSchema = z
       .number({ message: "Category is required." })
       .int()
       .positive("Category is required."),
-    imageUrl: z.string().min(1, "Product image is required."),
+    imageUrl: z
+      .string()
+      .max(IMAGE_URL_MAX_LENGTH, `Image URL must be ≤ ${IMAGE_URL_MAX_LENGTH} characters.`),
     price: z.number({ message: "Price is required." }).min(0, "Price must be ≥ 0."),
     isMultiSize: z.boolean(),
     stockRows: z.array(ProductCreateFormStockRowSchema).min(1, "Add at least one stock row."),
@@ -155,7 +157,7 @@ export function toProductCreateRequest(form: ProductCreateForm): ProductCreateRe
     description: form.description.trim().length === 0 ? null : form.description.trim(),
     categoryId: form.categoryId,
     isMultiSize: form.isMultiSize,
-    imageUrl: form.imageUrl,
+    imageUrl: form.imageUrl.length === 0 ? null : form.imageUrl,
     price: form.price,
     stockBySize,
   };
@@ -185,7 +187,9 @@ export const ProductUpdateFormSchema = z.object({
     .number({ message: "Category is required." })
     .int()
     .positive("Category is required."),
-  imageUrl: z.string().min(1, "Product image is required."),
+  imageUrl: z
+    .string()
+    .max(IMAGE_URL_MAX_LENGTH, `Image URL must be ≤ ${IMAGE_URL_MAX_LENGTH} characters.`),
   price: z.number({ message: "Price is required." }).min(0, "Price must be ≥ 0."),
   isMultiSize: z.boolean(),
   version: z.number().int().nonnegative(),
@@ -198,7 +202,7 @@ export function toProductUpdateRequest(form: ProductUpdateForm): ProductUpdateRe
     description: form.description.trim().length === 0 ? null : form.description.trim(),
     categoryId: form.categoryId,
     isMultiSize: form.isMultiSize,
-    imageUrl: form.imageUrl,
+    imageUrl: form.imageUrl.length === 0 ? null : form.imageUrl,
     price: form.price,
     version: form.version,
   };

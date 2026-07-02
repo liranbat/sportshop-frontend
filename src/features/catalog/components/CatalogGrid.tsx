@@ -37,7 +37,7 @@ export function CatalogGrid({ products, categories, pageSize, view }: Props) {
   return (
     <div className="flex h-full w-full items-center justify-center">
       <div
-        className="grid aspect-7/3 max-h-full max-w-full gap-3"
+        className="grid aspect-7/3 h-full max-h-full max-w-full gap-3"
         style={{
           gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))`,
           gridTemplateRows: `repeat(${n}, minmax(0, 1fr))`,

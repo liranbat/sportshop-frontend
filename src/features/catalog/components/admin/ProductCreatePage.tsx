@@ -223,7 +223,7 @@ export function ProductCreatePage() {
 
                 <section
                   aria-label="Stock"
-                  className="flex flex-col gap-4 rounded-lg border border-border-default bg-background-card p-4 lg:min-h-0 lg:flex-1"
+                  className="flex flex-col gap-4 rounded-lg border border-border-default bg-background-card p-4 lg:min-h-64 lg:flex-1"
                 >
                   <header className="flex items-center justify-between">
                     <h2 className="text-body-regular font-semibold text-text-primary">Stock</h2>
