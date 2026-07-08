@@ -1,19 +1,18 @@
-import { api } from "@/lib/api";
 import {
   ImageUploadResponseSchema,
   type ImageResourceType,
   type ImageUploadResponse,
 } from "@/features/images/schema";
+import { postParsed } from "@/lib/api-client";
 
-export async function uploadAdminImage(
+export function uploadAdminImage(
   resourceType: ImageResourceType,
   file: File,
 ): Promise<ImageUploadResponse> {
   const body = new FormData();
   body.append("file", file);
-  // header needed to override the api instance default of application/json.
-  const { data } = await api.post<unknown>(`/admin/images/${resourceType}`, body, {
+  // multipart header needed to override the api instance default of application/json.
+  return postParsed(`/admin/images/${resourceType}`, body, ImageUploadResponseSchema, {
     headers: { "Content-Type": "multipart/form-data" },
   });
-  return ImageUploadResponseSchema.parse(data);
 }

@@ -1,31 +1,27 @@
-import { api } from "@/lib/api";
 import {
   UserResponseSchema,
   type LoginRequest,
   type RegisterRequest,
   type UserResponse,
 } from "@/features/auth/schema";
+import { getParsed, postParsed, postVoid } from "@/lib/api-client";
 
-export async function login(payload: LoginRequest): Promise<UserResponse> {
-  const { data } = await api.post<unknown>("/auth/login", payload);
-  return UserResponseSchema.parse(data);
+export function login(payload: LoginRequest): Promise<UserResponse> {
+  return postParsed("/auth/login", payload, UserResponseSchema);
 }
 
-export async function register(payload: RegisterRequest): Promise<UserResponse> {
-  const { data } = await api.post<unknown>("/auth/register", payload);
-  return UserResponseSchema.parse(data);
+export function register(payload: RegisterRequest): Promise<UserResponse> {
+  return postParsed("/auth/register", payload, UserResponseSchema);
 }
 
-export async function logout(): Promise<void> {
-  await api.post("/auth/logout");
+export function logout(): Promise<void> {
+  return postVoid("/auth/logout");
 }
 
-export async function refresh(): Promise<UserResponse> {
-  const { data } = await api.post<unknown>("/auth/refresh");
-  return UserResponseSchema.parse(data);
+export function refresh(): Promise<UserResponse> {
+  return postParsed("/auth/refresh", undefined, UserResponseSchema);
 }
 
-export async function getMe(): Promise<UserResponse> {
-  const { data } = await api.get<unknown>("/auth/me", { timeout: 5_000 });
-  return UserResponseSchema.parse(data);
+export function getMe(): Promise<UserResponse> {
+  return getParsed("/auth/me", UserResponseSchema, { timeout: 5_000 });
 }

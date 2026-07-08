@@ -1,10 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  cancelAdminOrder,
   cancelOrder,
-  getAdminOrderByNumber,
   getOrderByNumber,
-  listAdminOrders,
   listOrders,
   updateAdminOrderShipping,
   updateAdminOrderStatus,
@@ -32,7 +29,7 @@ export const orderQueryKeys = {
 export function useOrdersListQuery(params: OrderListParams, enabled: boolean = true) {
   return useQuery({
     queryKey: orderQueryKeys.list(params),
-    queryFn: () => listOrders(params),
+    queryFn: () => listOrders("user", params),
     placeholderData: keepPreviousData,
     enabled,
   });
@@ -41,7 +38,7 @@ export function useOrdersListQuery(params: OrderListParams, enabled: boolean = t
 export function useAdminOrdersListQuery(params: OrderListParams, enabled: boolean) {
   return useQuery({
     queryKey: orderQueryKeys.adminList(params),
-    queryFn: () => listAdminOrders(params),
+    queryFn: () => listOrders("admin", params),
     placeholderData: keepPreviousData,
     enabled,
   });
@@ -50,7 +47,7 @@ export function useAdminOrdersListQuery(params: OrderListParams, enabled: boolea
 export function useOrderDetailQuery(orderNumber: string, enabled: boolean = true) {
   return useQuery<OrderDetail, ApiError>({
     queryKey: orderQueryKeys.detail(orderNumber),
-    queryFn: () => getOrderByNumber(orderNumber),
+    queryFn: () => getOrderByNumber("user", orderNumber),
     enabled,
   });
 }
@@ -58,7 +55,7 @@ export function useOrderDetailQuery(orderNumber: string, enabled: boolean = true
 export function useAdminOrderDetailQuery(orderNumber: string, enabled: boolean) {
   return useQuery<OrderDetail, ApiError>({
     queryKey: orderQueryKeys.adminDetail(orderNumber),
-    queryFn: () => getAdminOrderByNumber(orderNumber),
+    queryFn: () => getOrderByNumber("admin", orderNumber),
     enabled,
   });
 }
@@ -69,8 +66,7 @@ export function useCancelOrderMutation(options?: { admin?: boolean }) {
   const admin = options?.admin ?? false;
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, string>({
-    mutationFn: (orderNumber: string) =>
-      admin ? cancelAdminOrder(orderNumber) : cancelOrder(orderNumber),
+    mutationFn: (orderNumber: string) => cancelOrder(admin ? "admin" : "user", orderNumber),
     onSuccess: (_data, orderNumber) => {
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
       queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });

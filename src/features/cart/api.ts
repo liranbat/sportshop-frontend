@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import {
   CartCountSchema,
   CartValidationResultSchema,
@@ -9,39 +8,36 @@ import {
   type CartView,
   type UpdateCartItemRequest,
 } from "@/features/cart/schema";
+import { deleteVoid, getParsed, patchVoid, postParsed, postVoid } from "@/lib/api-client";
 
-export async function getCartCount(): Promise<CartCount> {
-  const { data } = await api.get<unknown>("/cart/count");
-  return CartCountSchema.parse(data);
+export function getCartCount(): Promise<CartCount> {
+  return getParsed("/cart/count", CartCountSchema);
 }
 
-export async function getCart(): Promise<CartView> {
-  const { data } = await api.get<unknown>("/cart");
-  return CartViewSchema.parse(data);
+export function getCart(): Promise<CartView> {
+  return getParsed("/cart", CartViewSchema);
 }
 
-export async function syncCart(): Promise<CartView> {
-  const { data } = await api.post<unknown>("/cart/sync");
-  return CartViewSchema.parse(data);
+export function syncCart(): Promise<CartView> {
+  return postParsed("/cart/sync", undefined, CartViewSchema);
 }
 
-export async function validateCart(): Promise<CartValidationResult> {
-  const { data } = await api.post<unknown>("/cart/validate");
-  return CartValidationResultSchema.parse(data);
+export function validateCart(): Promise<CartValidationResult> {
+  return postParsed("/cart/validate", undefined, CartValidationResultSchema);
 }
 
-export async function addCartItem(payload: AddCartItemRequest): Promise<void> {
-  await api.post("/cart/items", payload);
+export function addCartItem(payload: AddCartItemRequest): Promise<void> {
+  return postVoid("/cart/items", payload);
 }
 
-export async function updateCartItem(
+export function updateCartItem(
   productId: number,
   size: string,
   payload: UpdateCartItemRequest,
 ): Promise<void> {
-  await api.patch(`/cart/items/${productId}/${encodeURIComponent(size)}`, payload);
+  return patchVoid(`/cart/items/${productId}/${encodeURIComponent(size)}`, payload);
 }
 
-export async function removeCartItem(productId: number, size: string): Promise<void> {
-  await api.delete(`/cart/items/${productId}/${encodeURIComponent(size)}`);
+export function removeCartItem(productId: number, size: string): Promise<void> {
+  return deleteVoid(`/cart/items/${productId}/${encodeURIComponent(size)}`);
 }

@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import type { SessionListParams } from "@/features/sessions/filters";
 import {
   SessionListPageSchema,
@@ -6,19 +5,18 @@ import {
   type SessionListPage,
   type SessionRevokeAllResponse,
 } from "@/features/sessions/schema";
+import { deleteParsed, deleteVoid, getParsed } from "@/lib/api-client";
 
-export async function listAdminSessions(params: SessionListParams): Promise<SessionListPage> {
-  const { data } = await api.get<unknown>("/admin/sessions", { params });
-  return SessionListPageSchema.parse(data);
+export function listAdminSessions(params: SessionListParams): Promise<SessionListPage> {
+  return getParsed("/admin/sessions", SessionListPageSchema, { params });
 }
 
-export async function revokeAdminSession(sessionId: number): Promise<void> {
-  await api.delete(`/admin/sessions/${sessionId}`);
+export function revokeAdminSession(sessionId: number): Promise<void> {
+  return deleteVoid(`/admin/sessions/${sessionId}`);
 }
 
-export async function revokeAllAdminSessions(): Promise<SessionRevokeAllResponse> {
-  const { data } = await api.delete<unknown>("/admin/sessions", {
+export function revokeAllAdminSessions(): Promise<SessionRevokeAllResponse> {
+  return deleteParsed("/admin/sessions", SessionRevokeAllResponseSchema, {
     params: { scope: "others" },
   });
-  return SessionRevokeAllResponseSchema.parse(data);
 }

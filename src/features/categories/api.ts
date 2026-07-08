@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import {
   CategoriesSchema,
   CategorySchema,
@@ -6,39 +5,31 @@ import {
   type CategorySoftDeleteRequest,
   type CategoryWriteRequest,
 } from "@/features/categories/schema";
+import { getParsed, postParsed, putParsed } from "@/lib/api-client";
 
-export async function listCategories(): Promise<Category[]> {
-  const { data } = await api.get<unknown>("/categories");
-  return CategoriesSchema.parse(data);
+export function listCategories(): Promise<Category[]> {
+  return getParsed("/categories", CategoriesSchema);
 }
 
-export async function listAdminCategories(): Promise<Category[]> {
-  const { data } = await api.get<unknown>("/admin/categories");
-  return CategoriesSchema.parse(data);
+export function listAdminCategories(): Promise<Category[]> {
+  return getParsed("/admin/categories", CategoriesSchema);
 }
 
-export async function createAdminCategory(payload: CategoryWriteRequest): Promise<Category> {
-  const { data } = await api.post<unknown>("/admin/categories", payload);
-  return CategorySchema.parse(data);
+export function createAdminCategory(payload: CategoryWriteRequest): Promise<Category> {
+  return postParsed("/admin/categories", payload, CategorySchema);
 }
 
-export async function updateAdminCategory(
-  id: number,
-  payload: CategoryWriteRequest,
-): Promise<Category> {
-  const { data } = await api.put<unknown>(`/admin/categories/${id}`, payload);
-  return CategorySchema.parse(data);
+export function updateAdminCategory(id: number, payload: CategoryWriteRequest): Promise<Category> {
+  return putParsed(`/admin/categories/${id}`, payload, CategorySchema);
 }
 
-export async function softDeleteAdminCategory(
+export function softDeleteAdminCategory(
   id: number,
   payload: CategorySoftDeleteRequest,
 ): Promise<Category> {
-  const { data } = await api.post<unknown>(`/admin/categories/${id}/delete`, payload);
-  return CategorySchema.parse(data);
+  return postParsed(`/admin/categories/${id}/delete`, payload, CategorySchema);
 }
 
-export async function restoreAdminCategory(id: number): Promise<Category> {
-  const { data } = await api.post<unknown>(`/admin/categories/${id}/restore`);
-  return CategorySchema.parse(data);
+export function restoreAdminCategory(id: number): Promise<Category> {
+  return postParsed(`/admin/categories/${id}/restore`, undefined, CategorySchema);
 }

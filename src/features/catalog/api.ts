@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import type { ProductListParams } from "@/features/catalog/filters";
 import {
   ProductDetailSchema,
@@ -9,47 +8,41 @@ import {
   type ProductPage,
   type ProductUpdateRequest,
 } from "@/features/catalog/schema";
+import { getParsed, postParsed, putParsed } from "@/lib/api-client";
 
-export async function listProducts(params: ProductListParams): Promise<ProductPage> {
-  const { data } = await api.get<unknown>("/products", { params });
-  return ProductPageSchema.parse(data);
+export function listProducts(params: ProductListParams): Promise<ProductPage> {
+  return getParsed("/products", ProductPageSchema, { params });
 }
 
-export async function listAdminProducts(params: ProductListParams): Promise<ProductPage> {
-  const { data } = await api.get<unknown>("/admin/products", { params });
-  return ProductPageSchema.parse(data);
+export function listAdminProducts(params: ProductListParams): Promise<ProductPage> {
+  return getParsed("/admin/products", ProductPageSchema, { params });
 }
 
-export async function getProduct(id: number): Promise<ProductDetail> {
-  const { data } = await api.get<unknown>(`/products/${id}`);
-  return ProductDetailSchema.parse(data);
+export function getProduct(id: number): Promise<ProductDetail> {
+  return getParsed(`/products/${id}`, ProductDetailSchema);
 }
 
-export async function createAdminProduct(payload: ProductCreateRequest): Promise<ProductDetail> {
-  const { data } = await api.post<unknown>("/admin/products", payload);
-  return ProductDetailSchema.parse(data);
+export function createAdminProduct(payload: ProductCreateRequest): Promise<ProductDetail> {
+  return postParsed("/admin/products", payload, ProductDetailSchema);
 }
 
-export async function updateAdminProduct(
+export function updateAdminProduct(
   id: number,
   payload: ProductUpdateRequest,
 ): Promise<ProductDetail> {
-  const { data } = await api.put<unknown>(`/admin/products/${id}`, payload);
-  return ProductDetailSchema.parse(data);
+  return putParsed(`/admin/products/${id}`, payload, ProductDetailSchema);
 }
 
-export async function archiveAdminProduct(
+export function archiveAdminProduct(
   id: number,
   payload: ProductLifecycleRequest,
 ): Promise<ProductDetail> {
-  const { data } = await api.post<unknown>(`/admin/products/${id}/archive`, payload);
-  return ProductDetailSchema.parse(data);
+  return postParsed(`/admin/products/${id}/archive`, payload, ProductDetailSchema);
 }
 
-export async function restoreAdminProduct(
+export function restoreAdminProduct(
   id: number,
   payload: ProductLifecycleRequest,
 ): Promise<ProductDetail> {
-  const { data } = await api.post<unknown>(`/admin/products/${id}/restore`, payload);
-  return ProductDetailSchema.parse(data);
+  return postParsed(`/admin/products/${id}/restore`, payload, ProductDetailSchema);
 }

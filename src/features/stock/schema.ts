@@ -18,17 +18,20 @@ export type StockRow = z.infer<typeof StockRowSchema>;
 export const StockPageSchema = pageSchema(StockRowSchema);
 export type StockPage = z.infer<typeof StockPageSchema>;
 
-export type StockSetRequest = {
-  quantity: number;
-  lowStockThreshold: number | null;
-};
+export const StockSetRequestSchema = z.object({
+  quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.number().int().nonnegative().nullable(),
+});
+export type StockSetRequest = z.infer<typeof StockSetRequestSchema>;
 
-export type StockAdjustRequest = {
-  delta: number;
-};
+export const StockAdjustRequestSchema = z.object({
+  delta: z.number().int(),
+});
+export type StockAdjustRequest = z.infer<typeof StockAdjustRequestSchema>;
 
-export type StockSizeAddRequest = {
-  size: string;
-  quantity: number;
-  lowStockThreshold?: number | null;
-};
+export const StockSizeAddRequestSchema = z.object({
+  size: z.string(),
+  quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.number().int().nonnegative().nullable().optional(),
+});
+export type StockSizeAddRequest = z.infer<typeof StockSizeAddRequestSchema>;
