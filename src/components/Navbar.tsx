@@ -3,6 +3,7 @@ import sportshopHorizontal from "@/assets/sportshop-logos/sportshop-horizontal.p
 import { NavButton } from "@/components/NavButton";
 import { NavCartButton } from "@/components/NavCartButton";
 import { RoleBadge } from "@/components/RoleBadge";
+import { config } from "@/config";
 import { useLogoutMutation, useMeQuery } from "@/features/auth";
 
 export function Navbar() {
@@ -24,6 +25,14 @@ export function Navbar() {
           alt="SportShop"
           className="block h-12 w-auto origin-left scale-x-90"
         />
+        {config.ENV_LABEL && config.ENV_LABEL !== "prod" && (
+          <span
+            aria-label={`Environment: ${config.ENV_LABEL}`}
+            className="rounded bg-primary-blue-light px-1.5 py-0.5 text-caption font-semibold tracking-wide text-primary-blue uppercase"
+          >
+            {config.ENV_LABEL}
+          </span>
+        )}
         {user?.isAdmin === true && <RoleBadge role="Admin" />}
         {user && !user.isAdmin && <RoleBadge role="User" />}
       </div>

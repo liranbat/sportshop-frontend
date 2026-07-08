@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pageSchema } from "@/lib/schemas/pagination";
 
 export const SessionSchema = z.object({
   id: z.number().int().positive(),
@@ -10,13 +11,7 @@ export const SessionSchema = z.object({
 });
 export type Session = z.infer<typeof SessionSchema>;
 
-export const SessionListPageSchema = z.object({
-  items: z.array(SessionSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const SessionListPageSchema = pageSchema(SessionSchema);
 export type SessionListPage = z.infer<typeof SessionListPageSchema>;
 
 export const SessionRevokeAllResponseSchema = z.object({

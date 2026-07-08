@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import { UserResponseSchema, type UserResponse } from "@/features/auth/schema";
 import type { UserListParams } from "@/features/users/filters";
 import {
@@ -8,56 +7,53 @@ import {
   type DeleteAccountRequest,
   type UpdateProfileRequest,
 } from "@/features/users/schema";
+import {
+  deleteVoid,
+  getParsed,
+  patchParsed,
+  postParsed,
+  postVoid,
+  putParsed,
+} from "@/lib/api-client";
 
-export async function updateProfile(payload: UpdateProfileRequest): Promise<UserResponse> {
-  const { data } = await api.patch<unknown>("/users/me", payload);
-  return UserResponseSchema.parse(data);
+export function updateProfile(payload: UpdateProfileRequest): Promise<UserResponse> {
+  return patchParsed("/users/me", payload, UserResponseSchema);
 }
 
-export async function changePassword(payload: ChangePasswordRequest): Promise<void> {
-  await api.post("/users/me/password", payload);
+export function changePassword(payload: ChangePasswordRequest): Promise<void> {
+  return postVoid("/users/me/password", payload);
 }
 
-export async function deleteAccount(payload: DeleteAccountRequest): Promise<void> {
-  await api.delete("/users/me", {
+export function deleteAccount(payload: DeleteAccountRequest): Promise<void> {
+  return deleteVoid("/users/me", {
     headers: { "X-Confirm-Password": payload.currentPassword },
   });
 }
 
-export async function listUsers(params: UserListParams): Promise<UserListPage> {
-  const { data } = await api.get<unknown>("/admin/users", { params });
-  return UserListPageSchema.parse(data);
+export function listUsers(params: UserListParams): Promise<UserListPage> {
+  return getParsed("/admin/users", UserListPageSchema, { params });
 }
 
-export async function getAdminUser(id: number): Promise<UserResponse> {
-  const { data } = await api.get<unknown>(`/admin/users/${id}`);
-  return UserResponseSchema.parse(data);
+export function getAdminUser(id: number): Promise<UserResponse> {
+  return getParsed(`/admin/users/${id}`, UserResponseSchema);
 }
 
-export async function updateAdminUser(
-  id: number,
-  payload: UpdateProfileRequest,
-): Promise<UserResponse> {
-  const { data } = await api.patch<unknown>(`/admin/users/${id}`, payload);
-  return UserResponseSchema.parse(data);
+export function updateAdminUser(id: number, payload: UpdateProfileRequest): Promise<UserResponse> {
+  return patchParsed(`/admin/users/${id}`, payload, UserResponseSchema);
 }
 
-export async function promoteAdminUser(id: number): Promise<UserResponse> {
-  const { data } = await api.put<unknown>(`/admin/users/${id}/promote`);
-  return UserResponseSchema.parse(data);
+export function promoteAdminUser(id: number): Promise<UserResponse> {
+  return putParsed(`/admin/users/${id}/promote`, undefined, UserResponseSchema);
 }
 
-export async function demoteAdminUser(id: number): Promise<UserResponse> {
-  const { data } = await api.put<unknown>(`/admin/users/${id}/demote`);
-  return UserResponseSchema.parse(data);
+export function demoteAdminUser(id: number): Promise<UserResponse> {
+  return putParsed(`/admin/users/${id}/demote`, undefined, UserResponseSchema);
 }
 
-export async function softDeleteAdminUser(id: number): Promise<UserResponse> {
-  const { data } = await api.post<unknown>(`/admin/users/${id}/soft-delete`);
-  return UserResponseSchema.parse(data);
+export function softDeleteAdminUser(id: number): Promise<UserResponse> {
+  return postParsed(`/admin/users/${id}/soft-delete`, undefined, UserResponseSchema);
 }
 
-export async function restoreAdminUser(id: number): Promise<UserResponse> {
-  const { data } = await api.post<unknown>(`/admin/users/${id}/restore`);
-  return UserResponseSchema.parse(data);
+export function restoreAdminUser(id: number): Promise<UserResponse> {
+  return postParsed(`/admin/users/${id}/restore`, undefined, UserResponseSchema);
 }

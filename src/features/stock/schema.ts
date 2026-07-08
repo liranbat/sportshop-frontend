@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { pageSchema } from "@/lib/schemas/pagination";
 
-export const ONE_SIZE_TOKEN = "ONE_SIZE";
+export { ONE_SIZE_TOKEN } from "@/lib/schemas/constants";
 
 export const StockRowSchema = z.object({
   productId: z.number().int().positive(),
@@ -14,26 +15,23 @@ export const StockRowSchema = z.object({
 });
 export type StockRow = z.infer<typeof StockRowSchema>;
 
-export const StockPageSchema = z.object({
-  items: z.array(StockRowSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const StockPageSchema = pageSchema(StockRowSchema);
 export type StockPage = z.infer<typeof StockPageSchema>;
 
-export type StockSetRequest = {
-  quantity: number;
-  lowStockThreshold: number | null;
-};
+export const StockSetRequestSchema = z.object({
+  quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.number().int().nonnegative().nullable(),
+});
+export type StockSetRequest = z.infer<typeof StockSetRequestSchema>;
 
-export type StockAdjustRequest = {
-  delta: number;
-};
+export const StockAdjustRequestSchema = z.object({
+  delta: z.number().int(),
+});
+export type StockAdjustRequest = z.infer<typeof StockAdjustRequestSchema>;
 
-export type StockSizeAddRequest = {
-  size: string;
-  quantity: number;
-  lowStockThreshold?: number | null;
-};
+export const StockSizeAddRequestSchema = z.object({
+  size: z.string(),
+  quantity: z.number().int().nonnegative(),
+  lowStockThreshold: z.number().int().nonnegative().nullable().optional(),
+});
+export type StockSizeAddRequest = z.infer<typeof StockSizeAddRequestSchema>;

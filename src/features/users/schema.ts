@@ -3,9 +3,10 @@ import {
   firstNameSchema,
   lastNameSchema,
   passwordSchema,
-  phoneSchema,
   UserResponseSchema,
 } from "@/features/auth/schema";
+import { phoneSchema } from "@/lib/schemas/common";
+import { pageSchema } from "@/lib/schemas/pagination";
 
 export const UpdateProfileRequestSchema = z.object({
   firstName: firstNameSchema,
@@ -35,11 +36,5 @@ export const DeleteAccountRequestSchema = z.object({
 });
 export type DeleteAccountRequest = z.infer<typeof DeleteAccountRequestSchema>;
 
-export const UserListPageSchema = z.object({
-  items: z.array(UserResponseSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const UserListPageSchema = pageSchema(UserResponseSchema);
 export type UserListPage = z.infer<typeof UserListPageSchema>;

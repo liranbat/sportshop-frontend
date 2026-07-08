@@ -1,4 +1,8 @@
 import { z } from "zod";
+import { ONE_SIZE_TOKEN } from "@/lib/schemas/constants";
+import { pageSchema } from "@/lib/schemas/pagination";
+
+export { ONE_SIZE_TOKEN };
 
 export const ProductSchema = z.object({
   id: z.number().int().positive(),
@@ -16,13 +20,7 @@ export const ProductSchema = z.object({
   archivedBy: z.number().int().positive().nullable().optional(),
 });
 
-export const ProductPageSchema = z.object({
-  items: z.array(ProductSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const ProductPageSchema = pageSchema(ProductSchema);
 
 export const StockStateSchema = z.enum(["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK"]);
 
@@ -43,7 +41,6 @@ export type StockState = z.infer<typeof StockStateSchema>;
 export type ProductSize = z.infer<typeof ProductSizeSchema>;
 export type ProductDetail = z.infer<typeof ProductDetailSchema>;
 
-export const ONE_SIZE_TOKEN = "ONE_SIZE";
 export const SIZE_TOKEN_MAX_LENGTH = 20;
 const NAME_MAX_LENGTH = 200;
 const DESCRIPTION_MAX_LENGTH = 2000;

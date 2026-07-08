@@ -1,4 +1,3 @@
-import { api } from "@/lib/api";
 import type { OrderListParams } from "@/features/orders/filters";
 import {
   OrderDetailSchema,
@@ -8,45 +7,37 @@ import {
   type UpdateOrderStatusRequest,
   type UpdateShippingAddressRequest,
 } from "@/features/orders/schema";
+import { getParsed, postVoid } from "@/lib/api-client";
 
-export async function listOrders(params: OrderListParams): Promise<OrderListPage> {
-  const { data } = await api.get<unknown>("/orders", { params });
-  return OrderListPageSchema.parse(data);
+export type OrderScope = "user" | "admin";
+
+function orderPath(scope: OrderScope, suffix: string = ""): string {
+  const base = scope === "admin" ? "/admin/orders" : "/orders";
+  return suffix === "" ? base : `${base}${suffix}`;
 }
 
-export async function listAdminOrders(params: OrderListParams): Promise<OrderListPage> {
-  const { data } = await api.get<unknown>("/admin/orders", { params });
-  return OrderListPageSchema.parse(data);
+export function listOrders(scope: OrderScope, params: OrderListParams): Promise<OrderListPage> {
+  return getParsed(orderPath(scope), OrderListPageSchema, { params });
 }
 
-export async function getOrderByNumber(orderNumber: string): Promise<OrderDetail> {
-  const { data } = await api.get<unknown>(`/orders/${orderNumber}`);
-  return OrderDetailSchema.parse(data);
+export function getOrderByNumber(scope: OrderScope, orderNumber: string): Promise<OrderDetail> {
+  return getParsed(orderPath(scope, `/${orderNumber}`), OrderDetailSchema);
 }
 
-export async function getAdminOrderByNumber(orderNumber: string): Promise<OrderDetail> {
-  const { data } = await api.get<unknown>(`/admin/orders/${orderNumber}`);
-  return OrderDetailSchema.parse(data);
+export function cancelOrder(scope: OrderScope, orderNumber: string): Promise<void> {
+  return postVoid(orderPath(scope, `/${orderNumber}/cancel`));
 }
 
-export async function cancelOrder(orderNumber: string): Promise<void> {
-  await api.post(`/orders/${orderNumber}/cancel`);
-}
-
-export async function cancelAdminOrder(orderNumber: string): Promise<void> {
-  await api.post(`/admin/orders/${orderNumber}/cancel`);
-}
-
-export async function updateAdminOrderStatus(
+export function updateAdminOrderStatus(
   orderNumber: string,
   body: UpdateOrderStatusRequest,
 ): Promise<void> {
-  await api.post(`/admin/orders/${orderNumber}/update-status`, body);
+  return postVoid(`/admin/orders/${orderNumber}/update-status`, body);
 }
 
-export async function updateAdminOrderShipping(
+export function updateAdminOrderShipping(
   orderNumber: string,
   body: UpdateShippingAddressRequest,
 ): Promise<void> {
-  await api.post(`/admin/orders/${orderNumber}/update-shipping`, body);
+  return postVoid(`/admin/orders/${orderNumber}/update-shipping`, body);
 }

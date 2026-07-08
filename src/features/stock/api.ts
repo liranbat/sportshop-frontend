@@ -1,52 +1,54 @@
-import { api } from "@/lib/api";
 import type { StockListParams } from "@/features/stock/filters";
 import {
+  StockAdjustRequestSchema,
   StockPageSchema,
   StockRowSchema,
+  StockSetRequestSchema,
+  StockSizeAddRequestSchema,
   type StockAdjustRequest,
   type StockPage,
   type StockRow,
   type StockSetRequest,
   type StockSizeAddRequest,
 } from "@/features/stock/schema";
+import { deleteVoid, getParsed, postParsed, putParsed } from "@/lib/api-client";
 
-export async function listAdminStock(params: StockListParams): Promise<StockPage> {
-  const { data } = await api.get<unknown>("/admin/stock", { params });
-  return StockPageSchema.parse(data);
+export function listAdminStock(params: StockListParams): Promise<StockPage> {
+  return getParsed("/admin/stock", StockPageSchema, { params });
 }
 
-export async function setAdminStock(
+export function setAdminStock(
   productId: number,
   size: string,
   body: StockSetRequest,
 ): Promise<StockRow> {
-  const { data } = await api.put<unknown>(
+  return putParsed(
     `/admin/stock/${productId}/${encodeURIComponent(size)}`,
-    body,
+    StockSetRequestSchema.parse(body),
+    StockRowSchema,
   );
-  return StockRowSchema.parse(data);
 }
 
-export async function adjustAdminStock(
+export function adjustAdminStock(
   productId: number,
   size: string,
   body: StockAdjustRequest,
 ): Promise<StockRow> {
-  const { data } = await api.post<unknown>(
+  return postParsed(
     `/admin/stock/${productId}/${encodeURIComponent(size)}/adjust`,
-    body,
+    StockAdjustRequestSchema.parse(body),
+    StockRowSchema,
   );
-  return StockRowSchema.parse(data);
 }
 
-export async function addAdminStockSize(
-  productId: number,
-  body: StockSizeAddRequest,
-): Promise<StockRow> {
-  const { data } = await api.post<unknown>(`/admin/stock/${productId}/sizes`, body);
-  return StockRowSchema.parse(data);
+export function addAdminStockSize(productId: number, body: StockSizeAddRequest): Promise<StockRow> {
+  return postParsed(
+    `/admin/stock/${productId}/sizes`,
+    StockSizeAddRequestSchema.parse(body),
+    StockRowSchema,
+  );
 }
 
-export async function removeAdminStockSize(productId: number, size: string): Promise<void> {
-  await api.delete(`/admin/stock/${productId}/sizes/${encodeURIComponent(size)}`);
+export function removeAdminStockSize(productId: number, size: string): Promise<void> {
+  return deleteVoid(`/admin/stock/${productId}/sizes/${encodeURIComponent(size)}`);
 }

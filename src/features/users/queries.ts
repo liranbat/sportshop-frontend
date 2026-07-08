@@ -1,4 +1,10 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import { authQueryKeys } from "@/features/auth/queries";
 import {
   changePassword,
@@ -49,14 +55,20 @@ export function useUpdateProfileMutation() {
   });
 }
 
+export function applyAdminUserMutationResult<T>(
+  queryClient: QueryClient,
+  id: number,
+  user: T,
+): void {
+  queryClient.setQueryData(userQueryKeys.detail(id), user);
+  void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
+}
+
 export function useUpdateAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (payload: Parameters<typeof updateAdminUser>[1]) => updateAdminUser(id, payload),
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKeys.detail(id), user);
-      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
-    },
+    onSuccess: (user) => applyAdminUserMutationResult(queryClient, id, user),
   });
 }
 
@@ -64,10 +76,7 @@ export function usePromoteAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => promoteAdminUser(id),
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKeys.detail(id), user);
-      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
-    },
+    onSuccess: (user) => applyAdminUserMutationResult(queryClient, id, user),
   });
 }
 
@@ -76,10 +85,7 @@ export function useDemoteAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => demoteAdminUser(id),
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKeys.detail(id), user);
-      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
-    },
+    onSuccess: (user) => applyAdminUserMutationResult(queryClient, id, user),
   });
 }
 
@@ -87,10 +93,7 @@ export function useSoftDeleteAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => softDeleteAdminUser(id),
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKeys.detail(id), user);
-      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
-    },
+    onSuccess: (user) => applyAdminUserMutationResult(queryClient, id, user),
   });
 }
 
@@ -98,10 +101,7 @@ export function useRestoreAdminUserMutation(id: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => restoreAdminUser(id),
-    onSuccess: (user) => {
-      queryClient.setQueryData(userQueryKeys.detail(id), user);
-      void queryClient.invalidateQueries({ queryKey: userQueryKeys.lists() });
-    },
+    onSuccess: (user) => applyAdminUserMutationResult(queryClient, id, user),
   });
 }
 

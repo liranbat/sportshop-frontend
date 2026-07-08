@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosInstance } from "axios";
+import { config } from "@/config";
 
 export class ApiError extends Error {
   readonly status: number | undefined;
@@ -88,11 +89,17 @@ function paramsSerializer(params: Record<string, unknown>): string {
   return parts.join("&");
 }
 
-// Relative baseURL — same-origin in dev (Vite proxy) and prod (Caddy).
-// Call sites stay prefix-free; the /api hop is added once, here.
+// Relative baseURL — same-origin in dev (Vite proxy) and prod (Caddy). Call
+// sites stay prefix-free; the /api hop is added once, here. Both env-driven
+// via config.API_BASE_URL / config.API_TIMEOUT_MS; hardcoded fallbacks apply
+// when unset or invalid, preserving today's behavior.
+const apiTimeoutParsed = Number(config.API_TIMEOUT_MS);
+const apiTimeoutMs =
+  Number.isFinite(apiTimeoutParsed) && apiTimeoutParsed > 0 ? apiTimeoutParsed : 30_000;
+
 export const api: AxiosInstance = axios.create({
-  baseURL: "/api",
-  timeout: 30_000,
+  baseURL: config.API_BASE_URL || "/api",
+  timeout: apiTimeoutMs,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
   paramsSerializer,
