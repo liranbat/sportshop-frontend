@@ -3,9 +3,9 @@ import {
   firstNameSchema,
   lastNameSchema,
   passwordSchema,
-  phoneSchema,
   UserResponseSchema,
 } from "@/features/auth/schema";
+import { phoneSchema } from "@/lib/schemas/common";
 import { pageSchema } from "@/lib/schemas/pagination";
 
 export const UpdateProfileRequestSchema = z.object({

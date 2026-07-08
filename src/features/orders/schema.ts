@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { orderNumberSchema, phoneSchema } from "@/lib/schemas/common";
 import { pageSchema } from "@/lib/schemas/pagination";
 
 export const OrderStatusSchema = z.enum([
@@ -18,11 +19,7 @@ export const CustomerForOrderSchema = z.object({
 });
 
 export const OrderSummarySchema = z.object({
-  orderNumber: z
-    .string()
-    .min(23)
-    .max(23)
-    .regex(/^ORD-\d{8}-[A-Z0-9]{10}$/),
+  orderNumber: orderNumberSchema,
   status: OrderStatusSchema,
   createdAt: z.string().datetime({ offset: true }),
   itemCount: z.number().int().positive(),
@@ -47,11 +44,7 @@ export const OrderItemSchema = z.object({
 export const OrderShippingSchema = z.object({
   fullName: z.string().min(2).max(100),
   email: z.string().email().min(3).max(254),
-  phone: z
-    .string()
-    .min(10)
-    .max(10)
-    .regex(/^05\d{8}$/),
+  phone: phoneSchema,
   country: z.string().min(1).max(100),
   city: z.string().min(1).max(100),
   addressLine: z.string().min(1).max(200),
@@ -72,11 +65,7 @@ export const OrderPaymentSchema = z.object({
 });
 
 export const OrderDetailSchema = z.object({
-  orderNumber: z
-    .string()
-    .min(23)
-    .max(23)
-    .regex(/^ORD-\d{8}-[A-Z0-9]{10}$/),
+  orderNumber: orderNumberSchema,
   status: OrderStatusSchema,
   createdAt: z.string().datetime({ offset: true }),
   cancelledAt: z.string().datetime({ offset: true }).nullable().optional(),

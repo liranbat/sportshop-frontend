@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emailFormSchema, orderNumberSchema, phoneSchema } from "@/lib/schemas/common";
 
 export const CheckoutStepSchema = z.enum([
   "shipping",
@@ -21,18 +22,9 @@ const nameLikeSchema = (label: string) =>
 const fullNameSchema = nameLikeSchema("Full name");
 const cardholderNameSchema = nameLikeSchema("Cardholder name");
 
-const emailSchema = z
-  .string()
-  .trim()
-  .pipe(z.email("Enter a valid email address").max(254, "Email must be 254 characters or fewer"));
-
-const phoneSchema = z.string().refine((v) => /^05\d{8}$/.test(v), {
-  message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
-});
-
 export const ShippingFormSchema = z.object({
   fullName: fullNameSchema,
-  email: emailSchema,
+  email: emailFormSchema,
   phone: phoneSchema,
   country: z.string().min(1, "Country is required").max(100),
   city: z.string().min(1, "City is required").max(100),
@@ -103,10 +95,7 @@ export const CheckoutRequestSchema = z.object({
 export type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
 
 export const CheckoutResultSchema = z.object({
-  orderNumber: z
-    .string()
-    .regex(/^ORD-\d{8}-[A-Z0-9]{10}$/, "Invalid order number format")
-    .length(23),
+  orderNumber: orderNumberSchema,
   itemCount: z.number().int().min(1),
   totalPrice: z.number().min(0),
 });

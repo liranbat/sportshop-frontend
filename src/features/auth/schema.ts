@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emailFormSchema, phoneSchema } from "@/lib/schemas/common";
 
 // Letters only, hyphen permitted only between letter groups (no leading/trailing/consecutive hyphens)
 const NAME_PATTERN = /^[A-Za-z]+(-[A-Za-z]+)*$/;
@@ -13,15 +14,6 @@ const nameSchema = (fieldLabel: string) =>
 
 export const firstNameSchema = nameSchema("First name");
 export const lastNameSchema = nameSchema("Last name");
-
-const emailSchema = z
-  .string()
-  .trim()
-  .pipe(z.email("Enter a valid email address").max(254, "Email must be 254 characters or fewer"));
-
-export const phoneSchema = z.string().refine((v) => /^05\d{8}$/.test(v), {
-  message: "Enter a valid Israeli mobile number — 10 digits starting with 05 (e.g. 0521234567)",
-});
 
 export const passwordSchema = z
   .string()
@@ -42,7 +34,7 @@ export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 const registerRequestFields = {
   firstName: firstNameSchema,
   lastName: lastNameSchema,
-  email: emailSchema,
+  email: emailFormSchema,
   phone: phoneSchema,
   password: passwordSchema,
 };

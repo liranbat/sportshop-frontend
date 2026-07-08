@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { pageSchema } from "@/lib/schemas/pagination";
 
-export const ONE_SIZE_TOKEN = "ONE_SIZE";
+export { ONE_SIZE_TOKEN } from "@/lib/schemas/constants";
 
 export const StockRowSchema = z.object({
   productId: z.number().int().positive(),

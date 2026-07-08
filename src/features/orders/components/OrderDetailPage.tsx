@@ -12,19 +12,19 @@ import { PaymentInfoCard } from "@/features/orders/components/PaymentInfoCard";
 import { ShippingCard } from "@/features/orders/components/ShippingCard";
 import { useAdminOrderDetailQuery, useOrderDetailQuery } from "@/features/orders/queries";
 import { ApiError } from "@/lib/api";
-
-const ORDER_NUMBER_PATTERN = /^ORD-\d{8}-[A-Z0-9]{10}$/;
+import { orderNumberSchema } from "@/lib/schemas/common";
 
 const ADMIN_NOTICE_MESSAGE = "You are viewing this order in admin mode.";
 
 export function OrderDetailPage() {
   const { orderNumber: raw } = useParams<{ orderNumber: string }>();
+  const parsed = orderNumberSchema.safeParse(raw);
 
-  if (!raw || !ORDER_NUMBER_PATTERN.test(raw)) {
+  if (!parsed.success) {
     return <OrderNotFound />;
   }
 
-  return <OrderDetailView orderNumber={raw} />;
+  return <OrderDetailView orderNumber={parsed.data} />;
 }
 
 function OrderDetailView({ orderNumber }: { orderNumber: string }) {
