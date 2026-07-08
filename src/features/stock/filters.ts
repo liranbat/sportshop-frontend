@@ -1,16 +1,22 @@
+import {
+  createFiltersEqual,
+  createPageSizeOptions,
+  wireOptionalTrimmed,
+  wireSort,
+  type SortDirection,
+} from "@/lib/filters";
+
 export type StockSortField = "name" | "quantity" | "threshold";
-export type StockSortDirection = "asc" | "desc";
+export type StockSortDirection = SortDirection;
 
 export type StockStatusFilter = "ALL" | "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK";
 export type StockArchiveStatus = "ACTIVE" | "ARCHIVED" | "ALL";
 
-export const PAGE_SIZE_OPTIONS = [25, 50, 100] as const;
+export const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, isPageSize } = createPageSizeOptions(
+  [25, 50, 100] as const,
+  50,
+);
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
-export const DEFAULT_PAGE_SIZE: PageSize = 50;
-
-export function isPageSize(value: number): value is PageSize {
-  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
-}
 
 export type StagedStockFilters = {
   search: string;
@@ -48,8 +54,7 @@ export type StockListParams = {
 export function toStockListParams(filters: StagedStockFilters, page: number): StockListParams {
   const params: StockListParams = { page, pageSize: filters.pageSize };
 
-  const trimmed = filters.search.trim();
-  if (trimmed.length > 0) params.searchName = trimmed;
+  wireOptionalTrimmed(params, "searchName", filters.search);
 
   const sizes = parseSizesText(filters.sizes);
   if (sizes.length > 0) params.sizes = sizes;
@@ -57,26 +62,21 @@ export function toStockListParams(filters: StagedStockFilters, page: number): St
   if (filters.stockStatus !== "ALL") params.stockStatus = filters.stockStatus;
   if (filters.archiveStatus !== "ALL") params.archiveStatus = filters.archiveStatus;
 
-  if (filters.sortEnabled) {
-    params.sortField = filters.sortField;
-    params.sortDirection = filters.sortDirection;
-  }
+  wireSort(params, filters.sortEnabled, filters.sortField, filters.sortDirection);
 
   return params;
 }
 
-export function filtersEqual(a: StagedStockFilters, b: StagedStockFilters): boolean {
-  return (
-    a.search === b.search &&
-    a.stockStatus === b.stockStatus &&
-    a.archiveStatus === b.archiveStatus &&
-    a.sortField === b.sortField &&
-    a.sortDirection === b.sortDirection &&
-    a.sortEnabled === b.sortEnabled &&
-    a.pageSize === b.pageSize &&
-    a.sizes === b.sizes
-  );
-}
+export const filtersEqual = createFiltersEqual<StagedStockFilters>([
+  "search",
+  "sizes",
+  "stockStatus",
+  "archiveStatus",
+  "sortField",
+  "sortDirection",
+  "sortEnabled",
+  "pageSize",
+]);
 
 // "M, L, 42" -> ["M", "L", "42"]; trims tokens and drops empties so trailing
 // commas / double commas don't reach the backend.

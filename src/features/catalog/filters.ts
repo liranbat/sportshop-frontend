@@ -1,15 +1,22 @@
-export type SortField = "name" | "price" | "category";
-export type SortDirection = "asc" | "desc";
+import {
+  createFiltersEqual,
+  createPageSizeOptions,
+  shallowArrayEqual,
+  wireOptionalTrimmed,
+  wireSort,
+  type SortDirection as SharedSortDirection,
+} from "@/lib/filters";
 
-export const PAGE_SIZE_OPTIONS = [4, 9, 16, 25] as const;
+export type SortField = "name" | "price" | "category";
+export type SortDirection = SharedSortDirection;
+
+export const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, isPageSize } = createPageSizeOptions(
+  [4, 9, 16, 25] as const,
+  9,
+);
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
-export const DEFAULT_PAGE_SIZE: PageSize = 9;
 
 export type ArchiveStatus = "ACTIVE" | "ARCHIVED" | "ALL";
-
-export function isPageSize(value: number): value is PageSize {
-  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
-}
 
 export type StagedFilters = {
   search: string;
@@ -57,8 +64,7 @@ export function toProductListParams(
 ): ProductListParams {
   const params: ProductListParams = { page, pageSize: filters.pageSize };
 
-  const trimmedSearch = filters.search.trim();
-  if (trimmedSearch.length > 0) params.search = trimmedSearch;
+  wireOptionalTrimmed(params, "search", filters.search);
 
   if (filters.categoryIds.length > 0) params.categoryIds = filters.categoryIds;
 
@@ -67,10 +73,7 @@ export function toProductListParams(
     if (filters.priceMax !== null) params.priceMax = filters.priceMax;
   }
 
-  if (filters.sortEnabled) {
-    params.sortField = filters.sortField;
-    params.sortDirection = filters.sortDirection;
-  }
+  wireSort(params, filters.sortEnabled, filters.sortField, filters.sortDirection);
 
   if (isAdmin && filters.archiveStatus !== "ALL") {
     params.archiveStatus = filters.archiveStatus;
@@ -79,18 +82,20 @@ export function toProductListParams(
   return params;
 }
 
-export function filtersEqual(a: StagedFilters, b: StagedFilters): boolean {
-  return (
-    a.search === b.search &&
-    a.priceEnabled === b.priceEnabled &&
-    a.priceMin === b.priceMin &&
-    a.priceMax === b.priceMax &&
-    a.sortField === b.sortField &&
-    a.sortEnabled === b.sortEnabled &&
-    a.sortDirection === b.sortDirection &&
-    a.pageSize === b.pageSize &&
-    a.archiveStatus === b.archiveStatus &&
-    a.categoryIds.length === b.categoryIds.length &&
-    a.categoryIds.every((id, i) => id === b.categoryIds[i])
-  );
-}
+export const filtersEqual = createFiltersEqual<StagedFilters>(
+  [
+    "search",
+    "priceEnabled",
+    "priceMin",
+    "priceMax",
+    "sortField",
+    "sortEnabled",
+    "sortDirection",
+    "pageSize",
+    "archiveStatus",
+    "categoryIds",
+  ],
+  {
+    categoryIds: shallowArrayEqual,
+  },
+);
