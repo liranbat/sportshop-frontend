@@ -1,13 +1,19 @@
+import {
+  createFiltersEqual,
+  createPageSizeOptions,
+  wireOptionalTrimmed,
+  wireSort,
+  type SortDirection,
+} from "@/lib/filters";
+
 export type SessionSortField = "user" | "expiresAt";
-export type SessionSortDirection = "asc" | "desc";
+export type SessionSortDirection = SortDirection;
 
-export const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+export const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, isPageSize } = createPageSizeOptions(
+  [10, 20, 50] as const,
+  20,
+);
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
-export const DEFAULT_PAGE_SIZE: PageSize = 20;
-
-export function isPageSize(value: number): value is PageSize {
-  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
-}
 
 export type StagedSessionFilters = {
   search: string;
@@ -38,24 +44,15 @@ export function toSessionListParams(
   page: number,
 ): SessionListParams {
   const params: SessionListParams = { page, pageSize: filters.pageSize };
-
-  const trimmedSearch = filters.search.trim();
-  if (trimmedSearch.length > 0) params.q = trimmedSearch;
-
-  if (filters.sortEnabled) {
-    params.sortField = filters.sortField;
-    params.sortDirection = filters.sortDirection;
-  }
-
+  wireOptionalTrimmed(params, "q", filters.search);
+  wireSort(params, filters.sortEnabled, filters.sortField, filters.sortDirection);
   return params;
 }
 
-export function filtersEqual(a: StagedSessionFilters, b: StagedSessionFilters): boolean {
-  return (
-    a.search === b.search &&
-    a.sortEnabled === b.sortEnabled &&
-    a.sortField === b.sortField &&
-    a.sortDirection === b.sortDirection &&
-    a.pageSize === b.pageSize
-  );
-}
+export const filtersEqual = createFiltersEqual<StagedSessionFilters>([
+  "search",
+  "sortEnabled",
+  "sortField",
+  "sortDirection",
+  "pageSize",
+]);

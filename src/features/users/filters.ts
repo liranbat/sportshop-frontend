@@ -1,5 +1,13 @@
+import {
+  createFiltersEqual,
+  createPageSizeOptions,
+  wireOptionalTrimmed,
+  wireSort,
+  type SortDirection,
+} from "@/lib/filters";
+
 export type UserSortField = "id" | "name" | "email";
-export type UserSortDirection = "asc" | "desc";
+export type UserSortDirection = SortDirection;
 
 export type UserRoleWire = "ADMIN" | "USER";
 export type UserStatusWire = "ACTIVE" | "DELETED";
@@ -7,13 +15,11 @@ export type UserStatusWire = "ACTIVE" | "DELETED";
 export type UserRoleFilter = UserRoleWire | "ALL";
 export type UserStatusFilter = UserStatusWire | "ALL";
 
-export const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+export const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, isPageSize } = createPageSizeOptions(
+  [10, 20, 50] as const,
+  20,
+);
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
-export const DEFAULT_PAGE_SIZE: PageSize = 20;
-
-export function isPageSize(value: number): value is PageSize {
-  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
-}
 
 export type StagedUserFilters = {
   search: string;
@@ -47,29 +53,19 @@ export type UserListParams = {
 
 export function toUserListParams(filters: StagedUserFilters, page: number): UserListParams {
   const params: UserListParams = { page, pageSize: filters.pageSize };
-
-  const trimmedSearch = filters.search.trim();
-  if (trimmedSearch.length > 0) params.q = trimmedSearch;
-
+  wireOptionalTrimmed(params, "q", filters.search);
   if (filters.role !== "ALL") params.role = filters.role;
   if (filters.status !== "ALL") params.status = filters.status;
-
-  if (filters.sortEnabled) {
-    params.sortField = filters.sortField;
-    params.sortDirection = filters.sortDirection;
-  }
-
+  wireSort(params, filters.sortEnabled, filters.sortField, filters.sortDirection);
   return params;
 }
 
-export function filtersEqual(a: StagedUserFilters, b: StagedUserFilters): boolean {
-  return (
-    a.search === b.search &&
-    a.role === b.role &&
-    a.status === b.status &&
-    a.sortEnabled === b.sortEnabled &&
-    a.sortField === b.sortField &&
-    a.sortDirection === b.sortDirection &&
-    a.pageSize === b.pageSize
-  );
-}
+export const filtersEqual = createFiltersEqual<StagedUserFilters>([
+  "search",
+  "role",
+  "status",
+  "sortEnabled",
+  "sortField",
+  "sortDirection",
+  "pageSize",
+]);

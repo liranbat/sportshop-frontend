@@ -1,15 +1,20 @@
 import type { OrderStatus } from "@/features/orders/schema";
+import {
+  createFiltersEqual,
+  createPageSizeOptions,
+  wireOptionalTrimmed,
+  wireSort,
+  type SortDirection,
+} from "@/lib/filters";
 
 export type OrderSortField = "date" | "total";
-export type OrderSortDirection = "asc" | "desc";
+export type OrderSortDirection = SortDirection;
 
-export const PAGE_SIZE_OPTIONS = [5, 10, 20] as const;
+export const { PAGE_SIZE_OPTIONS, DEFAULT_PAGE_SIZE, isPageSize } = createPageSizeOptions(
+  [5, 10, 20] as const,
+  10,
+);
 export type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
-export const DEFAULT_PAGE_SIZE: PageSize = 10;
-
-export function isPageSize(value: number): value is PageSize {
-  return (PAGE_SIZE_OPTIONS as readonly number[]).includes(value);
-}
 
 export type StagedOrderFilters = {
   search: string;
@@ -60,11 +65,8 @@ export type OrderListParams = {
 export function toOrderListParams(filters: StagedOrderFilters, page: number): OrderListParams {
   const params: OrderListParams = { page, pageSize: filters.pageSize };
 
-  const trimmedSearch = filters.search.trim();
-  if (trimmedSearch.length > 0) params.orderNumber = trimmedSearch;
-
-  const trimmedCustomer = filters.customer.trim();
-  if (trimmedCustomer.length > 0) params.customer = trimmedCustomer;
+  wireOptionalTrimmed(params, "orderNumber", filters.search);
+  wireOptionalTrimmed(params, "customer", filters.customer);
 
   if (filters.status !== null) params.status = filters.status;
 
@@ -78,28 +80,23 @@ export function toOrderListParams(filters: StagedOrderFilters, page: number): Or
     if (filters.dateTo !== null) params.dateTo = filters.dateTo;
   }
 
-  if (filters.sortEnabled) {
-    params.sortField = filters.sortField;
-    params.sortDirection = filters.sortDirection;
-  }
+  wireSort(params, filters.sortEnabled, filters.sortField, filters.sortDirection);
 
   return params;
 }
 
-export function filtersEqual(a: StagedOrderFilters, b: StagedOrderFilters): boolean {
-  return (
-    a.search === b.search &&
-    a.customer === b.customer &&
-    a.status === b.status &&
-    a.amountEnabled === b.amountEnabled &&
-    a.amountMin === b.amountMin &&
-    a.amountMax === b.amountMax &&
-    a.dateEnabled === b.dateEnabled &&
-    a.dateFrom === b.dateFrom &&
-    a.dateTo === b.dateTo &&
-    a.sortEnabled === b.sortEnabled &&
-    a.sortField === b.sortField &&
-    a.sortDirection === b.sortDirection &&
-    a.pageSize === b.pageSize
-  );
-}
+export const filtersEqual = createFiltersEqual<StagedOrderFilters>([
+  "search",
+  "customer",
+  "status",
+  "amountEnabled",
+  "amountMin",
+  "amountMax",
+  "dateEnabled",
+  "dateFrom",
+  "dateTo",
+  "sortEnabled",
+  "sortField",
+  "sortDirection",
+  "pageSize",
+]);
