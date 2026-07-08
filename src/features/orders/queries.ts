@@ -1,4 +1,10 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import {
   cancelOrder,
   getOrderByNumber,
@@ -60,19 +66,21 @@ export function useAdminOrderDetailQuery(orderNumber: string, enabled: boolean) 
   });
 }
 
-// Invalidates all four scopes -- a cancel can flip the badge on either history page and
-// either detail page, regardless of which path issued it.
+// invalidates all four scopes -- any order write can flip the badge on either
+// history page and either detail page, regardless of which path issued it.
+export function invalidateAllOrderViews(queryClient: QueryClient, orderNumber: string): void {
+  queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
+  queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
+  queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
+  queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
+}
+
 export function useCancelOrderMutation(options?: { admin?: boolean }) {
   const admin = options?.admin ?? false;
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, string>({
     mutationFn: (orderNumber: string) => cancelOrder(admin ? "admin" : "user", orderNumber),
-    onSuccess: (_data, orderNumber) => {
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
-    },
+    onSuccess: (_data, orderNumber) => invalidateAllOrderViews(queryClient, orderNumber),
   });
 }
 
@@ -80,12 +88,7 @@ export function useUpdateOrderStatusMutation(orderNumber: string) {
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, UpdateOrderStatusRequest>({
     mutationFn: (body) => updateAdminOrderStatus(orderNumber, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
-    },
+    onSuccess: () => invalidateAllOrderViews(queryClient, orderNumber),
   });
 }
 
@@ -93,11 +96,6 @@ export function useUpdateShippingAddressMutation(orderNumber: string) {
   const queryClient = useQueryClient();
   return useMutation<void, ApiError, UpdateShippingAddressRequest>({
     mutationFn: (body) => updateAdminOrderShipping(orderNumber, body),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.detail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminDetail(orderNumber) });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.adminLists() });
-    },
+    onSuccess: () => invalidateAllOrderViews(queryClient, orderNumber),
   });
 }

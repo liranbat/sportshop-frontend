@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { useMeQuery } from "@/features/auth/queries";
 import {
@@ -22,6 +22,11 @@ export const cartKeys = {
   count: () => [...cartKeys.all, "count"] as const,
   full: () => [...cartKeys.all, "full"] as const,
 };
+
+export function invalidateCartQueries(queryClient: QueryClient): void {
+  queryClient.invalidateQueries({ queryKey: cartKeys.count() });
+  queryClient.invalidateQueries({ queryKey: cartKeys.full() });
+}
 
 type UpdateCartItemArgs = { productId: number; size: string; quantity: number };
 type RemoveCartItemArgs = { productId: number; size: string };
@@ -65,10 +70,7 @@ export function useAddCartItemMutation() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, AddCartItemRequest>({
     mutationFn: addCartItem,
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: cartKeys.count() });
-      queryClient.invalidateQueries({ queryKey: cartKeys.full() });
-    },
+    onSettled: () => invalidateCartQueries(queryClient),
   });
 }
 
@@ -86,10 +88,7 @@ export function useRemoveCartItemMutation() {
   const queryClient = useQueryClient();
   return useMutation<void, Error, RemoveCartItemArgs>({
     mutationFn: ({ productId, size }) => removeCartItem(productId, size),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: cartKeys.count() });
-      queryClient.invalidateQueries({ queryKey: cartKeys.full() });
-    },
+    onSettled: () => invalidateCartQueries(queryClient),
   });
 }
 
