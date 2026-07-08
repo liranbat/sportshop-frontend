@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pageSchema } from "@/lib/schemas/pagination";
 
 export const ONE_SIZE_TOKEN = "ONE_SIZE";
 
@@ -14,13 +15,7 @@ export const StockRowSchema = z.object({
 });
 export type StockRow = z.infer<typeof StockRowSchema>;
 
-export const StockPageSchema = z.object({
-  items: z.array(StockRowSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const StockPageSchema = pageSchema(StockRowSchema);
 export type StockPage = z.infer<typeof StockPageSchema>;
 
 export type StockSetRequest = {

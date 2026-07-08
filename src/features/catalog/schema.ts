@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pageSchema } from "@/lib/schemas/pagination";
 
 export const ProductSchema = z.object({
   id: z.number().int().positive(),
@@ -16,13 +17,7 @@ export const ProductSchema = z.object({
   archivedBy: z.number().int().positive().nullable().optional(),
 });
 
-export const ProductPageSchema = z.object({
-  items: z.array(ProductSchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const ProductPageSchema = pageSchema(ProductSchema);
 
 export const StockStateSchema = z.enum(["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK"]);
 

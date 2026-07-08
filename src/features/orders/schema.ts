@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { pageSchema } from "@/lib/schemas/pagination";
 
 export const OrderStatusSchema = z.enum([
   "PAID",
@@ -29,13 +30,7 @@ export const OrderSummarySchema = z.object({
   customer: CustomerForOrderSchema,
 });
 
-export const OrderListPageSchema = z.object({
-  items: z.array(OrderSummarySchema),
-  page: z.number().int().nonnegative(),
-  pageSize: z.number().int().positive(),
-  totalElements: z.number().int().nonnegative(),
-  totalPages: z.number().int().nonnegative(),
-});
+export const OrderListPageSchema = pageSchema(OrderSummarySchema);
 
 export const PaymentStatusSchema = z.enum(["SUCCESS", "REFUNDED"]);
 
