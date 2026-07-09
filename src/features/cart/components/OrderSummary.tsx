@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { paths } from "@/lib/paths";
 
 type Props = {
   itemCount: number;
@@ -60,7 +61,7 @@ export function OrderSummary({
             Resolve cart issues to proceed
           </p>
         )}
-        <Link to="/catalog" className="self-stretch">
+        <Link to={paths.catalog()} className="self-stretch">
           <Button variant="outlined" className="w-full">
             Continue Shopping
           </Button>

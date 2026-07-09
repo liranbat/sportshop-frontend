@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import sportshopStory from "@/assets/sportshop-logos/sportshop-story.png";
+import { paths } from "@/lib/paths";
 
 export function HeroSection() {
   return (
@@ -11,7 +12,7 @@ export function HeroSection() {
           your best.
         </p>
         <Link
-          to="/catalog"
+          to={paths.catalog()}
           className="inline-flex h-13 w-50 items-center justify-center rounded-lg bg-primary-blue text-body-regular text-white transition-colors hover:bg-primary-blue-hover"
         >
           Shop Now

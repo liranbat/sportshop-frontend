@@ -8,6 +8,7 @@ import { PasswordField } from "@/components/PasswordField";
 import { WarningTile } from "@/components/WarningTile";
 import { useDeleteAccountMutation } from "@/features/users/queries";
 import { DeleteAccountRequestSchema, type DeleteAccountRequest } from "@/features/users/schema";
+import { paths } from "@/lib/paths";
 
 type Props = {
   open: boolean;
@@ -46,7 +47,7 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
     mutation.mutate(payload, {
       onSuccess: () => {
         // queryClient.clear() already ran inside the mutation hook
-        navigate("/sign-in?reason=deleted", { replace: true });
+        navigate(paths.signIn({ reason: "deleted" }), { replace: true });
       },
     });
   };

@@ -29,6 +29,7 @@ import {
 } from "@/features/catalog/schema";
 import { useUpdateAdminProductMutation } from "@/features/catalog/queries";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 const PRODUCT_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
 const VIEW_PARAM = "view";
@@ -102,7 +103,7 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
           isRefreshing={isRefreshing}
         />
 
-        <BackLink to="/catalog" label="Back to Catalog" />
+        <BackLink to={paths.catalog()} label="Back to Catalog" />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 lg:overflow-hidden">
           {adminView === "admin" ? (

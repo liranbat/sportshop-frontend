@@ -5,6 +5,7 @@ import { useMeQuery } from "@/features/auth/queries";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { SecurityCard } from "@/features/users/components/SecurityCard";
 import { useUpdateProfileMutation } from "@/features/users/queries";
+import { paths } from "@/lib/paths";
 
 export function ProfilePage() {
   const { data: user, isPending, isFetching, refetch } = useMeQuery({ refetchOnMount: "always" });
@@ -26,7 +27,7 @@ export function ProfilePage() {
   }
 
   if (!user) {
-    return <Navigate to="/sign-in" replace />;
+    return <Navigate to={paths.signIn()} replace />;
   }
 
   return (

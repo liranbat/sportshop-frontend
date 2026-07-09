@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router";
 import { NotFound } from "@/components/NotFound";
 import { useMeQuery } from "@/features/auth";
+import { paths } from "@/lib/paths";
 
 export function RequireAdmin() {
   const { data: user, isPending } = useMeQuery();
@@ -12,7 +13,7 @@ export function RequireAdmin() {
   }
 
   if (!user) {
-    return <Navigate to="/sign-in" replace />;
+    return <Navigate to={paths.signIn()} replace />;
   }
 
   if (!user.isAdmin) {

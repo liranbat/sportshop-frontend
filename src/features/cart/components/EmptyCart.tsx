@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { paths } from "@/lib/paths";
 
 export function EmptyCart() {
   return (
@@ -26,7 +27,7 @@ export function EmptyCart() {
       <p className="max-w-80 text-body-small text-text-secondary">
         Looks like you haven&apos;t added any items to your cart yet.
       </p>
-      <Link to="/catalog" className="mt-2">
+      <Link to={paths.catalog()} className="mt-2">
         <Button variant="primary">Browse Products</Button>
       </Link>
     </div>

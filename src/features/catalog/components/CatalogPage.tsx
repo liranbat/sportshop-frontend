@@ -14,6 +14,7 @@ import {
   type StagedFilters,
 } from "@/features/catalog/filters";
 import { useAdminProductsQuery, useProductsQuery } from "@/features/catalog/queries";
+import { paths } from "@/lib/paths";
 
 type CatalogIntentState = { categoryId: number };
 
@@ -132,19 +133,19 @@ export function CatalogPage() {
             <h1 className="text-body-large font-semibold text-text-primary">Catalog</h1>
             <div className="flex items-center gap-2">
               <Link
-                to="/products/new"
+                to={paths.products.create()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 + New Product
               </Link>
               <Link
-                to="/admin/category-management"
+                to={paths.admin.categories()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 Category Management
               </Link>
               <Link
-                to="/admin/stock-management"
+                to={paths.admin.stock()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 Stock Management

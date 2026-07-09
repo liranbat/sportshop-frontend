@@ -9,6 +9,7 @@ import { useMeQuery } from "@/features/auth";
 import { useAddCartItemMutation } from "@/features/cart/queries";
 import { SizeButton } from "@/features/catalog/components/SizeButton";
 import type { ProductDetail, ProductSize, StockState } from "@/features/catalog/schema";
+import { paths } from "@/lib/paths";
 
 type Props = {
   product: ProductDetail;
@@ -100,7 +101,7 @@ export function ProductInfoSection({ product, onRefresh, isRefreshing = false }:
     >
       <fieldset disabled={isRefreshing} className="contents">
         <div className="flex items-center justify-between gap-2">
-          <BackLink to="/catalog" label="Back to Catalog" />
+          <BackLink to={paths.catalog()} label="Back to Catalog" />
           {onRefresh && (
             <RefreshButton
               onClick={onRefresh}

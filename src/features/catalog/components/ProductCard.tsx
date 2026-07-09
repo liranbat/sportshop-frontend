@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { StatusBadge } from "@/components/StatusBadge";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 export type ProductCardView = "user" | "admin";
 
@@ -40,7 +41,7 @@ export function ProductCard({
 
   return (
     <Link
-      to={`/products/${id}`}
+      to={paths.products.detail(id)}
       aria-label={ariaParts.join(", ")}
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden rounded-[0.6em] bg-background-card shadow-card transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue",

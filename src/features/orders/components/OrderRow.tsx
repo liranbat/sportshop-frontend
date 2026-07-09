@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import type { OrderSummary } from "@/features/orders/schema";
+import { paths } from "@/lib/paths";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -22,7 +23,7 @@ export function OrderRow({ order, view }: Props) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    void navigate(`/orders/${order.orderNumber}`);
+    void navigate(paths.orders.detail(order.orderNumber));
   };
 
   const itemCountLabel = order.itemCount === 1 ? "1 item" : `${order.itemCount} items`;

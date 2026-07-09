@@ -22,6 +22,7 @@ import {
   type ProductCreateForm,
 } from "@/features/catalog/schema";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 const PRODUCT_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
 
@@ -105,7 +106,7 @@ export function ProductCreatePage() {
           <h1 className="text-body-large font-semibold text-text-primary">New Product</h1>
         </section>
 
-        <BackLink to="/catalog" label="Back to Catalog" />
+        <BackLink to={paths.catalog()} label="Back to Catalog" />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 lg:overflow-hidden">
           {mutation.isError && (
@@ -299,7 +300,7 @@ export function ProductCreatePage() {
               <Button
                 type="button"
                 variant="outlined"
-                onClick={() => navigate("/catalog")}
+                onClick={() => navigate(paths.catalog())}
                 disabled={mutation.isPending}
               >
                 Cancel

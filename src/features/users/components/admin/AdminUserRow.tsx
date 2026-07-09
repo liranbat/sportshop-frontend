@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { RoleBadge } from "@/components/RoleBadge";
 import { UserStatusBadge } from "@/components/UserStatusBadge";
 import type { UserResponse } from "@/features/auth/schema";
+import { paths } from "@/lib/paths";
 
 type Props = {
   user: UserResponse;
@@ -13,7 +14,7 @@ export function AdminUserRow({ user }: Props) {
   const role = user.isAdmin ? "Admin" : "User";
 
   const goToDetail = () => {
-    void navigate(`/profile/${user.id}`);
+    void navigate(paths.profile.adminDetail(user.id));
   };
 
   return (

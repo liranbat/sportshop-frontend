@@ -6,6 +6,7 @@ import { ProductInfoSection } from "@/features/catalog/components/ProductInfoSec
 import { ProductDetailsAdminView } from "@/features/catalog/components/admin/ProductDetailsAdminView";
 import { useProductQuery } from "@/features/catalog/queries";
 import { ApiError } from "@/lib/api";
+import { paths } from "@/lib/paths";
 
 function parseProductId(raw: string | undefined): number | null {
   if (raw === undefined) return null;
@@ -87,7 +88,7 @@ function ProductNotFound() {
           We couldn’t find this product. It may have been removed.
         </p>
         <Link
-          to="/catalog"
+          to={paths.catalog()}
           className="mt-2 inline-flex h-10 items-center justify-center rounded-lg bg-primary-blue px-5 text-body-regular font-semibold text-white transition-colors hover:bg-primary-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
         >
           Back to Catalog

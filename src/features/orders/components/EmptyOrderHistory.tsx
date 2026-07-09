@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { paths } from "@/lib/paths";
 
 type Props = {
   view: "user" | "admin";
@@ -36,7 +37,7 @@ export function EmptyOrderHistory({ view }: Props) {
       <h2 className="text-heading-l text-text-primary">No orders yet</h2>
       <p className="max-w-80 text-body-small text-text-secondary">{body}</p>
       {view === "user" && (
-        <Link to="/catalog" className="mt-2">
+        <Link to={paths.catalog()} className="mt-2">
           <Button variant="primary">Browse Products</Button>
         </Link>
       )}

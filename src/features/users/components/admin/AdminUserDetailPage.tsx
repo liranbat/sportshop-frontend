@@ -8,13 +8,14 @@ import { UserStatusBadge } from "@/components/UserStatusBadge";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { AdminActionsCard } from "@/features/users/components/admin/AdminActionsCard";
 import { useAdminUserQuery, useUpdateAdminUserMutation } from "@/features/users/queries";
+import { paths } from "@/lib/paths";
 
 export function AdminUserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
   const parsedId = Number(userId);
 
   if (!Number.isInteger(parsedId) || parsedId <= 0) {
-    return <Navigate to="/admin/users" replace />;
+    return <Navigate to={paths.admin.users()} replace />;
   }
 
   return <AdminUserDetailContent userId={parsedId} />;
@@ -47,7 +48,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
             variant="error"
             message="Could not load this user. They may have been removed, or your connection dropped."
           />
-          <BackLink to="/admin/users" label="Back to Users" />
+          <BackLink to={paths.admin.users()} label="Back to Users" />
         </div>
       </main>
     );
@@ -78,7 +79,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
           />
         </header>
 
-        <BackLink to="/admin/users" label="Back to Users" />
+        <BackLink to={paths.admin.users()} label="Back to Users" />
 
         <div
           aria-busy={isRefreshing}

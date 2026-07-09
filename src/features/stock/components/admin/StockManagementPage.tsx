@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { BackLink } from "@/components/BackLink";
+import { paths } from "@/lib/paths";
 import { Notice } from "@/components/Notice";
 import { AddSizeModal } from "@/features/stock/components/admin/AddSizeModal";
 import { EditStockRowModal } from "@/features/stock/components/admin/EditStockRowModal";
@@ -97,7 +98,7 @@ export function StockManagementPage() {
           onAddSize={handleAddSize}
         />
 
-        <BackLink to="/catalog" label="Back to Catalog" />
+        <BackLink to={paths.catalog()} label="Back to Catalog" />
 
         {isTrueEmpty ? (
           <EmptyStockManagementList filtered={false} onClearFilters={handleClear} />

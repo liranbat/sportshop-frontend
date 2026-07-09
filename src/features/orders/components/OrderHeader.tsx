@@ -3,6 +3,7 @@ import { Button } from "@/components/Button";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { RefreshButton } from "@/components/RefreshButton";
 import { legalTargetStatusesFor, type OrderDetail } from "@/features/orders/schema";
+import { paths } from "@/lib/paths";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -59,7 +60,7 @@ export function OrderHeader({
           <p className="text-body-small text-text-secondary">
             Customer:{" "}
             <Link
-              to={`/profile/${order.customer.id}`}
+              to={paths.profile.adminDetail(order.customer.id)}
               className="text-body-small-bold text-primary-blue hover:underline focus-visible:underline focus-visible:outline-none"
             >
               {customerName}
