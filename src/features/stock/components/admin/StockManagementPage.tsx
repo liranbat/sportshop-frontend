@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { BackLink } from "@/components/BackLink";
+import { ListPagination } from "@/components/ListPagination";
 import { paths } from "@/lib/paths";
 import { Notice } from "@/components/Notice";
 import { AddSizeModal } from "@/features/stock/components/admin/AddSizeModal";
@@ -9,11 +10,11 @@ import { EmptyStockManagementList } from "@/features/stock/components/admin/Empt
 import { RemoveSizeConfirmModal } from "@/features/stock/components/admin/RemoveSizeConfirmModal";
 import { StockListHeaderRow } from "@/features/stock/components/admin/StockListHeaderRow";
 import { StockManagementList } from "@/features/stock/components/admin/StockManagementList";
-import { StockManagementListPagination } from "@/features/stock/components/admin/StockManagementListPagination";
 import { StockManagementToolbar } from "@/features/stock/components/admin/StockManagementToolbar";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toStockListParams,
   type PageSize,
   type StagedStockFilters,
@@ -140,9 +141,11 @@ export function StockManagementPage() {
               </fieldset>
             </div>
 
-            <StockManagementListPagination
+            <ListPagination
+              ariaLabel="Stock list pagination"
               page={page}
               pageSize={staged.pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
               totalPages={totalPages}
               disabled={stockQuery.isFetching}
               onPageChange={setPage}

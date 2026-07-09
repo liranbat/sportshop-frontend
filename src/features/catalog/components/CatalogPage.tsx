@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
 import { useCategoriesQuery } from "@/features/categories";
 import { CatalogGrid } from "@/features/catalog/components/CatalogGrid";
-import { CatalogPagination } from "@/features/catalog/components/CatalogPagination";
 import { CatalogToolbar } from "@/features/catalog/components/CatalogToolbar";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toProductListParams,
   type PageSize,
   type StagedFilters,
@@ -185,9 +186,11 @@ export function CatalogPage() {
           )}
         </div>
 
-        <CatalogPagination
+        <ListPagination
+          ariaLabel="Catalog pagination"
           page={page}
           pageSize={staged.pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
           totalPages={totalPages}
           disabled={isRefreshing}
           onPageChange={setPage}

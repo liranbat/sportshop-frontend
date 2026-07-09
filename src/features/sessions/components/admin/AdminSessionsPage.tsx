@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
 import { AdminSessionRevokeAllModal } from "@/features/sessions/components/admin/AdminSessionRevokeAllModal";
 import { AdminSessionRevokeSingleModal } from "@/features/sessions/components/admin/AdminSessionRevokeSingleModal";
 import { AdminSessionsList } from "@/features/sessions/components/admin/AdminSessionsList";
-import { AdminSessionsListPagination } from "@/features/sessions/components/admin/AdminSessionsListPagination";
 import { AdminSessionsToolbar } from "@/features/sessions/components/admin/AdminSessionsToolbar";
 import { EmptyAdminSessionsList } from "@/features/sessions/components/admin/EmptyAdminSessionsList";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toSessionListParams,
   type PageSize,
   type StagedSessionFilters,
@@ -128,9 +129,11 @@ export function AdminSessionsPage() {
               </fieldset>
             </div>
 
-            <AdminSessionsListPagination
+            <ListPagination
+              ariaLabel="Admin sessions pagination"
               page={page}
               pageSize={staged.pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
               totalPages={totalPages}
               disabled={sessionsQuery.isFetching}
               onPageChange={setPage}
