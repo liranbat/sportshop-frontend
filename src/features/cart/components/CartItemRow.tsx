@@ -1,5 +1,5 @@
+import { Badge, type BadgeKind } from "@/components/Badge";
 import { QuantityControl } from "@/components/QuantityControl";
-import { StatusBadge } from "@/components/StatusBadge";
 import { cartItemRowState, type CartItemRowState } from "@/features/cart/cartItemRowState";
 import { useRemoveCartItemMutation, useUpdateCartItemMutation } from "@/features/cart/queries";
 import type { CartItem } from "@/features/cart/schema";
@@ -16,18 +16,21 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
 
 const ONE_SIZE = "ONE_SIZE";
 
-type BadgeSpec = { kind: "LOW_STOCK" | "OUT_OF_STOCK" | "DELETED"; label?: string };
+type BadgeSpec = {
+  kind: Extract<BadgeKind, "LOW_STOCK" | "OUT_OF_STOCK" | "DELETED">;
+  label: string;
+};
 
 function badgeFor(state: CartItemRowState): BadgeSpec | null {
   switch (state) {
     case "LOW_STOCK":
-      return { kind: "LOW_STOCK" };
+      return { kind: "LOW_STOCK", label: "Low stock" };
     case "INSUFFICIENT_STOCK":
       return { kind: "OUT_OF_STOCK", label: "Insufficient stock" };
     case "OUT_OF_STOCK":
-      return { kind: "OUT_OF_STOCK" };
+      return { kind: "OUT_OF_STOCK", label: "Out of stock" };
     case "UNAVAILABLE":
-      return { kind: "DELETED" };
+      return { kind: "DELETED", label: "Deleted" };
     default:
       return null;
   }
@@ -89,9 +92,7 @@ export function CartItemRow({ item }: Props) {
         <p className="text-body-small text-text-secondary">
           {priceFormatter.format(item.productPrice)} ea
         </p>
-        {badge && (
-          <StatusBadge state={badge.kind} label={badge.label} className="mt-1 self-start" />
-        )}
+        {badge && <Badge {...badge} className="mt-1 self-start" />}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-2">

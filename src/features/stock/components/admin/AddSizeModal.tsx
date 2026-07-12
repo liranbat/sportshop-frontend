@@ -4,7 +4,7 @@ import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { MutationErrorBanner, Notice } from "@/components/Notice";
 import { StandardModal } from "@/components/StandardModal";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/Badge";
 import { useAdminProductsQuery } from "@/features/catalog/queries";
 import type { Product } from "@/features/catalog/schema";
 import { useAddAdminStockSizeMutation } from "@/features/stock/queries";
@@ -224,7 +224,7 @@ function ProductPicker({
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate font-medium text-text-primary">{p.name}</span>
-                    {p.isArchived && <StatusBadge state="ARCHIVED" />}
+                    {p.isArchived && <Badge kind="ARCHIVED" label="Archived" />}
                   </span>
                   <span className="shrink-0 text-caption-regular text-text-secondary">#{p.id}</span>
                 </button>
@@ -292,7 +292,7 @@ function SizeForm({
             <span className="truncate text-body-regular font-semibold text-text-primary">
               {selected.name}
             </span>
-            {selected.isArchived && <StatusBadge state="ARCHIVED" />}
+            {selected.isArchived && <Badge kind="ARCHIVED" label="Archived" />}
           </span>
         </div>
         <Button

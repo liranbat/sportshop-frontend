@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/Badge";
 import { cn } from "@/lib/cn";
 import { paths } from "@/lib/paths";
 
@@ -75,7 +75,7 @@ export function ProductCard({
           <span className="text-[1em] font-semibold leading-tight text-primary-blue">
             {priceFormatter.format(price)}
           </span>
-          {isAdmin && isArchived && <StatusBadge state="ARCHIVED" />}
+          {isAdmin && isArchived && <Badge kind="ARCHIVED" label="Archived" />}
         </div>
         {isAdmin && (
           <div className="mt-[0.2em] flex items-center justify-between gap-[0.5em] text-[0.7em] text-text-secondary">

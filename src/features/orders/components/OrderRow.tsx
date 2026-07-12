@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
-import { OrderStatusBadge } from "@/components/OrderStatusBadge";
+import { Badge } from "@/components/Badge";
+import { ORDER_STATUS_LABEL } from "@/features/orders/labels";
 import type { OrderSummary } from "@/features/orders/schema";
 import { paths } from "@/lib/paths";
 
@@ -55,7 +56,7 @@ export function OrderRow({ order, view }: Props) {
         {priceFormatter.format(order.totalPrice)}
       </td>
       <td className="px-4 py-3 align-middle">
-        <OrderStatusBadge status={order.status} />
+        <Badge kind={order.status} label={ORDER_STATUS_LABEL[order.status]} />
       </td>
     </tr>
   );

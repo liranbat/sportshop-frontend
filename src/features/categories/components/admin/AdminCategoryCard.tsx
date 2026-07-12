@@ -1,4 +1,4 @@
-import { StatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/Badge";
 import type { Category } from "@/features/categories/schema";
 import { cn } from "@/lib/cn";
 
@@ -21,7 +21,7 @@ export function AdminCategoryCard({ category, onClick }: Props) {
     >
       {isDeleted && (
         <div className="absolute top-2 right-2 z-10">
-          <StatusBadge state="DELETED" />
+          <Badge kind="DELETED" label="Deleted" />
         </div>
       )}
       <div

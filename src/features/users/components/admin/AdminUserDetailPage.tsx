@@ -1,11 +1,10 @@
 import { useCallback, useState } from "react";
 import { Navigate, useParams } from "react-router";
+import { Badge } from "@/components/Badge";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
 import { PageLoading } from "@/components/PageLoading";
 import { RefreshButton } from "@/components/RefreshButton";
-import { RoleBadge } from "@/components/RoleBadge";
-import { UserStatusBadge } from "@/components/UserStatusBadge";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { AdminActionsCard } from "@/features/users/components/admin/AdminActionsCard";
 import { useAdminUserQuery, useUpdateAdminUserMutation } from "@/features/users/queries";
@@ -53,7 +52,6 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
 
   const user = userQuery.data;
   const fullName = `${user.firstName} ${user.lastName}`.trim();
-  const role = user.isAdmin ? "Admin" : "User";
   const isRefreshing = userQuery.isFetching;
 
   return (
@@ -65,8 +63,14 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
               Profile - Admin View: {fullName}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
-              <UserStatusBadge status={user.isDeleted ? "DELETED" : "ACTIVE"} />
-              <RoleBadge role={role} />
+              <Badge
+                kind={user.isDeleted ? "DELETED" : "ACTIVE"}
+                label={user.isDeleted ? "Deleted" : "Active"}
+              />
+              <Badge
+                kind={user.isAdmin ? "ROLE_ADMIN" : "ROLE_USER"}
+                label={user.isAdmin ? "Admin" : "User"}
+              />
             </div>
           </div>
           <RefreshButton

@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router";
 import sportshopHorizontal from "@/assets/sportshop-logos/sportshop-horizontal.png";
+import { Badge } from "@/components/Badge";
 import { NavButton } from "@/components/NavButton";
 import { NavCartButton } from "@/components/NavCartButton";
-import { RoleBadge } from "@/components/RoleBadge";
 import { config } from "@/config";
 import { useLogoutMutation, useMeQuery } from "@/features/auth";
 import { paths } from "@/lib/paths";
@@ -34,8 +34,8 @@ export function Navbar() {
             {config.ENV_LABEL}
           </span>
         )}
-        {user?.isAdmin === true && <RoleBadge role="Admin" />}
-        {user && !user.isAdmin && <RoleBadge role="User" />}
+        {user?.isAdmin === true && <Badge kind="ROLE_ADMIN" label="Admin" />}
+        {user && !user.isAdmin && <Badge kind="ROLE_USER" label="User" />}
       </div>
 
       <nav aria-label="Primary" className="flex items-center gap-3">

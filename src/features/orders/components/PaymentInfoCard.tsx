@@ -1,4 +1,4 @@
-import { OrderStatusBadge } from "@/components/OrderStatusBadge";
+import { Badge } from "@/components/Badge";
 import type { OrderPayment } from "@/features/orders/schema";
 
 const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
@@ -39,9 +39,9 @@ export function PaymentInfoCard({ payment }: Props) {
               {payment.transactionId}
             </span>
             {isRefunded ? (
-              <OrderStatusBadge status="CANCELLED_BY_USER" label="Refunded" />
+              <Badge kind="CANCELLED_BY_USER" label="Refunded" />
             ) : (
-              <OrderStatusBadge status="PAID" />
+              <Badge kind="PAID" label="Paid" />
             )}
           </div>
         </Field>

@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import { Badge } from "@/components/Badge";
 import { BackLink } from "@/components/BackLink";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { QuantityControl } from "@/components/QuantityControl";
 import { RefreshButton } from "@/components/RefreshButton";
-import { StatusBadge } from "@/components/StatusBadge";
 import { useMeQuery } from "@/features/auth";
 import { useAddCartItemMutation } from "@/features/cart/queries";
 import { SizeButton } from "@/features/catalog/components/SizeButton";
 import type { ProductDetail, ProductSize, StockState } from "@/features/catalog/schema";
+import { STOCK_LABEL } from "@/features/stock/badge";
 import { paths } from "@/lib/paths";
 
 type Props = {
@@ -113,7 +114,7 @@ export function ProductInfoSection({ product, onRefresh, isRefreshing = false }:
 
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-heading-l text-text-primary">{product.name}</h1>
-          {product.isArchived && <StatusBadge state="ARCHIVED" />}
+          {product.isArchived && <Badge kind="ARCHIVED" label="Archived" />}
         </div>
 
         {!product.isArchived && (
@@ -154,7 +155,7 @@ export function ProductInfoSection({ product, onRefresh, isRefreshing = false }:
               </div>
             )}
 
-            <StatusBadge state={stockState} className="self-start" />
+            <Badge kind={stockState} label={STOCK_LABEL[stockState]} className="self-start" />
 
             {isAuthed && (
               <div className="flex flex-col gap-3">
