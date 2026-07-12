@@ -1,14 +1,12 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { EmptyState } from "@/components/EmptyState";
 import { paths } from "@/lib/paths";
 
 export function EmptyCart() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 px-4 py-12 text-center">
-      <div
-        aria-hidden="true"
-        className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-blue-light text-primary-blue"
-      >
+    <EmptyState
+      icon={
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -22,14 +20,14 @@ export function EmptyCart() {
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
-      </div>
-      <h2 className="text-heading-l text-text-primary">Your cart is empty</h2>
-      <p className="max-w-80 text-body-small text-text-secondary">
-        Looks like you haven&apos;t added any items to your cart yet.
-      </p>
-      <Link to={paths.catalog()} className="mt-2">
-        <Button variant="primary">Browse Products</Button>
-      </Link>
-    </div>
+      }
+      title="Your cart is empty"
+      description="Looks like you haven't added any items to your cart yet."
+      action={
+        <Link to={paths.catalog()} className="mt-2">
+          <Button variant="primary">Browse Products</Button>
+        </Link>
+      }
+    />
   );
 }

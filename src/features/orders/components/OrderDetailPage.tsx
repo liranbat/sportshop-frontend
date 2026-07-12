@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { useMeQuery } from "@/features/auth/queries";
 import { EditShippingAddressModal } from "@/features/orders/components/admin/EditShippingAddressModal";
 import { UpdateOrderStatusModal } from "@/features/orders/components/admin/UpdateOrderStatusModal";
@@ -41,11 +42,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
   const [isEditShippingOpen, setIsEditShippingOpen] = useState(false);
 
   if (detailQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading order…
-      </main>
-    );
+    return <PageLoading label="Loading order…" />;
   }
 
   if (detailQuery.isError) {

@@ -1,10 +1,9 @@
+import { EmptyState } from "@/components/EmptyState";
+
 export function EmptyAdminUserList() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 px-4 py-12 text-center">
-      <div
-        aria-hidden="true"
-        className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-blue-light text-primary-blue"
-      >
+    <EmptyState
+      icon={
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -19,11 +18,9 @@ export function EmptyAdminUserList() {
           <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
           <path d="M16 3.13a4 4 0 0 1 0 7.75" />
         </svg>
-      </div>
-      <h2 className="text-heading-l text-text-primary">No users yet</h2>
-      <p className="max-w-80 text-body-small text-text-secondary">
-        There are no users in the system to display.
-      </p>
-    </div>
+      }
+      title="No users yet"
+      description="There are no users in the system to display."
+    />
   );
 }

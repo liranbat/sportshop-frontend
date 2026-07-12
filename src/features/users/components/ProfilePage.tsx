@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { Navigate } from "react-router";
+import { PageLoading } from "@/components/PageLoading";
 import { RefreshButton } from "@/components/RefreshButton";
 import { useMeQuery } from "@/features/auth/queries";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
@@ -19,11 +20,7 @@ export function ProfilePage() {
   }, [updateMutation, refetch]);
 
   if (isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading profile…
-      </main>
-    );
+    return <PageLoading label="Loading profile…" />;
   }
 
   if (!user) {

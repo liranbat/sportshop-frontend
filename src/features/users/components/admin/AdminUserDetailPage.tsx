@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { Navigate, useParams } from "react-router";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { RefreshButton } from "@/components/RefreshButton";
 import { RoleBadge } from "@/components/RoleBadge";
 import { UserStatusBadge } from "@/components/UserStatusBadge";
@@ -33,11 +34,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
   }, [updateMutation, userQuery]);
 
   if (userQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading user…
-      </main>
-    );
+    return <PageLoading label="Loading user…" />;
   }
 
   if (userQuery.isError || !userQuery.data) {

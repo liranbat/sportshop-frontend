@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/Button";
+import { EmptyState } from "@/components/EmptyState";
 import { paths } from "@/lib/paths";
 
 type Props = {
@@ -13,11 +14,8 @@ export function EmptyOrderHistory({ view }: Props) {
       : "Once you place your first order it will appear here.";
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-4 px-4 py-12 text-center">
-      <div
-        aria-hidden="true"
-        className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-blue-light text-primary-blue"
-      >
+    <EmptyState
+      icon={
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -33,14 +31,16 @@ export function EmptyOrderHistory({ view }: Props) {
           <line x1="8" y1="17" x2="16" y2="17" />
           <line x1="8" y1="9" x2="10" y2="9" />
         </svg>
-      </div>
-      <h2 className="text-heading-l text-text-primary">No orders yet</h2>
-      <p className="max-w-80 text-body-small text-text-secondary">{body}</p>
-      {view === "user" && (
-        <Link to={paths.catalog()} className="mt-2">
-          <Button variant="primary">Browse Products</Button>
-        </Link>
-      )}
-    </div>
+      }
+      title="No orders yet"
+      description={body}
+      action={
+        view === "user" && (
+          <Link to={paths.catalog()} className="mt-2">
+            <Button variant="primary">Browse Products</Button>
+          </Link>
+        )
+      }
+    />
   );
 }

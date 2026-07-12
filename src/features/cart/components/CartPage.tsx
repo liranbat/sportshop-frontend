@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { RefreshButton } from "@/components/RefreshButton";
 import { CartIssuesModal } from "@/features/cart/components/CartIssuesModal";
 import { CartItemsList } from "@/features/cart/components/CartItemsList";
@@ -28,17 +29,13 @@ export function CartPage() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (cartQuery.isPending) {
-    return (
-      <div className="flex h-full items-center justify-center text-text-secondary">
-        Loading cart…
-      </div>
-    );
+    return <PageLoading label="Loading cart…" />;
   }
 
   if (cartQuery.isError) {
     return (
       <div className="flex h-full items-center justify-center px-4">
-        <Notice variant="error" message={`Failed to load cart: ${cartQuery.error.message}`} />
+        <Notice variant="error" message="Could not load cart. Please refresh and try again." />
       </div>
     );
   }

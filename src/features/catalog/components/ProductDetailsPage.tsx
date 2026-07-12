@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { useMeQuery } from "@/features/auth/queries";
 import { ProductImageSection } from "@/features/catalog/components/ProductImageSection";
 import { ProductInfoSection } from "@/features/catalog/components/ProductInfoSection";
@@ -32,11 +33,7 @@ function ProductDetailsRouter({ productId }: { productId: number }) {
   const isAdmin = meQuery.data?.isAdmin === true;
 
   if (!isAuthResolved || productQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading product…
-      </main>
-    );
+    return <PageLoading label="Loading product…" />;
   }
 
   if (productQuery.isError) {
