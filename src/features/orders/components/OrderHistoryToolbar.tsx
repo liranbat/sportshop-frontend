@@ -1,11 +1,10 @@
-import { Button } from "@/components/Button";
 import { FilterDateRange } from "@/components/FilterDateRange";
 import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
 import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { FilterPriceRange } from "@/components/FilterPriceRange";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { FilterSort } from "@/components/FilterSort";
-import { RefreshButton } from "@/components/RefreshButton";
+import { ListFilterToolbar } from "@/components/ListFilterToolbar";
 import type { OrderSortField, StagedOrderFilters } from "@/features/orders/filters";
 import { OrderStatusSchema, type OrderStatus } from "@/features/orders/schema";
 
@@ -58,107 +57,82 @@ export function OrderHistoryToolbar({
   view,
 }: Props) {
   return (
-    <section
-      aria-label="Order history filters"
-      aria-busy={isRefreshing}
-      className={`relative z-20 flex flex-col gap-1 transition-opacity ${
-        isRefreshing ? "opacity-60" : ""
-      }`}
+    <ListFilterToolbar
+      ariaLabel="Order history filters"
+      isRefreshing={isRefreshing}
+      hasPendingEdits={hasPendingEdits}
+      onApply={onApply}
+      onClear={onClear}
+      onRefresh={onRefresh}
+      refreshAriaLabel="Refresh orders"
     >
-      <fieldset disabled={isRefreshing} className="contents">
-        <div className="flex flex-wrap items-end gap-2">
+      <div className="flex flex-wrap items-end gap-2">
+        <FilterSearchBar
+          value={staged.search}
+          onChange={(search) => setStaged({ ...staged, search })}
+          placeholder="Search by order #..."
+          ariaLabel="Search by order number"
+          className="w-60"
+        />
+
+        {view === "admin" && (
           <FilterSearchBar
-            value={staged.search}
-            onChange={(search) => setStaged({ ...staged, search })}
-            placeholder="Search by order #..."
-            ariaLabel="Search by order number"
+            value={staged.customer}
+            onChange={(customer) => setStaged({ ...staged, customer })}
+            placeholder="Search by name or email..."
+            ariaLabel="Search by customer name or email"
             className="w-60"
           />
+        )}
 
-          {view === "admin" && (
-            <FilterSearchBar
-              value={staged.customer}
-              onChange={(customer) => setStaged({ ...staged, customer })}
-              placeholder="Search by name or email..."
-              ariaLabel="Search by customer name or email"
-              className="w-60"
-            />
-          )}
-
-          <FilterDropdownLabeled label="STATUS">
-            <FilterDropdown
-              options={STATUS_OPTIONS}
-              value={staged.status ?? ALL_STATUSES}
-              onChange={(next) => setStaged({ ...staged, status: parseStatus(next) })}
-              ariaLabel="Filter by order status"
-              className="w-40"
-            />
-          </FilterDropdownLabeled>
-
-          <FilterPriceRange
-            enabled={staged.amountEnabled}
-            min={staged.amountMin}
-            max={staged.amountMax}
-            onEnabledChange={(amountEnabled) => setStaged({ ...staged, amountEnabled })}
-            onMinChange={(amountMin) => setStaged({ ...staged, amountMin })}
-            onMaxChange={(amountMax) => setStaged({ ...staged, amountMax })}
+        <FilterDropdownLabeled label="STATUS">
+          <FilterDropdown
+            options={STATUS_OPTIONS}
+            value={staged.status ?? ALL_STATUSES}
+            onChange={(next) => setStaged({ ...staged, status: parseStatus(next) })}
+            ariaLabel="Filter by order status"
+            className="w-40"
           />
+        </FilterDropdownLabeled>
 
-          <FilterDateRange
-            enabled={staged.dateEnabled}
-            from={staged.dateFrom}
-            to={staged.dateTo}
-            onEnabledChange={(dateEnabled) => setStaged({ ...staged, dateEnabled })}
-            onFromChange={(dateFrom) => setStaged({ ...staged, dateFrom })}
-            onToChange={(dateTo) => setStaged({ ...staged, dateTo })}
-          />
+        <FilterPriceRange
+          enabled={staged.amountEnabled}
+          min={staged.amountMin}
+          max={staged.amountMax}
+          onEnabledChange={(amountEnabled) => setStaged({ ...staged, amountEnabled })}
+          onMinChange={(amountMin) => setStaged({ ...staged, amountMin })}
+          onMaxChange={(amountMax) => setStaged({ ...staged, amountMax })}
+        />
 
-          <FilterSort
-            options={SORT_OPTIONS}
-            field={staged.sortField}
-            direction={staged.sortDirection}
-            enabled={staged.sortEnabled}
-            onFieldChange={(value) => {
-              if (isOrderSortField(value)) {
-                setStaged({ ...staged, sortField: value });
-              }
-            }}
-            onDirectionToggle={() =>
-              setStaged({
-                ...staged,
-                sortDirection: staged.sortDirection === "asc" ? "desc" : "asc",
-              })
+        <FilterDateRange
+          enabled={staged.dateEnabled}
+          from={staged.dateFrom}
+          to={staged.dateTo}
+          onEnabledChange={(dateEnabled) => setStaged({ ...staged, dateEnabled })}
+          onFromChange={(dateFrom) => setStaged({ ...staged, dateFrom })}
+          onToChange={(dateTo) => setStaged({ ...staged, dateTo })}
+        />
+
+        <FilterSort
+          options={SORT_OPTIONS}
+          field={staged.sortField}
+          direction={staged.sortDirection}
+          enabled={staged.sortEnabled}
+          onFieldChange={(value) => {
+            if (isOrderSortField(value)) {
+              setStaged({ ...staged, sortField: value });
             }
-            onEnabledChange={(sortEnabled) => setStaged({ ...staged, sortEnabled })}
-            className="ml-auto"
-          />
-        </div>
-
-        <div className="mt-3 flex items-center gap-2">
-          <div className="relative">
-            <Button variant="primary" className="h-7 px-3 text-body-small" onClick={onApply}>
-              Apply
-            </Button>
-            {hasPendingEdits && (
-              <span
-                aria-label="Unapplied filter changes"
-                title="Unapplied filter changes"
-                className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-error-red ring-2 ring-background-page"
-              />
-            )}
-          </div>
-          <Button variant="outlined" className="h-7 px-3 text-body-small" onClick={onClear}>
-            Clear
-          </Button>
-          <div className="ml-auto">
-            <RefreshButton
-              onClick={onRefresh}
-              isPending={isRefreshing}
-              ariaLabel="Refresh orders"
-            />
-          </div>
-        </div>
-      </fieldset>
-    </section>
+          }}
+          onDirectionToggle={() =>
+            setStaged({
+              ...staged,
+              sortDirection: staged.sortDirection === "asc" ? "desc" : "asc",
+            })
+          }
+          onEnabledChange={(sortEnabled) => setStaged({ ...staged, sortEnabled })}
+          className="ml-auto"
+        />
+      </div>
+    </ListFilterToolbar>
   );
 }
