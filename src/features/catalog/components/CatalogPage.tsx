@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router";
 import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
-import { useCategoriesQuery } from "@/features/categories";
+import { useCategoriesQuery } from "@/features/categories/queries";
 import { CatalogGrid } from "@/features/catalog/components/CatalogGrid";
 import { CatalogToolbar } from "@/features/catalog/components/CatalogToolbar";
 import {

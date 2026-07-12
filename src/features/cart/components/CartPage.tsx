@@ -13,7 +13,7 @@ import {
   useValidateCartMutation,
 } from "@/features/cart/queries";
 import type { StockIssue, VersionMismatch } from "@/features/cart/schema";
-import { CheckoutDialog } from "@/features/checkout";
+import { CheckoutDialog } from "@/features/checkout/components/CheckoutDialog";
 
 type ModalState = {
   versionMismatches: readonly VersionMismatch[];

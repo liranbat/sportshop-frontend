@@ -11,7 +11,7 @@ import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { categoriesQueryKeys, useCategoriesQuery } from "@/features/categories";
+import { categoriesQueryKeys, useCategoriesQuery } from "@/features/categories/queries";
 import { ImageUpload } from "@/features/images/components/ImageUpload";
 import {
   AdminProductDetailHeaderRow,

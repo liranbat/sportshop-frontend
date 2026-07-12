@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router";
-import { useMeQuery } from "@/features/auth";
+import { useMeQuery } from "@/features/auth/queries";
 import { paths } from "@/lib/paths";
 
 export function RequireGuest() {

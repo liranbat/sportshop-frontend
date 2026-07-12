@@ -7,7 +7,7 @@ type ModalProps = {
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
   contentClassName?: string;
-  width?: number | string;
+  width?: string;
   ariaLabel?: string;
 };
 
@@ -24,7 +24,7 @@ export function Modal({
   ariaLabel,
 }: ModalProps) {
   const widthStyle: CSSProperties = {
-    width: typeof width === "number" ? `${width}px` : width,
+    width,
     maxWidth: "calc(100vw - 2rem)",
   };
 

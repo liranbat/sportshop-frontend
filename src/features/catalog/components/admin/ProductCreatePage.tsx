@@ -11,7 +11,7 @@ import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import { RefreshButton } from "@/components/RefreshButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { useCategoriesQuery } from "@/features/categories";
+import { useCategoriesQuery } from "@/features/categories/queries";
 import { ImageUpload } from "@/features/images/components/ImageUpload";
 import { useCreateAdminProductMutation } from "@/features/catalog/queries";
 import {

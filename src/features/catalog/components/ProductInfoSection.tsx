@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { QuantityControl } from "@/components/QuantityControl";
 import { RefreshButton } from "@/components/RefreshButton";
-import { useMeQuery } from "@/features/auth";
+import { useMeQuery } from "@/features/auth/queries";
 import { useAddCartItemMutation } from "@/features/cart/queries";
 import { SizeButton } from "@/features/catalog/components/SizeButton";
 import type { ProductDetail, ProductSize, StockState } from "@/features/catalog/schema";

@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 import { NotFound } from "@/components/NotFound";
-import { useMeQuery } from "@/features/auth";
+import { useMeQuery } from "@/features/auth/queries";
 import { paths } from "@/lib/paths";
 
 export function RequireAdmin() {

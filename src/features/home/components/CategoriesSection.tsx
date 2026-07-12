@@ -1,5 +1,5 @@
 import { RefreshButton } from "@/components/RefreshButton";
-import { useCategoriesQuery } from "@/features/categories";
+import { useCategoriesQuery } from "@/features/categories/queries";
 import { CategoriesCarousel } from "@/features/home/components/CategoriesCarousel";
 
 export function CategoriesSection() {

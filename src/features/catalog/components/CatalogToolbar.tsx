@@ -5,7 +5,7 @@ import { FilterPriceRange } from "@/components/FilterPriceRange";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { FilterSort } from "@/components/FilterSort";
 import { ListFilterToolbar } from "@/components/ListFilterToolbar";
-import type { Category } from "@/features/categories";
+import type { Category } from "@/features/categories/schema";
 import type { ArchiveStatus, StagedFilters } from "@/features/catalog/filters";
 
 const SORT_OPTIONS: readonly DropdownOption[] = [

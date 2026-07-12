@@ -11,7 +11,7 @@ type Props = {
   errorBanner?: ReactNode;
   children?: ReactNode;
   footer?: ReactNode;
-  width?: number | string;
+  width?: string;
   bodyClassName?: string;
 };
 

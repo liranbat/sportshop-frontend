@@ -4,7 +4,7 @@ import { Badge } from "@/components/Badge";
 import { NavButton } from "@/components/NavButton";
 import { NavCartButton } from "@/components/NavCartButton";
 import { config } from "@/config";
-import { useLogoutMutation, useMeQuery } from "@/features/auth";
+import { useLogoutMutation, useMeQuery } from "@/features/auth/queries";
 import { paths } from "@/lib/paths";
 
 export function Navbar() {

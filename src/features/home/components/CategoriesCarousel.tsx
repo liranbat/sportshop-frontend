@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import type { Category } from "@/features/categories";
+import type { Category } from "@/features/categories/schema";
 import { CategoryCard } from "@/features/home/components/CategoryCard";
 
 // keep in sync with --slides-visible in styles/index.css
