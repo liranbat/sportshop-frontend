@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { AlertModal } from "@/components/AlertModal";
-import { Button } from "@/components/Button";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
 import { Notice } from "@/components/Notice";
 import { WarningTile } from "@/components/WarningTile";
@@ -8,12 +7,36 @@ import { useSoftDeleteAdminCategoryMutation } from "@/features/categories/querie
 import type { Category } from "@/features/categories/schema";
 
 type Props = {
-  onClose: () => void;
-  category: Category;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  category: Category | null;
   allCategories: readonly Category[];
 };
 
-export function AdminCategoryDeleteModal({ onClose, category, allCategories }: Props) {
+export function AdminCategoryDeleteModal({ open, onOpenChange, category, allCategories }: Props) {
+  if (!category) return null;
+  return (
+    <AdminCategoryDeleteModalContent
+      key={category.id}
+      open={open}
+      onOpenChange={onOpenChange}
+      category={category}
+      allCategories={allCategories}
+    />
+  );
+}
+
+function AdminCategoryDeleteModalContent({
+  open,
+  onOpenChange,
+  category,
+  allCategories,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  category: Category;
+  allCategories: readonly Category[];
+}) {
   const [replacementId, setReplacementId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
 
@@ -23,10 +46,7 @@ export function AdminCategoryDeleteModal({ onClose, category, allCategories }: P
     .filter((c) => !c.isDeleted && c.id !== category.id)
     .map((c) => ({ value: String(c.id), label: c.name }));
 
-  const handleClose = () => {
-    if (mutation.isPending) return;
-    onClose();
-  };
+  const noReplacementAvailable = replacementOptions.length === 0;
 
   const handleConfirm = () => {
     if (replacementId === null) {
@@ -38,45 +58,24 @@ export function AdminCategoryDeleteModal({ onClose, category, allCategories }: P
       { replacementCategoryId: Number(replacementId) },
       {
         onSuccess: () => {
-          onClose();
+          onOpenChange(false);
         },
       },
     );
   };
 
-  const noReplacementAvailable = replacementOptions.length === 0;
-
   return (
-    <AlertModal
-      open={true}
-      onOpenChange={(next) => (next ? undefined : handleClose())}
-      width="32.5rem"
+    <ConfirmActionModal
+      open={open}
+      onOpenChange={onOpenChange}
       icon={<WarningTile />}
       title="Delete this category?"
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
-      footer={
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={handleClose}
-            disabled={mutation.isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            onClick={handleConfirm}
-            isLoading={mutation.isPending}
-            disabled={mutation.isPending || noReplacementAvailable}
-          >
-            {mutation.isPending ? "Deleting…" : "Delete category"}
-          </Button>
-        </div>
-      }
+      tone="danger"
+      confirmLabel="Delete category"
+      pendingLabel="Deleting…"
+      mutation={mutation}
+      onConfirm={handleConfirm}
+      confirmDisabled={noReplacementAvailable}
     >
       <div className="flex flex-col gap-4">
         <p className="text-body-regular text-text-primary">
@@ -115,6 +114,6 @@ export function AdminCategoryDeleteModal({ onClose, category, allCategories }: P
           </div>
         )}
       </div>
-    </AlertModal>
+    </ConfirmActionModal>
   );
 }

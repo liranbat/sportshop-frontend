@@ -170,13 +170,14 @@ export function StockManagementPage() {
         onSuccess={handleAddSizeSuccess}
       />
 
-      {removeTarget && (
-        <RemoveSizeConfirmModal
-          row={removeTarget}
-          onClose={() => setRemoveTarget(null)}
-          onSuccess={handleRemoveSuccess}
-        />
-      )}
+      <RemoveSizeConfirmModal
+        open={removeTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setRemoveTarget(null);
+        }}
+        row={removeTarget}
+        onSuccess={handleRemoveSuccess}
+      />
     </main>
   );
 }

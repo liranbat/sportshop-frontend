@@ -1,63 +1,36 @@
-import { AlertModal } from "@/components/AlertModal";
-import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { useRestoreAdminProductMutation } from "@/features/catalog/queries";
 import type { ProductDetail } from "@/features/catalog/schema";
 
 type Props = {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   product: ProductDetail;
 };
 
-export function AdminProductRestoreModal({ onClose, product }: Props) {
+export function AdminProductRestoreModal({ open, onOpenChange, product }: Props) {
   const mutation = useRestoreAdminProductMutation(product.id);
-
-  const handleClose = () => {
-    if (mutation.isPending) return;
-    onClose();
-  };
 
   const handleConfirm = () => {
     mutation.mutate(
       { version: product.version },
       {
         onSuccess: () => {
-          onClose();
+          onOpenChange(false);
         },
       },
     );
   };
 
   return (
-    <AlertModal
-      open={true}
-      onOpenChange={(next) => (next ? undefined : handleClose())}
-      width="32.5rem"
+    <ConfirmActionModal
+      open={open}
+      onOpenChange={onOpenChange}
       title="Restore this product?"
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
-      footer={
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={handleClose}
-            disabled={mutation.isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleConfirm}
-            isLoading={mutation.isPending}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Restoring…" : "Restore Product"}
-          </Button>
-        </div>
-      }
+      confirmLabel="Restore Product"
+      pendingLabel="Restoring…"
+      mutation={mutation}
+      onConfirm={handleConfirm}
     >
       <div className="flex flex-col gap-3 text-body-regular text-text-primary">
         <p>
@@ -68,6 +41,6 @@ export function AdminProductRestoreModal({ onClose, product }: Props) {
           Stock data, prices, and images are unchanged from before archiving.
         </p>
       </div>
-    </AlertModal>
+    </ConfirmActionModal>
   );
 }

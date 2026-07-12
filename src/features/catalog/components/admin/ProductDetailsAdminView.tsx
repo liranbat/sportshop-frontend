@@ -121,21 +121,19 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
         </div>
       </div>
 
-      {isArchiveOpen && (
-        <AdminProductArchiveModal
-          key={`archive-${product.id}-${product.version}`}
-          onClose={() => setIsArchiveOpen(false)}
-          product={product}
-        />
-      )}
+      <AdminProductArchiveModal
+        key={`archive-${product.id}-${product.version}`}
+        open={isArchiveOpen}
+        onOpenChange={setIsArchiveOpen}
+        product={product}
+      />
 
-      {isRestoreOpen && (
-        <AdminProductRestoreModal
-          key={`restore-${product.id}-${product.version}`}
-          onClose={() => setIsRestoreOpen(false)}
-          product={product}
-        />
-      )}
+      <AdminProductRestoreModal
+        key={`restore-${product.id}-${product.version}`}
+        open={isRestoreOpen}
+        onOpenChange={setIsRestoreOpen}
+        product={product}
+      />
     </main>
   );
 }

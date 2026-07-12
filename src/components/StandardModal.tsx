@@ -15,7 +15,7 @@ type Props = {
   bodyClassName?: string;
 };
 
-export function AlertModal({
+export function StandardModal({
   open,
   onOpenChange,
   title,

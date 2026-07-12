@@ -113,22 +113,22 @@ export function CategoryManagementPage() {
         />
       )}
 
-      {deleteTarget !== null && (
-        <AdminCategoryDeleteModal
-          key={`delete-${deleteTarget.id}`}
-          onClose={() => setDeleteTarget(null)}
-          category={deleteTarget}
-          allCategories={categories}
-        />
-      )}
+      <AdminCategoryDeleteModal
+        open={deleteTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setDeleteTarget(null);
+        }}
+        category={deleteTarget}
+        allCategories={categories}
+      />
 
-      {restoreTarget !== null && (
-        <AdminCategoryRestoreModal
-          key={`restore-${restoreTarget.id}`}
-          onClose={() => setRestoreTarget(null)}
-          category={restoreTarget}
-        />
-      )}
+      <AdminCategoryRestoreModal
+        open={restoreTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setRestoreTarget(null);
+        }}
+        category={restoreTarget}
+      />
     </main>
   );
 }

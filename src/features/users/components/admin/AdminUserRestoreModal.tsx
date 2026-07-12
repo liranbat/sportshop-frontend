@@ -1,6 +1,4 @@
-import { AlertModal } from "@/components/AlertModal";
-import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import type { UserResponse } from "@/features/auth/schema";
 import { useRestoreAdminUserMutation } from "@/features/users/queries";
 
@@ -14,11 +12,6 @@ export function AdminUserRestoreModal({ open, onOpenChange, user }: Props) {
   const mutation = useRestoreAdminUserMutation(user.id);
   const fullName = `${user.firstName} ${user.lastName}`.trim();
 
-  const handleClose = () => {
-    mutation.reset();
-    onOpenChange(false);
-  };
-
   const handleConfirm = () => {
     mutation.mutate(undefined, {
       onSuccess: () => {
@@ -28,29 +21,14 @@ export function AdminUserRestoreModal({ open, onOpenChange, user }: Props) {
   };
 
   return (
-    <AlertModal
+    <ConfirmActionModal
       open={open}
-      onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
-      width="32.5rem"
+      onOpenChange={onOpenChange}
       title="Restore this user?"
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
-      footer={
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={handleClose}
-            disabled={mutation.isPending}
-          >
-            Cancel
-          </Button>
-          <Button type="button" onClick={handleConfirm} isLoading={mutation.isPending}>
-            {mutation.isPending ? "Restoring…" : "Restore User"}
-          </Button>
-        </div>
-      }
+      confirmLabel="Restore User"
+      pendingLabel="Restoring…"
+      mutation={mutation}
+      onConfirm={handleConfirm}
       bodyClassName="text-center"
     >
       <p className="text-body-regular text-text-primary">
@@ -60,6 +38,6 @@ export function AdminUserRestoreModal({ open, onOpenChange, user }: Props) {
         Shopping cart and sessions are not recovered — they were permanently removed at deletion
         time. The user starts fresh.
       </p>
-    </AlertModal>
+    </ConfirmActionModal>
   );
 }

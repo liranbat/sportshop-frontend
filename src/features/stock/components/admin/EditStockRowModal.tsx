@@ -1,9 +1,9 @@
 import { useId, useState } from "react";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner } from "@/components/Notice";
 import { SegmentedControl } from "@/components/SegmentedControl";
+import { StandardModal } from "@/components/StandardModal";
 import { cn } from "@/lib/cn";
 import { useAdjustAdminStockMutation, useSetAdminStockMutation } from "@/features/stock/queries";
 import type { StockRow } from "@/features/stock/schema";
@@ -131,7 +131,7 @@ function EditStockRowModalContent({
   const showDeltaError = delta.trim() !== "" && !parsedDelta.ok;
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
       width="32.5rem"
@@ -141,11 +141,7 @@ function EditStockRowModalContent({
           {row.productName} · size <span className="font-semibold">{row.size}</span>
         </>
       }
-      errorBanner={
-        activeMutation.isError ? (
-          <Notice variant="error" message={activeMutation.error.message} />
-        ) : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={activeMutation} />}
       bodyClassName="gap-5"
       footer={
         <div className="flex justify-end gap-3">
@@ -290,7 +286,7 @@ function EditStockRowModalContent({
           </div>
         </form>
       )}
-    </AlertModal>
+    </StandardModal>
   );
 }
 

@@ -48,3 +48,18 @@ export function Notice({ message, variant, className }: Props) {
     </div>
   );
 }
+
+type MutationErrorBannerProps = {
+  mutation: { isError: boolean; error: Error | null };
+  overrideMessage?: string;
+};
+
+export function MutationErrorBanner({ mutation, overrideMessage }: MutationErrorBannerProps) {
+  if (!mutation.isError) return null;
+  return (
+    <Notice
+      variant="error"
+      message={overrideMessage ?? mutation.error?.message ?? "Something went wrong."}
+    />
+  );
+}

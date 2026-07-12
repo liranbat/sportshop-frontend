@@ -1,9 +1,9 @@
 import { useId, useState } from "react";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner, Notice } from "@/components/Notice";
+import { StandardModal } from "@/components/StandardModal";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useAdminProductsQuery } from "@/features/catalog/queries";
 import type { Product } from "@/features/catalog/schema";
@@ -109,15 +109,13 @@ function AddSizeModalContent({ open, onOpenChange, onSuccess }: Props) {
   const inPickerStep = selectedProduct === null;
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
       width="32.5rem"
       title="Add size"
       subtitle="Add a new size row for an existing multi-size product."
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       bodyClassName="min-h-96 gap-4"
       footer={
         <div className="flex justify-end gap-3">
@@ -168,7 +166,7 @@ function AddSizeModalContent({ open, onOpenChange, onSuccess }: Props) {
           onSubmit={handleSubmit}
         />
       )}
-    </AlertModal>
+    </StandardModal>
   );
 }
 
