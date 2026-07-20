@@ -1,4 +1,6 @@
+import { Badge } from "@/components/Badge";
 import { IconButton } from "@/components/IconButton";
+import { STOCK_LABEL, statusBadgeStateForStock } from "@/features/stock/badge";
 import type { StockRow } from "@/features/stock/schema";
 
 type Props = {
@@ -20,7 +22,7 @@ export function StockManagementListRow({ row, onStartEdit, onRemove }: Props) {
           : `≤${row.lowStockThreshold}`}
       </td>
       <td className="px-4 py-3 align-middle">
-        <StatusPill quantity={row.quantity} threshold={row.lowStockThreshold ?? null} />
+        <StockStatusBadge row={row} />
       </td>
       <td className="px-4 py-3 align-middle">
         <div className="flex items-center gap-1">
@@ -53,7 +55,7 @@ function ProductCell({ row }: { row: StockRow }) {
             <span className="truncate text-body-small-bold text-text-primary">
               {row.productName}
             </span>
-            {row.productIsArchived && <ArchivedPill />}
+            {row.productIsArchived && <Badge kind="ARCHIVED" label="Archived" size="sm" />}
           </div>
           <span className="text-caption-regular text-text-secondary">ID: {row.productId}</span>
         </div>
@@ -66,34 +68,9 @@ function SizeCell({ row }: { row: StockRow }) {
   return <td className="px-4 py-3 align-middle text-body-small text-text-primary">{row.size}</td>;
 }
 
-function StatusPill({ quantity, threshold }: { quantity: number; threshold: number | null }) {
-  if (quantity === 0) {
-    return (
-      <span className="inline-flex h-6 items-center rounded-full bg-error-bg px-2 text-body-small font-semibold text-error-text">
-        Out of stock
-      </span>
-    );
-  }
-  if (threshold !== null && threshold > 0 && quantity <= threshold) {
-    return (
-      <span className="inline-flex h-6 items-center rounded-full bg-warning-bg px-2 text-body-small font-semibold text-warning-text">
-        Low stock
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex h-6 items-center rounded-full bg-success-bg px-2 text-body-small font-semibold text-success-text">
-      In stock
-    </span>
-  );
-}
-
-function ArchivedPill() {
-  return (
-    <span className="inline-flex h-5 items-center rounded-full bg-background-page px-2 text-caption-regular font-semibold text-text-secondary">
-      Archived
-    </span>
-  );
+function StockStatusBadge({ row }: { row: StockRow }) {
+  const kind = statusBadgeStateForStock(row.quantity, row.lowStockThreshold ?? null);
+  return <Badge kind={kind} label={STOCK_LABEL[kind]} />;
 }
 
 function Thumbnail({ src, alt }: { src: string | null; alt: string }) {

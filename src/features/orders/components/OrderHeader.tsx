@@ -1,8 +1,10 @@
 import { Link } from "react-router";
+import { Badge } from "@/components/Badge";
 import { Button } from "@/components/Button";
-import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { RefreshButton } from "@/components/RefreshButton";
+import { ORDER_STATUS_LABEL } from "@/features/orders/labels";
 import { legalTargetStatusesFor, type OrderDetail } from "@/features/orders/schema";
+import { paths } from "@/lib/paths";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -45,7 +47,7 @@ export function OrderHeader({
           <h1 className="text-heading-l text-text-primary tabular-nums wrap-break-word">
             {order.orderNumber}
           </h1>
-          <OrderStatusBadge status={order.status} />
+          <Badge kind={order.status} label={ORDER_STATUS_LABEL[order.status]} />
         </div>
         <p className="text-body-small text-text-secondary">
           Placed on {dateFormatter.format(new Date(order.createdAt))}
@@ -59,7 +61,7 @@ export function OrderHeader({
           <p className="text-body-small text-text-secondary">
             Customer:{" "}
             <Link
-              to={`/profile/${order.customer.id}`}
+              to={paths.profile.adminDetail(order.customer.id)}
               className="text-body-small-bold text-primary-blue hover:underline focus-visible:underline focus-visible:outline-none"
             >
               {customerName}

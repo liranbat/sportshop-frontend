@@ -1,6 +1,7 @@
 import { Link } from "react-router";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/Badge";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 export type ProductCardView = "user" | "admin";
 
@@ -40,7 +41,7 @@ export function ProductCard({
 
   return (
     <Link
-      to={`/products/${id}`}
+      to={paths.products.detail(id)}
       aria-label={ariaParts.join(", ")}
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden rounded-[0.6em] bg-background-card shadow-card transition-shadow hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue",
@@ -74,7 +75,7 @@ export function ProductCard({
           <span className="text-[1em] font-semibold leading-tight text-primary-blue">
             {priceFormatter.format(price)}
           </span>
-          {isAdmin && isArchived && <StatusBadge state="ARCHIVED" />}
+          {isAdmin && isArchived && <Badge kind="ARCHIVED" label="Archived" />}
         </div>
         {isAdmin && (
           <div className="mt-[0.2em] flex items-center justify-between gap-[0.5em] text-[0.7em] text-text-secondary">

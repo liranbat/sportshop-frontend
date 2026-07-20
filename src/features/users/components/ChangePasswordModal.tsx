@@ -1,9 +1,9 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
+import { StandardModal } from "@/components/StandardModal";
 import { useChangePasswordMutation } from "@/features/users/queries";
 import {
   ChangePasswordFormSchema,
@@ -58,14 +58,12 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
   };
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={onOpenChange}
       title="Change Password"
       subtitle="Enter your current password and choose a new one."
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       footer={
         <div className="flex justify-end gap-3">
           <Button
@@ -115,6 +113,6 @@ export function ChangePasswordModal({ open, onOpenChange }: Props) {
           {...register("confirmPassword")}
         />
       </form>
-    </AlertModal>
+    </StandardModal>
   );
 }

@@ -10,6 +10,7 @@ import { AdminCategoryFormModal } from "@/features/categories/components/admin/A
 import { AdminCategoryGrid } from "@/features/categories/components/admin/AdminCategoryGrid";
 import { AdminCategoryRestoreModal } from "@/features/categories/components/admin/AdminCategoryRestoreModal";
 import { EmptyAdminCategoryList } from "@/features/categories/components/admin/EmptyAdminCategoryList";
+import { paths } from "@/lib/paths";
 
 type EditTarget = Category | "create" | null;
 
@@ -73,7 +74,7 @@ export function CategoryManagementPage() {
           </div>
         </section>
 
-        <BackLink to="/catalog" label="Back to Catalog" />
+        <BackLink to={paths.catalog()} label="Back to Catalog" />
 
         <div
           aria-busy={query.isFetching}
@@ -112,22 +113,22 @@ export function CategoryManagementPage() {
         />
       )}
 
-      {deleteTarget !== null && (
-        <AdminCategoryDeleteModal
-          key={`delete-${deleteTarget.id}`}
-          onClose={() => setDeleteTarget(null)}
-          category={deleteTarget}
-          allCategories={categories}
-        />
-      )}
+      <AdminCategoryDeleteModal
+        open={deleteTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setDeleteTarget(null);
+        }}
+        category={deleteTarget}
+        allCategories={categories}
+      />
 
-      {restoreTarget !== null && (
-        <AdminCategoryRestoreModal
-          key={`restore-${restoreTarget.id}`}
-          onClose={() => setRestoreTarget(null)}
-          category={restoreTarget}
-        />
-      )}
+      <AdminCategoryRestoreModal
+        open={restoreTarget !== null}
+        onOpenChange={(next) => {
+          if (!next) setRestoreTarget(null);
+        }}
+        category={restoreTarget}
+      />
     </main>
   );
 }

@@ -1,12 +1,13 @@
 import { useMemo, useState } from "react";
+import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { AdminUserList } from "@/features/users/components/admin/AdminUserList";
-import { AdminUserListPagination } from "@/features/users/components/admin/AdminUserListPagination";
 import { AdminUserListToolbar } from "@/features/users/components/admin/AdminUserListToolbar";
 import { EmptyAdminUserList } from "@/features/users/components/admin/EmptyAdminUserList";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toUserListParams,
   type PageSize,
   type StagedUserFilters,
@@ -79,9 +80,11 @@ export function AdminUserListPage() {
               )}
             </div>
 
-            <AdminUserListPagination
+            <ListPagination
+              ariaLabel="Admin user list pagination"
               page={page}
               pageSize={staged.pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
               totalPages={totalPages}
               disabled={usersQuery.isFetching}
               onPageChange={setPage}

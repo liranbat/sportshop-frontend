@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { Button } from "@/components/Button";
+import { paths } from "@/lib/paths";
 import type { CheckoutResult } from "../schema";
 import { CheckoutFooter } from "./CheckoutFooter";
 
@@ -18,7 +19,7 @@ export function SuccessState({ result, onClose }: SuccessStateProps) {
 
   const handleViewOrder = () => {
     onClose();
-    void navigate(`/orders/${result.orderNumber}`);
+    void navigate(paths.orders.detail(result.orderNumber));
   };
 
   return (

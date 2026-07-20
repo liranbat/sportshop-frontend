@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useCartCountQuery } from "@/features/cart/queries";
+import { paths } from "@/lib/paths";
 
 export function NavCartButton() {
   const { data } = useCartCountQuery();
@@ -9,7 +10,7 @@ export function NavCartButton() {
 
   return (
     <Link
-      to="/cart"
+      to={paths.cart()}
       aria-label={showBadge ? `Cart, ${count} ${count === 1 ? "item" : "items"}` : "Cart"}
       className="inline-flex h-8 items-center justify-center gap-2 rounded-md border border-primary-blue px-3 text-body-small text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
     >

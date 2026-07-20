@@ -1,11 +1,13 @@
 import { Link, useParams } from "react-router";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { useMeQuery } from "@/features/auth/queries";
 import { ProductImageSection } from "@/features/catalog/components/ProductImageSection";
 import { ProductInfoSection } from "@/features/catalog/components/ProductInfoSection";
 import { ProductDetailsAdminView } from "@/features/catalog/components/admin/ProductDetailsAdminView";
 import { useProductQuery } from "@/features/catalog/queries";
 import { ApiError } from "@/lib/api";
+import { paths } from "@/lib/paths";
 
 function parseProductId(raw: string | undefined): number | null {
   if (raw === undefined) return null;
@@ -31,11 +33,7 @@ function ProductDetailsRouter({ productId }: { productId: number }) {
   const isAdmin = meQuery.data?.isAdmin === true;
 
   if (!isAuthResolved || productQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading product…
-      </main>
-    );
+    return <PageLoading label="Loading product…" />;
   }
 
   if (productQuery.isError) {
@@ -87,7 +85,7 @@ function ProductNotFound() {
           We couldn’t find this product. It may have been removed.
         </p>
         <Link
-          to="/catalog"
+          to={paths.catalog()}
           className="mt-2 inline-flex h-10 items-center justify-center rounded-lg bg-primary-blue px-5 text-body-regular font-semibold text-white transition-colors hover:bg-primary-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
         >
           Back to Catalog

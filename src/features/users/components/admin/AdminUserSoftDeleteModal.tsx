@@ -1,6 +1,4 @@
-import { AlertModal } from "@/components/AlertModal";
-import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { WarningTile } from "@/components/WarningTile";
 import type { UserResponse } from "@/features/auth/schema";
 import { useSoftDeleteAdminUserMutation } from "@/features/users/queries";
@@ -15,11 +13,6 @@ export function AdminUserSoftDeleteModal({ open, onOpenChange, user }: Props) {
   const mutation = useSoftDeleteAdminUserMutation(user.id);
   const fullName = `${user.firstName} ${user.lastName}`.trim();
 
-  const handleClose = () => {
-    mutation.reset();
-    onOpenChange(false);
-  };
-
   const handleConfirm = () => {
     mutation.mutate(undefined, {
       onSuccess: () => {
@@ -29,35 +22,16 @@ export function AdminUserSoftDeleteModal({ open, onOpenChange, user }: Props) {
   };
 
   return (
-    <AlertModal
+    <ConfirmActionModal
       open={open}
-      onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
-      width="32.5rem"
+      onOpenChange={onOpenChange}
       icon={<WarningTile />}
       title="Delete this user?"
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
-      footer={
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="outlined"
-            onClick={handleClose}
-            disabled={mutation.isPending}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            onClick={handleConfirm}
-            isLoading={mutation.isPending}
-          >
-            {mutation.isPending ? "Deleting…" : "Delete User"}
-          </Button>
-        </div>
-      }
+      tone="danger"
+      confirmLabel="Delete User"
+      pendingLabel="Deleting…"
+      mutation={mutation}
+      onConfirm={handleConfirm}
       bodyClassName="text-center"
     >
       <p className="text-body-regular text-text-primary">
@@ -68,6 +42,6 @@ export function AdminUserSoftDeleteModal({ open, onOpenChange, user }: Props) {
       <p className="text-body-regular text-text-primary">
         Orders and payment history are preserved.
       </p>
-    </AlertModal>
+    </ConfirmActionModal>
   );
 }

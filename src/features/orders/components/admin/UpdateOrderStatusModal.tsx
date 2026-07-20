@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner } from "@/components/Notice";
+import { StandardModal } from "@/components/StandardModal";
 import { ORDER_STATUS_LABEL } from "@/features/orders/labels";
 import { orderQueryKeys, useUpdateOrderStatusMutation } from "@/features/orders/queries";
 import { legalTargetStatusesFor, type OrderStatus } from "@/features/orders/schema";
@@ -59,16 +59,14 @@ export function UpdateOrderStatusModal({ orderNumber, currentStatus, open, onOpe
   }));
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={handleOpenChange}
       width="32.5rem"
       title="Update order status"
       subtitle={`Currently ${ORDER_STATUS_LABEL[currentStatus]}. Choose the next status.`}
       bodyClassName="min-h-25"
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       footer={
         mutation.isError ? (
           <div className="flex justify-end">
@@ -104,6 +102,6 @@ export function UpdateOrderStatusModal({ orderNumber, currentStatus, open, onOpe
           listboxClassName="w-fit min-w-40"
         />
       )}
-    </AlertModal>
+    </StandardModal>
   );
 }

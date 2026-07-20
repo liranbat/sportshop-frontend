@@ -1,32 +1,36 @@
 import ReactPaginate from "react-paginate";
 import { FilterDropdown, type DropdownOption } from "@/components/FilterDropdown";
-import { PAGE_SIZE_OPTIONS, isPageSize, type PageSize } from "@/features/catalog/filters";
 
-type Props = {
+type Props<T extends number> = {
+  ariaLabel: string;
   page: number;
-  pageSize: PageSize;
+  pageSize: T;
+  pageSizeOptions: readonly T[];
   totalPages: number;
   disabled: boolean;
   onPageChange: (page: number) => void;
-  onPageSizeChange: (pageSize: PageSize) => void;
+  onPageSizeChange: (pageSize: T) => void;
 };
 
-const PAGE_SIZE_DROPDOWN_OPTIONS: readonly DropdownOption[] = PAGE_SIZE_OPTIONS.map((n) => ({
-  value: String(n),
-  label: `${n} per page`,
-}));
-
-export function CatalogPagination({
+export function ListPagination<T extends number>({
+  ariaLabel,
   page,
   pageSize,
+  pageSizeOptions,
   totalPages,
   disabled,
   onPageChange,
   onPageSizeChange,
-}: Props) {
+}: Props<T>) {
+  const dropdownOptions: readonly DropdownOption[] = pageSizeOptions.map((n) => ({
+    value: String(n),
+    label: `${n} per page`,
+  }));
+  const optionSet = new Set<number>(pageSizeOptions);
+
   return (
     <nav
-      aria-label="Catalog pagination"
+      aria-label={ariaLabel}
       aria-busy={disabled}
       className={`flex items-center gap-2 px-2 py-3 transition-opacity ${
         disabled ? "pointer-events-none opacity-60" : ""
@@ -63,12 +67,12 @@ export function CatalogPagination({
 
         <div className="flex flex-1 justify-end">
           <FilterDropdown
-            options={PAGE_SIZE_DROPDOWN_OPTIONS}
+            options={dropdownOptions}
             value={String(pageSize)}
             onChange={(next) => {
               const parsed = Number(next);
-              if (Number.isFinite(parsed) && isPageSize(parsed)) {
-                onPageSizeChange(parsed);
+              if (Number.isFinite(parsed) && optionSet.has(parsed)) {
+                onPageSizeChange(parsed as T);
               }
             }}
             ariaLabel="Items per page"

@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router";
-import { useMeQuery } from "@/features/auth";
+import { useMeQuery } from "@/features/auth/queries";
+import { paths } from "@/lib/paths";
 
 export function RequireGuest() {
   const { data: user, isPending } = useMeQuery();
@@ -11,7 +12,7 @@ export function RequireGuest() {
   }
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={paths.home()} replace />;
   }
 
   return <Outlet />;

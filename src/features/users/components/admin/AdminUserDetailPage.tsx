@@ -1,20 +1,21 @@
 import { useCallback, useState } from "react";
 import { Navigate, useParams } from "react-router";
+import { Badge } from "@/components/Badge";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { RefreshButton } from "@/components/RefreshButton";
-import { RoleBadge } from "@/components/RoleBadge";
-import { UserStatusBadge } from "@/components/UserStatusBadge";
 import { ProfileCard } from "@/features/users/components/ProfileCard";
 import { AdminActionsCard } from "@/features/users/components/admin/AdminActionsCard";
 import { useAdminUserQuery, useUpdateAdminUserMutation } from "@/features/users/queries";
+import { paths } from "@/lib/paths";
 
 export function AdminUserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
   const parsedId = Number(userId);
 
   if (!Number.isInteger(parsedId) || parsedId <= 0) {
-    return <Navigate to="/admin/users" replace />;
+    return <Navigate to={paths.admin.users()} replace />;
   }
 
   return <AdminUserDetailContent userId={parsedId} />;
@@ -32,11 +33,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
   }, [updateMutation, userQuery]);
 
   if (userQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading user…
-      </main>
-    );
+    return <PageLoading label="Loading user…" />;
   }
 
   if (userQuery.isError || !userQuery.data) {
@@ -47,7 +44,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
             variant="error"
             message="Could not load this user. They may have been removed, or your connection dropped."
           />
-          <BackLink to="/admin/users" label="Back to Users" />
+          <BackLink to={paths.admin.users()} label="Back to Users" />
         </div>
       </main>
     );
@@ -55,7 +52,6 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
 
   const user = userQuery.data;
   const fullName = `${user.firstName} ${user.lastName}`.trim();
-  const role = user.isAdmin ? "Admin" : "User";
   const isRefreshing = userQuery.isFetching;
 
   return (
@@ -67,8 +63,14 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
               Profile - Admin View: {fullName}
             </h1>
             <div className="flex flex-wrap items-center gap-2">
-              <UserStatusBadge status={user.isDeleted ? "DELETED" : "ACTIVE"} />
-              <RoleBadge role={role} />
+              <Badge
+                kind={user.isDeleted ? "DELETED" : "ACTIVE"}
+                label={user.isDeleted ? "Deleted" : "Active"}
+              />
+              <Badge
+                kind={user.isAdmin ? "ROLE_ADMIN" : "ROLE_USER"}
+                label={user.isAdmin ? "Admin" : "User"}
+              />
             </div>
           </div>
           <RefreshButton
@@ -78,7 +80,7 @@ function AdminUserDetailContent({ userId }: { userId: number }) {
           />
         </header>
 
-        <BackLink to="/admin/users" label="Back to Users" />
+        <BackLink to={paths.admin.users()} label="Back to Users" />
 
         <div
           aria-busy={isRefreshing}

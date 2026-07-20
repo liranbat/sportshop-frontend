@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
-import { RoleBadge } from "@/components/RoleBadge";
-import { UserStatusBadge } from "@/components/UserStatusBadge";
+import { Badge } from "@/components/Badge";
 import type { UserResponse } from "@/features/auth/schema";
+import { paths } from "@/lib/paths";
 
 type Props = {
   user: UserResponse;
@@ -10,10 +10,9 @@ type Props = {
 export function AdminUserRow({ user }: Props) {
   const navigate = useNavigate();
   const fullName = `${user.firstName} ${user.lastName}`.trim();
-  const role = user.isAdmin ? "Admin" : "User";
 
   const goToDetail = () => {
-    void navigate(`/profile/${user.id}`);
+    void navigate(paths.profile.adminDetail(user.id));
   };
 
   return (
@@ -30,10 +29,16 @@ export function AdminUserRow({ user }: Props) {
       </td>
       <td className="px-4 py-3 align-middle text-body-small text-text-secondary">{user.phone}</td>
       <td className="px-4 py-3 align-middle">
-        <UserStatusBadge status={user.isDeleted ? "DELETED" : "ACTIVE"} />
+        <Badge
+          kind={user.isDeleted ? "DELETED" : "ACTIVE"}
+          label={user.isDeleted ? "Deleted" : "Active"}
+        />
       </td>
       <td className="px-4 py-3 align-middle">
-        <RoleBadge role={role} />
+        <Badge
+          kind={user.isAdmin ? "ROLE_ADMIN" : "ROLE_USER"}
+          label={user.isAdmin ? "Admin" : "User"}
+        />
       </td>
     </tr>
   );

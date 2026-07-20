@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router";
-import { useMeQuery } from "@/features/auth";
+import { useMeQuery } from "@/features/auth/queries";
+import { paths } from "@/lib/paths";
 
 export function RequireAuth() {
   const { data: user, isPending } = useMeQuery();
@@ -11,7 +12,7 @@ export function RequireAuth() {
   }
 
   if (!user) {
-    return <Navigate to="/sign-in" replace />;
+    return <Navigate to={paths.signIn()} replace />;
   }
 
   return <Outlet />;

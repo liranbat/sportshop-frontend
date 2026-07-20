@@ -1,6 +1,6 @@
 import { RefreshButton } from "@/components/RefreshButton";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { StatusBadge } from "@/components/StatusBadge";
+import { Badge } from "@/components/Badge";
 
 export type AdminProductDetailViewMode = "admin" | "customer";
 
@@ -31,7 +31,7 @@ export function AdminProductDetailHeaderRow({
     >
       <div className="flex items-center gap-3">
         <h1 className="text-body-large font-semibold text-text-primary">Product details</h1>
-        {isArchived && <StatusBadge state="ARCHIVED" />}
+        {isArchived && <Badge kind="ARCHIVED" label="Archived" />}
       </div>
       <div className="flex items-center gap-2">
         <SegmentedControl

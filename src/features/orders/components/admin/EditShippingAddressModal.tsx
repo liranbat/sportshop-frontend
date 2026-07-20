@@ -2,10 +2,10 @@ import { useId } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner } from "@/components/Notice";
+import { StandardModal } from "@/components/StandardModal";
 import { ShippingFormSchema, type ShippingForm } from "@/features/checkout/schema";
 import { orderQueryKeys, useUpdateShippingAddressMutation } from "@/features/orders/queries";
 import type { OrderShipping, OrderStatus } from "@/features/orders/schema";
@@ -67,15 +67,13 @@ export function EditShippingAddressModal({
   };
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={handleOpenChange}
       width="36rem"
       title="Edit shipping address"
       subtitle="Update the destination for this order."
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       footer={
         mutation.isError ? (
           <div className="flex justify-end">
@@ -165,6 +163,6 @@ export function EditShippingAddressModal({
           />
         </form>
       )}
-    </AlertModal>
+    </StandardModal>
   );
 }

@@ -6,7 +6,7 @@ import {
 } from "@/features/catalog/components/ProductCard";
 import type { PageSize } from "@/features/catalog/filters";
 import type { Product } from "@/features/catalog/schema";
-import type { Category } from "@/features/categories";
+import type { Category } from "@/features/categories/schema";
 
 type Props = {
   products: readonly Product[];

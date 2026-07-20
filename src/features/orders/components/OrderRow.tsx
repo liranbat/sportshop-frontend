@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router";
-import { OrderStatusBadge } from "@/components/OrderStatusBadge";
+import { Badge } from "@/components/Badge";
+import { ORDER_STATUS_LABEL } from "@/features/orders/labels";
 import type { OrderSummary } from "@/features/orders/schema";
+import { paths } from "@/lib/paths";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -22,7 +24,7 @@ export function OrderRow({ order, view }: Props) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    void navigate(`/orders/${order.orderNumber}`);
+    void navigate(paths.orders.detail(order.orderNumber));
   };
 
   const itemCountLabel = order.itemCount === 1 ? "1 item" : `${order.itemCount} items`;
@@ -54,7 +56,7 @@ export function OrderRow({ order, view }: Props) {
         {priceFormatter.format(order.totalPrice)}
       </td>
       <td className="px-4 py-3 align-middle">
-        <OrderStatusBadge status={order.status} />
+        <Badge kind={order.status} label={ORDER_STATUS_LABEL[order.status]} />
       </td>
     </tr>
   );

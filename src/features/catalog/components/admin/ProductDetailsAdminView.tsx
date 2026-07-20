@@ -11,7 +11,7 @@ import { FilterDropdownLabeled } from "@/components/FilterDropdownLabeled";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
 import { Notice } from "@/components/Notice";
 import { SegmentedControl } from "@/components/SegmentedControl";
-import { categoriesQueryKeys, useCategoriesQuery } from "@/features/categories";
+import { categoriesQueryKeys, useCategoriesQuery } from "@/features/categories/queries";
 import { ImageUpload } from "@/features/images/components/ImageUpload";
 import {
   AdminProductDetailHeaderRow,
@@ -29,6 +29,7 @@ import {
 } from "@/features/catalog/schema";
 import { useUpdateAdminProductMutation } from "@/features/catalog/queries";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 const PRODUCT_IMAGE_FORMATS = ["jpg", "jpeg", "png", "webp", "avif"] as const;
 const VIEW_PARAM = "view";
@@ -102,7 +103,7 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
           isRefreshing={isRefreshing}
         />
 
-        <BackLink to="/catalog" label="Back to Catalog" />
+        <BackLink to={paths.catalog()} label="Back to Catalog" />
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto py-2 lg:overflow-hidden">
           {adminView === "admin" ? (
@@ -120,21 +121,19 @@ export function ProductDetailsAdminView({ product, onRefresh, isRefreshing }: Pr
         </div>
       </div>
 
-      {isArchiveOpen && (
-        <AdminProductArchiveModal
-          key={`archive-${product.id}-${product.version}`}
-          onClose={() => setIsArchiveOpen(false)}
-          product={product}
-        />
-      )}
+      <AdminProductArchiveModal
+        key={`archive-${product.id}-${product.version}`}
+        open={isArchiveOpen}
+        onOpenChange={setIsArchiveOpen}
+        product={product}
+      />
 
-      {isRestoreOpen && (
-        <AdminProductRestoreModal
-          key={`restore-${product.id}-${product.version}`}
-          onClose={() => setIsRestoreOpen(false)}
-          product={product}
-        />
-      )}
+      <AdminProductRestoreModal
+        key={`restore-${product.id}-${product.version}`}
+        open={isRestoreOpen}
+        onOpenChange={setIsRestoreOpen}
+        product={product}
+      />
     </main>
   );
 }

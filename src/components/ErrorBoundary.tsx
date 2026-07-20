@@ -1,5 +1,6 @@
 import { useRouteError, isRouteErrorResponse, Link } from "react-router";
 import { cn } from "@/lib/cn";
+import { paths } from "@/lib/paths";
 
 function getMessage(error: unknown): { title: string; detail: string } {
   if (isRouteErrorResponse(error)) {
@@ -24,7 +25,7 @@ export function ErrorBoundary() {
         <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
         <p className="text-slate-400">{detail}</p>
         <Link
-          to="/"
+          to={paths.home()}
           className={cn(
             "rounded-lg px-4 py-2 text-sm font-medium transition",
             "bg-blue-600 text-white hover:bg-blue-500",

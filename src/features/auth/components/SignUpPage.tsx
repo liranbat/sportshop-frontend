@@ -12,6 +12,7 @@ import {
   type RegisterRequest,
   type SignUpFormValues,
 } from "@/features/auth/schema";
+import { paths } from "@/lib/paths";
 
 export function SignUpPage() {
   const navigate = useNavigate();
@@ -51,7 +52,7 @@ export function SignUpPage() {
       password: values.password,
     };
     registerMutation.mutate(payload, {
-      onSuccess: () => navigate("/sign-in?reason=registered", { replace: true }),
+      onSuccess: () => navigate(paths.signIn({ reason: "registered" }), { replace: true }),
     });
   };
 
@@ -135,7 +136,7 @@ export function SignUpPage() {
 
           <p className="mt-8 text-center text-body-small text-text-secondary">
             Already have an account?{" "}
-            <Link to="/sign-in" className="font-semibold text-primary-blue hover:underline">
+            <Link to={paths.signIn()} className="font-semibold text-primary-blue hover:underline">
               Sign In
             </Link>
           </p>

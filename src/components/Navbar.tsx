@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router";
 import sportshopHorizontal from "@/assets/sportshop-logos/sportshop-horizontal.png";
+import { Badge } from "@/components/Badge";
 import { NavButton } from "@/components/NavButton";
 import { NavCartButton } from "@/components/NavCartButton";
-import { RoleBadge } from "@/components/RoleBadge";
 import { config } from "@/config";
-import { useLogoutMutation, useMeQuery } from "@/features/auth";
+import { useLogoutMutation, useMeQuery } from "@/features/auth/queries";
+import { paths } from "@/lib/paths";
 
 export function Navbar() {
   const { data: user, isPending } = useMeQuery();
@@ -12,7 +13,7 @@ export function Navbar() {
   const logoutMutation = useLogoutMutation();
 
   const handleSignOut = () => {
-    navigate("/", { replace: true });
+    navigate(paths.home(), { replace: true });
     logoutMutation.mutate();
   };
 
@@ -33,8 +34,8 @@ export function Navbar() {
             {config.ENV_LABEL}
           </span>
         )}
-        {user?.isAdmin === true && <RoleBadge role="Admin" />}
-        {user && !user.isAdmin && <RoleBadge role="User" />}
+        {user?.isAdmin === true && <Badge kind="ROLE_ADMIN" label="Admin" />}
+        {user && !user.isAdmin && <Badge kind="ROLE_USER" label="User" />}
       </div>
 
       <nav aria-label="Primary" className="flex items-center gap-3">
@@ -52,10 +53,10 @@ export function Navbar() {
 function GuestLinks() {
   return (
     <>
-      <NavButton to="/" label="Home" variant="outlined" />
-      <NavButton to="/catalog" label="Catalog" variant="outlined" />
-      <NavButton to="/sign-in" label="Sign In" variant="outlined" />
-      <NavButton to="/sign-up" label="Sign Up" variant="filled" />
+      <NavButton to={paths.home()} label="Home" variant="outlined" />
+      <NavButton to={paths.catalog()} label="Catalog" variant="outlined" />
+      <NavButton to={paths.signIn()} label="Sign In" variant="outlined" />
+      <NavButton to={paths.signUp()} label="Sign Up" variant="filled" />
     </>
   );
 }
@@ -63,15 +64,15 @@ function GuestLinks() {
 function AuthedLinks({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () => void }) {
   return (
     <>
-      <NavButton to="/" label="Home" variant="outlined" />
-      <NavButton to="/catalog" label="Catalog" variant="outlined" />
+      <NavButton to={paths.home()} label="Home" variant="outlined" />
+      <NavButton to={paths.catalog()} label="Catalog" variant="outlined" />
       <NavCartButton />
-      <NavButton to="/orders" label="Orders" variant="outlined" />
-      <NavButton to="/profile" label="Profile" variant="outlined" />
+      <NavButton to={paths.orders.list()} label="Orders" variant="outlined" />
+      <NavButton to={paths.profile.me()} label="Profile" variant="outlined" />
       {isAdmin && (
         <>
-          <NavButton to="/admin/users" label="Users" variant="outlined" />
-          <NavButton to="/admin/sessions" label="Sessions" variant="outlined" />
+          <NavButton to={paths.admin.users()} label="Users" variant="outlined" />
+          <NavButton to={paths.admin.sessions()} label="Sessions" variant="outlined" />
         </>
       )}
       <NavButton onClick={onSignOut} label="Sign Out" variant="filled" />

@@ -1,6 +1,7 @@
 import { AxiosError, type AxiosResponse, type InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
+import { paths } from "@/lib/paths";
 import { queryClient } from "@/lib/query";
 import { refresh } from "@/features/auth/api";
 import { authQueryKeys } from "@/features/auth/queries";
@@ -95,7 +96,7 @@ function runRefreshOnce(): Promise<void> {
 
 function handleSessionDead(): void {
   queryClient.setQueryData(authQueryKeys.me(), null);
-  window.location.assign("/sign-in?reason=expired");
+  window.location.assign(paths.signIn({ reason: "expired" }));
 }
 
 // Patches `me.isAdmin` from the backend-supplied X-Auth-Role header. Called on every

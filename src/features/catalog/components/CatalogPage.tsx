@@ -1,19 +1,21 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
-import { useCategoriesQuery } from "@/features/categories";
+import { useCategoriesQuery } from "@/features/categories/queries";
 import { CatalogGrid } from "@/features/catalog/components/CatalogGrid";
-import { CatalogPagination } from "@/features/catalog/components/CatalogPagination";
 import { CatalogToolbar } from "@/features/catalog/components/CatalogToolbar";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toProductListParams,
   type PageSize,
   type StagedFilters,
 } from "@/features/catalog/filters";
 import { useAdminProductsQuery, useProductsQuery } from "@/features/catalog/queries";
+import { paths } from "@/lib/paths";
 
 type CatalogIntentState = { categoryId: number };
 
@@ -132,19 +134,19 @@ export function CatalogPage() {
             <h1 className="text-body-large font-semibold text-text-primary">Catalog</h1>
             <div className="flex items-center gap-2">
               <Link
-                to="/products/new"
+                to={paths.products.create()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 + New Product
               </Link>
               <Link
-                to="/admin/category-management"
+                to={paths.admin.categories()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 Category Management
               </Link>
               <Link
-                to="/admin/stock-management"
+                to={paths.admin.stock()}
                 className="inline-flex h-7 items-center justify-center rounded-lg border border-primary-blue bg-transparent px-3 text-body-small font-semibold text-primary-blue transition-colors hover:bg-primary-blue-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
               >
                 Stock Management
@@ -184,9 +186,11 @@ export function CatalogPage() {
           )}
         </div>
 
-        <CatalogPagination
+        <ListPagination
+          ariaLabel="Catalog pagination"
           page={page}
           pageSize={staged.pageSize}
+          pageSizeOptions={PAGE_SIZE_OPTIONS}
           totalPages={totalPages}
           disabled={isRefreshing}
           onPageChange={setPage}

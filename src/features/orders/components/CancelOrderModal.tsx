@@ -1,7 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { AlertModal } from "@/components/AlertModal";
-import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { ConfirmActionModal } from "@/components/ConfirmActionModal";
 import { WarningTile } from "@/components/WarningTile";
 import { orderQueryKeys, useCancelOrderMutation } from "@/features/orders/queries";
 
@@ -32,12 +30,10 @@ export function CancelOrderModal({ orderNumber, open, onOpenChange, variant = "u
   const detailKey = isAdmin
     ? orderQueryKeys.adminDetail(orderNumber)
     : orderQueryKeys.detail(orderNumber);
+
   const handleOpenChange = (next: boolean) => {
-    if (!next) {
-      if (mutation.isError) {
-        void queryClient.invalidateQueries({ queryKey: detailKey });
-      }
-      mutation.reset();
+    if (!next && mutation.isError) {
+      void queryClient.invalidateQueries({ queryKey: detailKey });
     }
     onOpenChange(next);
   };
@@ -50,42 +46,22 @@ export function CancelOrderModal({ orderNumber, open, onOpenChange, variant = "u
     });
   };
 
-  const close = () => handleOpenChange(false);
-
   return (
-    <AlertModal
+    <ConfirmActionModal
       open={open}
       onOpenChange={handleOpenChange}
       width="32rem"
       icon={<WarningTile />}
       title="Cancel this order?"
       subtitle={SUBTITLE[variant]}
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={CANNOT_CANCEL_MESSAGE} /> : undefined
-      }
-      footer={
-        mutation.isError ? (
-          <div className="flex justify-end">
-            <Button type="button" variant="primary" onClick={close}>
-              Close
-            </Button>
-          </div>
-        ) : (
-          <div className="flex justify-end gap-3">
-            <Button type="button" variant="outlined" onClick={close} disabled={mutation.isPending}>
-              Keep Order
-            </Button>
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleConfirm}
-              isLoading={mutation.isPending}
-            >
-              {mutation.isPending ? "Cancelling…" : "Cancel Order"}
-            </Button>
-          </div>
-        )
-      }
+      tone="danger"
+      cancelLabel="Keep Order"
+      confirmLabel="Cancel Order"
+      pendingLabel="Cancelling…"
+      mutation={mutation}
+      onConfirm={handleConfirm}
+      errorFooterMode="close-only"
+      errorMessage={CANNOT_CANCEL_MESSAGE}
     />
   );
 }

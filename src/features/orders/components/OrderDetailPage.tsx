@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
+import { PageLoading } from "@/components/PageLoading";
 import { useMeQuery } from "@/features/auth/queries";
 import { EditShippingAddressModal } from "@/features/orders/components/admin/EditShippingAddressModal";
 import { UpdateOrderStatusModal } from "@/features/orders/components/admin/UpdateOrderStatusModal";
@@ -12,6 +13,7 @@ import { PaymentInfoCard } from "@/features/orders/components/PaymentInfoCard";
 import { ShippingCard } from "@/features/orders/components/ShippingCard";
 import { useAdminOrderDetailQuery, useOrderDetailQuery } from "@/features/orders/queries";
 import { ApiError } from "@/lib/api";
+import { paths } from "@/lib/paths";
 import { orderNumberSchema } from "@/lib/schemas/common";
 
 const ADMIN_NOTICE_MESSAGE = "You are viewing this order in admin mode.";
@@ -40,11 +42,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
   const [isEditShippingOpen, setIsEditShippingOpen] = useState(false);
 
   if (detailQuery.isPending) {
-    return (
-      <main className="flex h-full items-center justify-center text-text-secondary">
-        Loading order…
-      </main>
-    );
+    return <PageLoading label="Loading order…" />;
   }
 
   if (detailQuery.isError) {
@@ -70,7 +68,7 @@ function OrderDetailView({ orderNumber }: { orderNumber: string }) {
   return (
     <main className="h-full overflow-hidden">
       <div className="flex h-full flex-col gap-4 px-6 py-4 lg:px-10 2xl:px-14">
-        <BackLink to="/orders" label="Back to Orders" />
+        <BackLink to={paths.orders.list()} label="Back to Orders" />
 
         {isAdmin && <Notice variant="info" message={ADMIN_NOTICE_MESSAGE} />}
 
@@ -146,7 +144,7 @@ function OrderNotFound() {
           We couldn’t find this order. It may have been removed or you may not have access.
         </p>
         <Link
-          to="/orders"
+          to={paths.orders.list()}
           className="mt-2 inline-flex h-10 items-center justify-center rounded-lg bg-primary-blue px-5 text-body-regular font-semibold text-white transition-colors hover:bg-primary-blue-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-blue focus-visible:ring-offset-2"
         >
           Back to Orders

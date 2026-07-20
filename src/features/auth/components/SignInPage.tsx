@@ -8,6 +8,7 @@ import { Notice } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
 import { useLoginMutation } from "@/features/auth/queries";
 import { LoginRequestSchema, type LoginRequest } from "@/features/auth/schema";
+import { paths } from "@/lib/paths";
 
 type ReasonNotice = { message: string; variant: "warning" | "success" | "info" };
 
@@ -47,7 +48,7 @@ export function SignInPage() {
 
   const onValid = (values: LoginRequest) => {
     loginMutation.mutate(values, {
-      onSuccess: () => navigate("/", { replace: true }),
+      onSuccess: () => navigate(paths.home(), { replace: true }),
     });
   };
 
@@ -105,7 +106,7 @@ export function SignInPage() {
 
           <p className="mt-8 text-center text-body-small text-text-secondary">
             Don&apos;t have an account?{" "}
-            <Link to="/sign-up" className="font-semibold text-primary-blue hover:underline">
+            <Link to={paths.signUp()} className="font-semibold text-primary-blue hover:underline">
               Sign Up
             </Link>
           </p>

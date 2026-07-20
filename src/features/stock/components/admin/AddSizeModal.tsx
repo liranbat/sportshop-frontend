@@ -1,10 +1,10 @@
 import { useId, useState } from "react";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
 import { FilterSearchBar } from "@/components/FilterSearchBar";
 import { InputFieldStacked } from "@/components/InputFieldStacked";
-import { Notice } from "@/components/Notice";
-import { StatusBadge } from "@/components/StatusBadge";
+import { MutationErrorBanner, Notice } from "@/components/Notice";
+import { StandardModal } from "@/components/StandardModal";
+import { Badge } from "@/components/Badge";
 import { useAdminProductsQuery } from "@/features/catalog/queries";
 import type { Product } from "@/features/catalog/schema";
 import { useAddAdminStockSizeMutation } from "@/features/stock/queries";
@@ -109,15 +109,13 @@ function AddSizeModalContent({ open, onOpenChange, onSuccess }: Props) {
   const inPickerStep = selectedProduct === null;
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
       width="32.5rem"
       title="Add size"
       subtitle="Add a new size row for an existing multi-size product."
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       bodyClassName="min-h-96 gap-4"
       footer={
         <div className="flex justify-end gap-3">
@@ -168,7 +166,7 @@ function AddSizeModalContent({ open, onOpenChange, onSuccess }: Props) {
           onSubmit={handleSubmit}
         />
       )}
-    </AlertModal>
+    </StandardModal>
   );
 }
 
@@ -226,7 +224,7 @@ function ProductPicker({
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <span className="truncate font-medium text-text-primary">{p.name}</span>
-                    {p.isArchived && <StatusBadge state="ARCHIVED" />}
+                    {p.isArchived && <Badge kind="ARCHIVED" label="Archived" />}
                   </span>
                   <span className="shrink-0 text-caption-regular text-text-secondary">#{p.id}</span>
                 </button>
@@ -294,7 +292,7 @@ function SizeForm({
             <span className="truncate text-body-regular font-semibold text-text-primary">
               {selected.name}
             </span>
-            {selected.isArchived && <StatusBadge state="ARCHIVED" />}
+            {selected.isArchived && <Badge kind="ARCHIVED" label="Archived" />}
           </span>
         </div>
         <Button

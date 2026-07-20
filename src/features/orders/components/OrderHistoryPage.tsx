@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
+import { ListPagination } from "@/components/ListPagination";
 import { Notice } from "@/components/Notice";
 import { useMeQuery } from "@/features/auth/queries";
 import { EmptyOrderHistory } from "@/features/orders/components/EmptyOrderHistory";
@@ -8,11 +9,11 @@ import {
   type OrderListView,
 } from "@/features/orders/components/OrderHistoryHeaderRow";
 import { OrderHistoryList } from "@/features/orders/components/OrderHistoryList";
-import { OrderHistoryPagination } from "@/features/orders/components/OrderHistoryPagination";
 import { OrderHistoryToolbar } from "@/features/orders/components/OrderHistoryToolbar";
 import {
   DEFAULT_FILTERS,
   filtersEqual,
+  PAGE_SIZE_OPTIONS,
   toOrderListParams,
   type PageSize,
   type StagedOrderFilters,
@@ -145,9 +146,11 @@ export function OrderHistoryPage() {
               )}
             </div>
 
-            <OrderHistoryPagination
+            <ListPagination
+              ariaLabel="Order history pagination"
               page={page}
               pageSize={staged.pageSize}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
               totalPages={totalPages}
               disabled={isRefreshing}
               onPageChange={setPage}

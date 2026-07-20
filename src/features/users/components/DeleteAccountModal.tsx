@@ -1,13 +1,14 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router";
-import { AlertModal } from "@/components/AlertModal";
 import { Button } from "@/components/Button";
-import { Notice } from "@/components/Notice";
+import { MutationErrorBanner } from "@/components/Notice";
 import { PasswordField } from "@/components/PasswordField";
+import { StandardModal } from "@/components/StandardModal";
 import { WarningTile } from "@/components/WarningTile";
 import { useDeleteAccountMutation } from "@/features/users/queries";
 import { DeleteAccountRequestSchema, type DeleteAccountRequest } from "@/features/users/schema";
+import { paths } from "@/lib/paths";
 
 type Props = {
   open: boolean;
@@ -46,22 +47,20 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
     mutation.mutate(payload, {
       onSuccess: () => {
         // queryClient.clear() already ran inside the mutation hook
-        navigate("/sign-in?reason=deleted", { replace: true });
+        navigate(paths.signIn({ reason: "deleted" }), { replace: true });
       },
     });
   };
 
   return (
-    <AlertModal
+    <StandardModal
       open={open}
       onOpenChange={onOpenChange}
       width="36rem"
       icon={<WarningTile />}
       title="Delete your account?"
       subtitle="This removes your profile, saved cart, and active sessions. Orders you have already placed will remain in our records. Your email address will stay reserved and cannot be used to register again."
-      errorBanner={
-        mutation.isError ? <Notice variant="error" message={mutation.error.message} /> : undefined
-      }
+      errorBanner={<MutationErrorBanner mutation={mutation} />}
       footer={
         <div className="flex justify-end gap-3">
           <Button
@@ -98,6 +97,6 @@ export function DeleteAccountModal({ open, onOpenChange }: Props) {
           {...register("currentPassword")}
         />
       </form>
-    </AlertModal>
+    </StandardModal>
   );
 }

@@ -11,11 +11,11 @@ type Props = {
   errorBanner?: ReactNode;
   children?: ReactNode;
   footer?: ReactNode;
-  width?: number | string;
+  width?: string;
   bodyClassName?: string;
 };
 
-export function AlertModal({
+export function StandardModal({
   open,
   onOpenChange,
   title,
