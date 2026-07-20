@@ -3,6 +3,11 @@ import { Outlet } from "react-router";
 import { Toaster } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { PageLoading } from "@/components/PageLoading";
+import { config } from "@/config";
+
+const toastDurationParsed = Number(config.TOAST_DURATION_MS);
+const toastDurationMs =
+  Number.isFinite(toastDurationParsed) && toastDurationParsed > 0 ? toastDurationParsed : 5_000;
 
 function App() {
   return (
@@ -14,7 +19,7 @@ function App() {
           <Outlet />
         </Suspense>
       </div>
-      <Toaster position="top-center" closeButton richColors duration={5000} />
+      <Toaster position="top-center" closeButton richColors duration={toastDurationMs} />
     </div>
   );
 }
