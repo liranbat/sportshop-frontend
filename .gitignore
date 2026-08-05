@@ -12,10 +12,11 @@ dist
 dist-ssr
 *.local
 
-# Env (committed: .env.example only)
+# Env (committed: *.example templates only)
 .env
 .env.*
 !.env.example
+!.env.prod.example
 
 # Editor directories and files
 .vscode/*
