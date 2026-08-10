@@ -24,6 +24,13 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
+// digits only, slash auto inserted after the month
+function formatExpiryInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "").slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+}
+
 export function PaymentStep({ subtotal, onBack, onBackToCart, onComplete }: PaymentStepProps) {
   const {
     register,
@@ -39,6 +46,7 @@ export function PaymentStep({ subtotal, onBack, onBackToCart, onComplete }: Paym
 
   const values = useWatch({ control });
   const isFormValid = PaymentFormSchema.safeParse(values).success;
+  const { onChange: onExpiryChange, ...expiryField } = register("expiry");
 
   return (
     <form onSubmit={handleSubmit(onComplete)} noValidate className="flex flex-1 flex-col gap-4">
@@ -60,9 +68,14 @@ export function PaymentStep({ subtotal, onBack, onBackToCart, onComplete }: Paym
           inputMode="numeric"
           placeholder="MM/YY"
           autoComplete="cc-exp"
+          maxLength={5}
           reserveErrorSpace
           error={errors.expiry?.message}
-          {...register("expiry")}
+          {...expiryField}
+          onChange={(e) => {
+            e.target.value = formatExpiryInput(e.target.value);
+            onExpiryChange(e);
+          }}
         />
         <InputFieldStacked
           label="CVV"
