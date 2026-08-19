@@ -71,6 +71,7 @@ function AuthedLinks({ isAdmin, onSignOut }: { isAdmin: boolean; onSignOut: () =
       <NavButton to={paths.profile.me()} label="Profile" variant="outlined" />
       {isAdmin && (
         <>
+          <NavButton to={paths.admin.sales()} label="Sales" variant="outlined" />
           <NavButton to={paths.admin.users()} label="Users" variant="outlined" />
           <NavButton to={paths.admin.sessions()} label="Sessions" variant="outlined" />
         </>
