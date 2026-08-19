@@ -25,5 +25,6 @@ export const paths = {
     sessions: () => "/admin/sessions",
     categories: () => "/admin/category-management",
     stock: () => "/admin/stock-management",
+    sales: () => "/admin/sales",
   },
 } as const;
